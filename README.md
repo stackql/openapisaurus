@@ -18,7 +18,7 @@ Splits an OpenAPI spec into multiple service scoped documents.
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`openapisaurus split <apiDoc> <flags>`  
 > 
 > &nbsp;&nbsp;&nbsp;__Arguments:__  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`apiDoc`  *[REQUIRED]* OpenAPI specification to be split.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`apiDoc`  __[REQUIRED]__ OpenAPI specification to be split.  
 > 
 > &nbsp;&nbsp;&nbsp;__Flags:__  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      *[REQUIRED]* Name of the provider.  
