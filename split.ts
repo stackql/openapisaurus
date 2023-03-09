@@ -4,10 +4,17 @@ import {
     logger,
     providerVersion,
     operations,
+    nonOperations,
     createDestDir,
     isOperationExcluded,
     retServiceNameAndDesc,
+    componentsChildren,
+    initService,
+    getAllRefs,
+    addRefsToComponents
 } from "./shared.ts";
+import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
+import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 
 export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> {
     
@@ -55,13 +62,13 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                     // fisrt occurance of the service, init service map
                     debug ? logger.debug(`first occurance of ${service}`) : null;
 
-                    services = initService(services, componentsChildren, service, serviceDesc, api);
+                    services = initService(services, componentsChildren, service, serviceDesc, apiDoc);
 
                 }
 
                 // add operation to service
                 if (!services[service]['paths'].hasOwnProperty(pathKey)){
-                    log('debug', `first occurance of ${pathKey}`, options.debug);
+                    debug ? logger.debug(`first occurance of ${pathKey}`) : null;
                     services[service]['paths'][pathKey] = {};
                     services[service]['paths'][pathKey][verbKey] = apiPaths[pathKey][verbKey];
                 } else {
@@ -70,17 +77,17 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
 
                 // get all refs for operation
                 let opRefs = getAllRefs(apiPaths[pathKey][verbKey]);
-                log('debug', `found ${opRefs.length} refs for ${service}`, options.debug);
+                debug ? logger.debug(`found ${opRefs.length} refs for ${service}`) : null;
 
                 // add refs to components in service map
-                addRefsToComponents(opRefs, services[service], api.components, options.debug);
+                addRefsToComponents(opRefs, services[service], apiDoc.components, debug);
 
                 // get internal refs
                 let internalRefDepth = 3;
                 for (let i = 0; i < internalRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
-                    log('debug', `found ${intRefs.length} INTERNAL refs`, options.debug);
-                    addRefsToComponents(intRefs, services[service], api.components, options.debug);
+                    debug ? logger.debug(`found ${intRefs.length} INTERNAL refs`) : null;
+                    addRefsToComponents(intRefs, services[service], apiDoc.components, debug);
                 }
 
                 // get internal refs for deeply nested schemas
@@ -88,12 +95,12 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 for (let i = 0; i < schemaMaxRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
                     intRefs = intRefs.filter(ref => !services[service]['components']['schemas'].hasOwnProperty(ref.split('/').pop()));
-                    log('debug', `found ${intRefs.length} INTERNAL schema refs`, options.debug);
+                    debug ? logger.debug(`found ${intRefs.length} INTERNAL schema refs`) : null;
                     if(intRefs.length > 0){
-                        log('debug', `adding ${intRefs.length} INTERNAL schema refs`, options.debug);
-                        addRefsToComponents(intRefs, services[service], api.components, options.debug);
+                        debug ? logger.debug(`adding ${intRefs.length} INTERNAL schema refs`) : null;
+                        addRefsToComponents(intRefs, services[service], apiDoc.components, debug);
                     } else {
-                        log('debug', `Exiting INTERNAL schema refs for ${service}`, options.debug);
+                        debug ? logger.debug(`Exiting INTERNAL schema refs for ${service}`) : null;
                         break;
                     }
                 }                
@@ -102,8 +109,37 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
         });
     });
 
-
-
+    // add non operations to each service
+    Object.keys(services).forEach(service => {
+        Object.keys(services[service]['paths']).forEach(pathKey => {
+            debug ? logger.debug(`adding non operations to ${service} for path ${pathKey}`) : null;
+            for (let nonOpIx in nonOperations){
+                debug ? logger.debug(`looking for non operation ${nonOperations[nonOpIx]} in ${service} under path ${pathKey}`) : null;
+                if(apiPaths[pathKey][nonOperations[nonOpIx]]){
+                    debug ? logger.debug(`adding ${nonOperations[nonOpIx]} to ${service} for path ${pathKey}`) : null;                    
+                    // services[service]['paths'][pathKey][nonOperations[nonOpIx]] = apiPaths[pathKey][nonOperations[nonOpIx]];
+                    // interim fix
+                    if(nonOperations[nonOpIx] == 'parameters'){
+                        Object.keys(services[service]['paths'][pathKey]).forEach(verbKey => {
+                            services[service]['paths'][pathKey][verbKey]['parameters'] = apiPaths[pathKey]['parameters'];
+                        });
+                    };
+                }
+            }
+        });
+    });
+    
+    // write out service docs
+    Object.keys(services).forEach((service: string) => {
+      logger.info(`writing out openapi doc for [${service}]`);
+      const svcDir = `${outputDir}/${providerName}/${providerVersion}/services/${service}`;
+      const outputFile = `${svcDir}/${service}.yaml`;
+      if (!existsSync(svcDir)) {
+        ensureDirSync(svcDir);
+      }
+      Deno.writeTextFileSync(outputFile, yaml.dump(services[service], {lineWidth: -1}));
+    });
+    
 
     return true;
 }
