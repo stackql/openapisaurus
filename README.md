@@ -21,12 +21,12 @@ Splits an OpenAPI spec into multiple service scoped documents.
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`apiDoc`  __[REQUIRED]__ OpenAPI specification to be split.  
 > 
 > &nbsp;&nbsp;&nbsp;__Flags:__  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      *[REQUIRED]* Name of the provider.  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--svcDiscriminator`  *[REQUIRED]* [JMESPath](https://jmespath.org/) expression to extract the service name from the OpenAPI spec.  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--exclude`           *[OPTIONAL]* [JMESPath](https://jmespath.org/) expression for paths to exclude from processing.  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--outputDir`         *[OPTIONAL]* Directory to write the generated stackql provider development documents to. (defaults to `cwd`)  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         *[OPTIONAL]* Overwrite existing files. (defaults to `false`)  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           *[OPTIONAL]* Verbose output (defaults to `false`).  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      __[REQUIRED]__ Name of the provider.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--svcDiscriminator`  __[REQUIRED]__ [JMESPath](https://jmespath.org/) expression to extract the service name from the OpenAPI spec.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--exclude`           __[OPTIONAL]__ [JMESPath](https://jmespath.org/) expression for paths to exclude from processing.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--outputDir`         __[OPTIONAL]__ Directory to write the output OpenAPI documents to. (defaults to `cwd`)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
 
 ```javascript
 import { search } from "https://deno.land/x/jmespath/index.ts";
