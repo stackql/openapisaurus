@@ -83,6 +83,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 addRefsToComponents(opRefs, services[service], apiDoc.components, debug);
 
                 // get internal refs
+
                 let internalRefDepth = 3;
                 for (let i = 0; i < internalRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
@@ -91,6 +92,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 }
 
                 // get internal refs for deeply nested schemas
+
                 let schemaMaxRefDepth = 10;
                 for (let i = 0; i < schemaMaxRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
@@ -103,7 +105,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                         debug ? logger.debug(`Exiting INTERNAL schema refs for ${service}`) : null;
                         break;
                     }
-                }                
+                }
 
             }
         });

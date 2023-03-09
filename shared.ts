@@ -126,7 +126,6 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
       if (discriminator == 'path_tokens') {
         thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
       } else {
-        console.log(discriminator);
         thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_') : getMeaningfulPathTokens(pathKey)[0];
       }
       const serviceName = camelToSnake(thisSvc);
@@ -157,8 +156,11 @@ export function initService(
     api.externalDocs ? services[service]['externalDocs'] = api.externalDocs : null;
     services[service]['components'] = {};
     for (let compChild in componentsChildren) {
-      // services[service]['components'][componentsChildren[compChild]] = {};
-      api.components[componentsChildren[compChild]] ? services[service]['components'][componentsChildren[compChild]] = api.components[componentsChildren[compChild]] : null;
+      if(componentsChildren[compChild] == 'schemas'){
+        services[service]['components']['schemas'] = {};
+      } else {
+        api.components[componentsChildren[compChild]] ? services[service]['components'][componentsChildren[compChild]] = api.components[componentsChildren[compChild]] : null;
+      }
     }
     services[service]['paths'] = {};
   

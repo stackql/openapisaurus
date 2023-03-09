@@ -87,19 +87,6 @@ function parseSplitArgs(args: any): types.splitArgs | false {
   // (FAIL) deno run --allow-net --allow-read app.ts split ref/myprovider
   // (FAIL) deno run --allow-net --allow-read app.ts split --providerName=myprovider --svcdiscriminator='$["tags"][0]' --verbose
 
-  /*
-deno run \
---allow-net \
---allow-read \
---allow-write \
-app.ts split \
-../../local-registry/ref/fivetran/swagger.json \
---providerName=myprovider \
---svcdiscriminator='["tags"][0]' \
---overwrite \
---verbose 
-  */
-
   if (args._.length !== 2) {
     console.log(`${red('ERROR: need to provide an apiDoc to split.')}
     ${usage.split}

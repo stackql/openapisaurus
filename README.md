@@ -1,4 +1,5 @@
 # openapisaurus
+
 > Command line utility to split OpenAPI documents into smaller, self contained, service oriented documents and prepare StackQL provider interfaces
 > Command line utility to help developers prepare and submit StackQL provider specs, see [StackQL](https://github.com/stackql/stackql)
 
@@ -6,7 +7,16 @@
 
 ## Installation
 
-
+1. Install Deno by following the instructions at [deno.land](https://deno.land/).
+2. Download the `openapisaurus` script by running the following command:
+```
+curl -o openapisaurus https://raw.githubusercontent.com/<username>/<repository>/main/app.ts
+```
+Replace `<username>` and `<repository>` with your GitHub username and the name of your repository, respectively.
+3. Make the `openapisaurus` script executable by running the following command:
+```
+chmod +x openapisaurus
+```
 
 ## Command Line Usage
 
@@ -28,13 +38,19 @@ Splits an OpenAPI spec into multiple service scoped documents.
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
 
-```javascript
-import { search } from "https://deno.land/x/jmespath/index.ts";
+#### Example
 
-search({foo: {bar: {baz: [0, 1, 2, 3, 4]}}}, "foo.bar.baz[2]")
-
-// OUTPUTS: 2
-
+```bash
+deno run \
+--allow-net \
+--allow-read \
+--allow-write \
+app.ts split \
+../../local-registry/ref/fivetran/swagger.json \
+--providerName=fivetran \
+--svcdiscriminator='["tags"][0]' \
+--overwrite \
+--verbose 
 ```
 
 In the example we gave the `search` function input data of
@@ -133,23 +149,34 @@ TreeInterpreter.search(ast, {foo: {bar: 'BAZ'}})
 
 ```
 
+## Local Development
 
-## More Resources
+```
+deno run \
+--allow-net \
+--allow-read \
+--allow-write \
+app.ts split \
+../../local-registry/ref/fivetran/swagger.json \
+--providerName=fivetran \
+--svcdiscriminator='["tags"][0]' \
+--overwrite \
+--verbose 
+```
 
-The example above only show a small amount of what
-a JMESPath expression can do. If you want to take a
-tour of the language, the *best* place to go is the
-[JMESPath Tutorial](http://jmespath.org/tutorial.html).
+```
+./openapisaurus split \
+../../local-registry/ref/fivetran/swagger.json \
+--providerName=fivetran \
+--svcdiscriminator='["tags"][0]' \
+--overwrite \
+--verbose
+```
+chmod +x openapisaurus
+```
 
-One of the best things about JMESPath is that it is
-implemented in many different programming languages including
-python, ruby, php, lua, etc.  To see a complete list of libraries,
-check out the [JMESPath libraries page](http://jmespath.org/libraries.html).
-
-And finally, the full JMESPath specification can be found
-on the [JMESPath site](http://jmespath.org/specification.html).
-
+If you have any issues with `openapisaurus`, please report them at [the issue tracker](https://github.com/<username>/<repository>/issues).
 
 ## License
 
-jmespath-ts is licensed under the Mozilla Public License Version 2.0
+This project is licensed under the [MIT License](LICENSE).
