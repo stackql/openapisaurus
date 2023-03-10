@@ -15,6 +15,7 @@ import {
     initProviderData,
     initResData,
     getResourceName,
+    addResource,
 } from "./shared.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
@@ -83,18 +84,25 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         // get resource name
                         let resource = getResourceName(providerName, apiPaths[pathKey][verbKey], service, resDiscriminator, pathKey);
                         logger.info(`processing resource: ${resource}`);
-
-                        // log('debug', `resource : [${resource}]`, options.debug);
     
-                        // if (!resData['components']['x-stackQL-resources'].hasOwnProperty(resource)){
-                        //     // fisrt occurance of the resource, init resource
-                        //     resData = addResource(resData, providerName, service, resource);
-                        // }
+                        if (!resData['components']['x-stackQL-resources'].hasOwnProperty(resource)){
+                            // first occurance of the resource, init resource
+                            resData = addResource(resData, providerName, service, resource);
+                        }
                         
-                        // const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
+                        const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
 
-                        // // get unique operation id 
-                        // let operationId = getOperationId(api.paths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
+                        // get unique operation id 
+                        let operationId = apiPaths[pathKey][verbKey][methodKey];
+                        
+                        if (!operationId){
+                            logger.error(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}`);
+                            throw 'Break';
+                        }
+                        
+                        debug ? logger.debug(`processing operationId : ${operationId}...`) : null;
+
+                        // let operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
                       
                         // if(operationId){
                         //     log('info', `operationId : [${operationId}]`);

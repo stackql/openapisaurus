@@ -237,3 +237,25 @@ export function getResourceName(providerName: string, operation: string, service
   }
   return resourceName;
 }
+
+function snakeToTitleCase(str: string): string {
+  let words = str.split('_');
+  let titleCase = words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  return titleCase;
+}
+
+export function addResource(resData: any, providerName: string, service: string, resource: string): any {
+  resData.components['x-stackQL-resources'][resource] = {
+    id: `${providerName}.${service}.${resource}`,
+    name: resource,
+    title: snakeToTitleCase(resource),
+    methods: {},
+    sqlVerbs: {
+      select: [],
+      insert: [],
+      update: [],
+      delete: []
+    }
+  };
+  return resData;
+}
