@@ -16,6 +16,9 @@ import {
     initResData,
     getResourceName,
     addResource,
+    getOperationId,
+    addOperation,
+    updateProviderData,
 } from "./shared.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
@@ -93,25 +96,21 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
 
                         // get unique operation id 
-                        let operationId = apiPaths[pathKey][verbKey][methodKey];
+                        let methodKeyVal = apiPaths[pathKey][verbKey][methodKey];
                         
-                        if (!operationId){
+                        if (!methodKeyVal){
                             logger.error(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}`);
                             throw 'Break';
                         }
                         
-                        debug ? logger.debug(`processing operationId : ${operationId}...`) : null;
+                        debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
 
-                        // let operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
+                        let operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
                       
-                        // if(operationId){
-                        //     log('info', `operationId : [${operationId}]`);
-                        // } else {
-                        //     throw 'Break';
-                        // }
-                        
-                        // // add operation to resource
-                        // resData = addOperation(resData, serviceDirName, resource, operationId, api, pathKey, verbKey, providerName);
+                        debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
+
+                        // add operation to resource
+                        resData = addOperation(resData, service, resource, operationId, apiPaths, pathKey, verbKey, providerName);
     
                         // // map sqlVerbs for operation
                         // resData = addSqlVerb(api.paths[pathKey][verbKey], resData, operationId, resource, pathKey, verbKey, providerName);
@@ -123,13 +122,35 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
 
             });
         });                
+       
+        if (existsSync(resDoc) && !overwrite) {
+            logger.error(`${resDoc} exists and overwrite is false`);
+            return false;
+        } else {
+            Deno.writeTextFileSync(resDoc, yaml.dump(resData, {lineWidth: -1}));
+            logger.info(`${resDoc} written`);
+        }
 
+        // update provider doc
+        providerData = updateProviderData(
+            providerData, 
+            providerName,
+            providerVersion,
+            service, 
+            apiDoc.info.title, 
+            apiDoc.info.description);
 
-
-
+        // end resources for loop
     }
     
-
+    // write out provider doc
+    if (existsSync(providerDoc) && !overwrite){
+        logger.error(`${providerDoc} exists and overwrite is false`);
+        return false;
+    } else {
+        Deno.writeTextFileSync(providerDoc, yaml.dump(providerData, {lineWidth: -1}));
+        logger.info(`${providerDoc} written`);
+    }
 
     return true;
 }

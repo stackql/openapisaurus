@@ -29,7 +29,7 @@ function camelToSnake(inStr: string): string {
 
     return str.replace(/\.?([A-Z])/g, function(x: string, y: string) {
         return "_" + y.toLowerCase();
-    }).replace(/^_/, "");
+    }).replace(/^_/, "").replace(/_{2,}/g, "_");
 }
 
 function isMeaningfulToken(token: string, excludeParams: boolean = true): boolean {
@@ -63,7 +63,7 @@ function getMeaningfulPathTokens(pathKey: string): string[] {
 
 export const logger = log.getLogger('openapisaurus');
 
-export const providerVersion = 'v1v00.00.00000';
+export const providerVersion = 'v00.00.00000';
 
 export const operations = [
     'get',
@@ -188,9 +188,11 @@ export function addRefsToComponents(refs: string[], service: any, apiComp: any, 
         if (refTokens[1] === 'components') {
             let thisSection = refTokens[2];
             let thisKey = refTokens[3];
-            debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;
             if (componentsChildren.includes(thisSection)) {
+              if(!service['components'][thisSection][thisKey]){
+                debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;
                 service['components'][thisSection][thisKey] = apiComp[thisSection][thisKey];
+              }
             }
         }
     }
@@ -258,4 +260,128 @@ export function addResource(resData: any, providerName: string, service: string,
     }
   };
   return resData;
+}
+
+function getAllPathTokens(pathKey: string): string[] {
+  let path = pathKey.replace(/\./g, '/').replace(/-/g, '_');
+  let outTokens: string[] = [];
+  let inTokens = path.split('/');
+  inTokens.forEach(token => {
+    if (isMeaningfulToken(token, false)) {
+      outTokens.push(token.replace(/{/, '_').replace(/}/, ''));
+    }
+  });
+  return outTokens;
+}
+
+export function getOperationId(
+  apiPaths: Record<string, Record<string, Record<string, string>>>,
+  pathKey: string,
+  verbKey: string,
+  existingOpIds: string[],
+  methodKey: string,
+  service: string,
+  resource: string
+): string {
+  let operationId = apiPaths[pathKey][verbKey][methodKey];
+  if (operationId) {
+    if (operationId.includes('/')) {
+      operationId = operationId.split('/')[1];
+    }
+    operationId = operationId.replace(/-/g, '_').replace(/\./g, '_');
+    // remove service prefix
+    if (operationId.startsWith(`${service}_`)) {
+      operationId = operationId.replace(`${service}_`, '');
+    }
+    // remove resource prefix
+    if (operationId.startsWith(`${resource}_`)) {
+      operationId = operationId.replace(`${resource}_`, '');
+    }
+    // check for uniqueness
+    if (existingOpIds.includes(operationId)) {
+      // preserve op type
+      if (operationId.endsWith('_list')) {
+        operationId = `list_${operationId.substring(0, operationId.length - 5)}`;
+      }
+      if (operationId.endsWith('_create')) {
+        operationId = `create_${operationId.substring(0, operationId.length - 7)}`;
+      }
+      if (operationId.endsWith('_delete')) {
+        operationId = `delete_${operationId.substring(0, operationId.length - 7)}`;
+      }
+      // get path params
+      let pathParams = (pathKey.match(/\{[\w]*\}/g) || ['by_noparams']);
+      let opSuffixes: string[] = [];
+      for (let ix in pathParams) {
+        opSuffixes.push(`by_${pathParams[ix].replace(/\{|\}/g, '')}`);
+      }
+      operationId = `${operationId}_${opSuffixes.join('_')}`;
+    }
+    return operationId;
+  } else {
+    logger.warning(`no method key found for ${pathKey}/${verbKey}, using path tokens and verb`);
+    return `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;
+  }
+}
+
+function getResponseCode(responses: any): string {
+  let respcode = '200';
+  if (responses) {
+    Object.keys(responses).forEach(respKey => {
+      if (respKey.startsWith('2')) {
+        if (responses[respKey]?.content?.['application/json']?.schema) {
+          respcode = respKey;
+        }
+      }
+    });
+  }
+  return respcode;
+}
+
+function getOperationRef(service: string, pathKey: string, verbKey: string): string {
+  return `${service}.yaml#/paths/${pathKey.replace(/\//g, '~1')}/${verbKey}`;
+}
+
+export function addOperation(
+  resData: any,
+  serviceDirName: string,
+  resource: string,
+  operationId: string,
+  apiPaths: any,
+  pathKey: string,
+  verbKey: string,
+  providerName: string
+): any {
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId] = {};
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation'] = {};
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response'] = {};
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = getOperationRef(serviceDirName, pathKey, verbKey);
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
+  resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
+  return resData;
+}
+
+function convertLowerCaseToTitleCase(str) {
+  return str.replace(/\b([a-z])/g, function(match, p1) {
+    return p1.toUpperCase();
+  });
+}
+
+export function updateProviderData(
+  providerData, 
+  providerName,
+  providerVersion,
+  service, 
+  serviceTitle, 
+  serviceDescription){
+      providerData.providerServices[service] = {};
+      providerData.providerServices[service].description = convertLowerCaseToTitleCase(snakeToTitleCase(serviceDescription));
+      providerData.providerServices[service].id = `${service}:${providerVersion}`;
+      providerData.providerServices[service].name = service;
+      providerData.providerServices[service].preferred = true;
+      providerData.providerServices[service].service = {};
+      providerData.providerServices[service].service['$ref'] = `${providerName}/${providerVersion}/services/${service}.yaml`;
+      providerData.providerServices[service].title = convertLowerCaseToTitleCase(snakeToTitleCase(serviceTitle));
+      providerData.providerServices[service].version = providerVersion;
+      return providerData;
 }

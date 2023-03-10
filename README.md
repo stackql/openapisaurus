@@ -169,7 +169,27 @@ chmod +x openapisaurus
 
 ```
 ./openapisaurus split \
-../../local-registry/ref/fivetran/swagger.json \
+ref/fivetran/swagger.json \
+--providerName=fivetran \
+--svcdiscriminator='["tags"][0]' \
+--outputDir=dev \
+--overwrite \
+--verbose
+```
+
+```
+./openapisaurus split \
+ref/digitalocean/digitalocean-openapi-bundled.yaml \
+--providerName=digitalocean \
+--svcdiscriminator='["tags"][0]' \
+--outputDir=dev \
+--overwrite --verbose
+```
+
+
+```
+./openapisaurus split \
+ref/fivetran/swagger.json \
 --providerName=fivetran \
 --svcdiscriminator='["tags"][0]' \
 --outputDir=dev \
@@ -181,7 +201,6 @@ chmod +x openapisaurus
 ./openapisaurus dev \
 dev \
 --providerName=fivetran \
---resdiscriminator='["tags"][0]' \
 --overwrite \
 --verbose
 ```

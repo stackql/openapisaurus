@@ -46,10 +46,13 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
 
     logger.info(`iterating over ${Object.keys(apiPaths).length} paths`);
     let services = {};
+    let opCounter = 0;
     
     Object.keys(apiPaths).forEach(pathKey => {
         debug ? logger.debug(`processing path ${pathKey}`) : null;
         Object.keys(apiPaths[pathKey]).forEach(verbKey => {
+            opCounter += 1;
+            logger.info(`operations processed : ${opCounter}`);
             debug ? logger.debug(`processing operation ${pathKey}:${verbKey}`) : null;
 
             // if verbKey in operations, then process
@@ -88,7 +91,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 let internalRefDepth = 3;
                 for (let i = 0; i < internalRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
-                    debug ? logger.debug(`found ${intRefs.length} INTERNAL refs`) : null;
+                    debug ? logger.debug(`found ${intRefs.length} INTERNAL refs for service ${service}`) : null;
                     addRefsToComponents(intRefs, services[service], apiDoc.components, debug);
                 }
 
@@ -97,10 +100,10 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 let schemaMaxRefDepth = 10;
                 for (let i = 0; i < schemaMaxRefDepth; i++){
                     let intRefs = getAllRefs(services[service]['components']);
-                    intRefs = intRefs.filter(ref => !services[service]['components']['schemas'].hasOwnProperty(ref.split('/').pop()));
-                    debug ? logger.debug(`found ${intRefs.length} INTERNAL schema refs`) : null;
+                    intRefs = intRefs.filter((ref: string) => !services[service]['components']['schemas'].hasOwnProperty(ref.split('/').pop()));
+                    debug ? logger.debug(`found ${intRefs.length} INTERNAL schema refs for service ${service}`) : null;
                     if(intRefs.length > 0){
-                        debug ? logger.debug(`adding ${intRefs.length} INTERNAL schema refs`) : null;
+                        debug ? logger.debug(`adding ${intRefs.length} INTERNAL schema refs for service ${service}`) : null;
                         addRefsToComponents(intRefs, services[service], apiDoc.components, debug);
                     } else {
                         debug ? logger.debug(`Exiting INTERNAL schema refs for ${service}`) : null;
