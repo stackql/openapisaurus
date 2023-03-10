@@ -23,10 +23,11 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
 
     const apiDoc = readSync(splitArgs.apiDoc);
     if (!apiDoc){
+        logger.error(`failed to parse ${splitArgs.apiDoc}`);
         return false;
     }
 
-    // valid do, lets go
+    // valid doc, lets go
     const providerName = splitArgs.providerName;
     const svcDiscriminator = splitArgs.svcDiscriminator;
     const outputDir = splitArgs.outputDir;

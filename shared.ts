@@ -196,3 +196,44 @@ export function addRefsToComponents(refs: string[], service: any, apiComp: any, 
     }
   }
   
+export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
+  let providerData: {
+    id: string;
+    name: string;
+    version: string;
+    providerServices: Record<string, unknown>;
+    config: Record<string, unknown>;
+  } = {
+    id: providerName,
+    name: providerName,
+    version: providerVersion,
+    providerServices: {},
+    config: providerConfig,
+  };
+  return providerData;
+}
+
+export function initResData(): Record<string, any> {
+  let resData: Record<string, any> = {};
+  resData['components'] = {};
+  resData['components']['x-stackQL-resources'] = {};
+  return resData;
+}
+
+export function getResourceName(providerName: string, operation: string, service: string, resDiscriminator: string, pathKey: string): string {
+  let resourceName = service;
+  if(resDiscriminator == 'path_tokens'){
+      let resTokens: string[] = [];
+      let pathTokens = getMeaningfulPathTokens(pathKey);
+      pathTokens.forEach(token => {
+        if (token != service && token.length > 0){
+          resTokens.push(token);
+        }       
+        resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
+      });
+  } else {
+    let resValue = search(operation, resDiscriminator)[0];
+    resourceName = resValue ? camelToSnake(resValue) : service;
+  }
+  return resourceName;
+}

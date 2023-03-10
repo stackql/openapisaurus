@@ -7,6 +7,7 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import * as types from "./types.ts";
 import { splitApiDoc } from "./split.ts";
+import { generateDevDocs } from "./provider-dev.ts";
 import { yellow, red } from "https://deno.land/std@0.178.0/fmt/colors.ts";;
 
 const banner = String.raw`
@@ -55,18 +56,26 @@ const usage = {
 
   Flags:
     --providerName      [REQUIRED] Name of the provider.
-    --svcDiscriminator  [REQUIRED] JSONPath expression to extract the service name from the OpenAPI spec.
-    --exclude           [OPTIONAL] JSONPath expression for paths to exclude from processing.
+    --svcDiscriminator  [REQUIRED] JMESPath expression to extract the service name from the OpenAPI spec.
+    --exclude           [OPTIONAL] JMESPath expression for paths to exclude from processing.
     --outputDir         [OPTIONAL] Directory to write the generated stackql provider development documents to. (defaults to cwd)
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
   dev: `${banner2}
   Usage: 
-    ${yellow('openapisaurus dev <apiDoc> <flags>')}
+    ${yellow('openapisaurus dev <apiDocDir> <flags>')}  
 
   Arguments:
-    apiDoc  [REQUIRED] OpenAPI specification to be split.
+    apiDocDir  [REQUIRED] Directory containing OpenAPI specifications documents used to create StackQL dev docs.
+
+  Flags:
+    --providerName      [REQUIRED] Name of the provider.
+    --resDiscriminator  [OPTIONAL] JMESPath expression used to identify stackql resources from a providers OpenAPI spec. (defaults to path_tokens).
+    --providerConfig    [OPTIONAL] Stringified JSON object, describing the config for a provider. (defaults to '{ "auth": { "type": "null_auth" }}').
+    --methodKey         [OPTIONAL] JMESPath used to identify resource methods from a providers OpenAPI spec. (defaults to operationId).
+    --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
+    --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
   build: `${banner2}
   Usage: 
@@ -81,11 +90,6 @@ const args = parse(Deno.args);
 const command = args._[0];
 
 function parseSplitArgs(args: any): types.splitArgs | false {
-  
-  // TESTS : 
-  // deno run --allow-net --allow-read app.ts split ref/myprovider --providerName=myprovider --svcdiscriminator='$["tags"][0]' --verbose
-  // (FAIL) deno run --allow-net --allow-read app.ts split ref/myprovider
-  // (FAIL) deno run --allow-net --allow-read app.ts split --providerName=myprovider --svcdiscriminator='$["tags"][0]' --verbose
 
   if (args._.length !== 2) {
     console.log(`${red('ERROR: need to provide an apiDoc to split.')}
@@ -147,9 +151,55 @@ function parseSplitArgs(args: any): types.splitArgs | false {
   return splitArgs;
 }
 
-function parseDevArgs(args: any): any | false {
+function parseDevArgs(args: any): types.devArgs | false {
 
-  return false;
+  if (args._.length !== 2) {
+    console.log(`${red('ERROR: need to provide an apiDocDir containing OpenAPI docs to process.')}
+    ${usage.split}
+    `);
+    return false;
+  }
+
+  // positional args
+  const apiDocDir = args._[1];
+
+  if (apiDocDir === 'help'){
+    console.log(`${usage.dev}`);
+    return false;
+  }
+  
+  // mandatory named args
+  let providerName: any;
+
+  if ('providerName' in args){
+    providerName = args.providerName;
+  } else if('providername' in args) {
+    providerName = args.providername;
+  } else {
+    console.log(`${red('ERROR: providerName not provided')}
+    ${usage.split}
+    `);
+    return false;
+  }
+
+  // optional named args
+  let resDiscriminator: string = args.resDiscriminator || 'path_tokens';
+  let providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
+  let methodKey: string = args.methodKey || 'operationId';
+  let verbose: boolean = args.verbose || false;
+  let overwrite: boolean = args.overwrite || false;
+
+  const devArgs: types.devArgs = {
+    apiDocDir: apiDocDir,
+    providerName: providerName,
+    resDiscriminator: resDiscriminator,
+    providerConfig: providerConfig,
+    methodKey: methodKey,
+    overwrite: overwrite,
+    verbose: verbose,
+  };  
+  
+  return devArgs;
 }
 
 function parseBuildArgs(args: any): any | false {
@@ -163,7 +213,8 @@ switch (command) {
     splitArgs ? await splitApiDoc(splitArgs) : null;
     break;
   case "dev":
-    parseDevArgs(args) ? console.log("dev docs") : console.log("show help");
+    const devArgs = parseDevArgs(args);
+    devArgs ? await generateDevDocs(devArgs) : null;
     break;
   case "build":
     parseBuildArgs(args) ? console.log("build docs") : console.log("show help");

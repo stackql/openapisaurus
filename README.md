@@ -163,17 +163,29 @@ app.ts split \
 --overwrite \
 --verbose 
 ```
+```
+chmod +x openapisaurus
+```
 
 ```
 ./openapisaurus split \
 ../../local-registry/ref/fivetran/swagger.json \
 --providerName=fivetran \
 --svcdiscriminator='["tags"][0]' \
+--outputDir=dev \
 --overwrite \
 --verbose
 ```
-chmod +x openapisaurus
+
 ```
+./openapisaurus dev \
+dev \
+--providerName=fivetran \
+--resdiscriminator='["tags"][0]' \
+--overwrite \
+--verbose
+```
+
 
 If you have any issues with `openapisaurus`, please report them at [the issue tracker](https://github.com/<username>/<repository>/issues).
 

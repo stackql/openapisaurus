@@ -6,3 +6,13 @@ export interface splitArgs {
     overwrite: boolean;
     verbose: boolean;
   }
+
+  export interface devArgs {
+    apiDocDir: string;
+    providerName: string;
+    resDiscriminator: string;
+    providerConfig: string;
+    methodKey: string;
+    overwrite: boolean;
+    verbose: boolean;
+  }
