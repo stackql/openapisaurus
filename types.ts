@@ -5,9 +5,9 @@ export interface splitArgs {
     outputDir: string;
     overwrite: boolean;
     verbose: boolean;
-  }
+}
 
-  export interface devArgs {
+export interface devArgs {
     apiDocDir: string;
     providerName: string;
     resDiscriminator: string;
@@ -15,4 +15,13 @@ export interface splitArgs {
     methodKey: string;
     overwrite: boolean;
     verbose: boolean;
-  }
+}
+
+export interface buildArgs {
+  apiDocDir: string;
+  providerName: string;
+  outputDir: string;
+  servers: string;
+  overwrite: boolean;
+  verbose: boolean;
+}

@@ -68,7 +68,7 @@ export function parseDevArgs(args: any): types.devArgs | false {
   
     if (args._.length !== 2) {
       console.log(`${red('ERROR: need to provide an apiDocDir containing OpenAPI docs to process.')}
-      ${usage.split}
+      ${usage.dev}
       `);
       return false;
     }
@@ -82,7 +82,7 @@ export function parseDevArgs(args: any): types.devArgs | false {
     }
     
     // mandatory named args
-    let providerName: any;
+    let providerName: string;
   
     if ('providerName' in args){
       providerName = args.providerName;
@@ -116,5 +116,43 @@ export function parseDevArgs(args: any): types.devArgs | false {
 }
   
 export function parseBuildArgs(args: any): any | false {
+
+  if (args._.length !== 2) {
+    console.log(`${red('ERROR: need to provide an apiDocDir containing OpenAPI docs to process.')}
+    ${usage.build}
+    `);
     return false;
+  }
+
+  // positional args
+  const apiDocDir = args._[1];
+
+  if (apiDocDir === 'help'){
+    console.log(`${usage.build}`);
+    return false;
+  }
+
+  // mandatory named args
+  let providerName: string;
+
+  if ('providerName' in args){
+    providerName = args.providerName;
+  } else if('providername' in args) {
+    providerName = args.providername;
+  } else {
+    console.log(`${red('ERROR: providerName not provided')}
+    ${usage.split}
+    `);
+    return false;
+  }
+
+
+  return false;
 }
+
+// Flags:
+//   --providerName      [REQUIRED] Name of the provider.
+//   --outputDir         [REQUIRED] Output directory to write compiled docs to.
+//   --servers           [OPTIONAL] Stringified JSON array containing servers for the provider. (defaults to '[]').
+//   --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
+//   --verbose           [OPTIONAL] Verbose output (defaults to false). 

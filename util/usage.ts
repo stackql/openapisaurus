@@ -69,9 +69,16 @@ export const usage = {
   `,
   build: `${banner2}
   Usage: 
-    ${yellow('openapisaurus build <apiDoc> <flags>')}
+    ${yellow('openapisaurus build <apiDocDir> <flags>')}
 
   Arguments:
-    apiDoc  [REQUIRED] OpenAPI specification to be split.
+    apiDocDir  [REQUIRED] Directory containing OpenAPI service specifications and StackQL dev docs.
+
+  Flags:
+    --providerName      [REQUIRED] Name of the provider.
+    --outputDir         [REQUIRED] Output directory to write compiled docs to.
+    --servers           [OPTIONAL] Stringified JSON array containing servers for the provider. (defaults to '[]').
+    --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
+    --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
 };
