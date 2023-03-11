@@ -205,6 +205,14 @@ dev \
 --verbose
 ```
 
+```
+./openapisaurus dev \
+dev \
+--providerName=digitalocean \
+--overwrite \
+--verbose
+```
+
 
 If you have any issues with `openapisaurus`, please report them at [the issue tracker](https://github.com/<username>/<repository>/issues).
 

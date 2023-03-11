@@ -1,17 +1,11 @@
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import * as types from "./types.ts";
-import { 
-    logger,
+import { logger } from "./util/logging.ts";
+import {
     providerVersion,
     operations,
-    // nonOperations,
-    // createDestDir,
-    // isOperationExcluded,
-    // retServiceNameAndDesc,
-    // componentsChildren,
-    // initService,
-    // getAllRefs,
-    // addRefsToComponents
+  } from "./util/constants.ts";
+import { 
     initProviderData,
     initResData,
     getResourceName,
@@ -19,7 +13,8 @@ import {
     getOperationId,
     addOperation,
     updateProviderData,
-} from "./shared.ts";
+    addSqlVerb,
+} from "./util/dev-functions.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 
@@ -112,8 +107,8 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         // add operation to resource
                         resData = addOperation(resData, service, resource, operationId, apiPaths, pathKey, verbKey, providerName);
     
-                        // // map sqlVerbs for operation
-                        // resData = addSqlVerb(api.paths[pathKey][verbKey], resData, operationId, resource, pathKey, verbKey, providerName);
+                        // map sqlVerbs for operation
+                        resData = addSqlVerb(apiPaths[pathKey][verbKey], resData, operationId, resource, pathKey, verbKey, providerName);
     
                     } catch (e) {
                         if (e !== 'Break') throw e
