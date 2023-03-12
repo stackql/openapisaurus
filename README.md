@@ -74,11 +74,11 @@ Generate stackql provider development provider docs.
 > 
 > &nbsp;&nbsp;&nbsp;__Flags:__  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      __[REQUIRED]__ Name of the provider.  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--resDiscriminator`  __[REQUIRED]__ [JMESPath](https://jmespath.org/) used to identify stackql resources from an OpenAPI spec. 
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--resDiscriminator`  __[REQUIRED]__ [JMESPath](https://jmespath.org/) used to identify stackql resources from an OpenAPI spec.  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (defaults to `path_tokens`).  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerConfig`    __[OPTIONAL]__ Stringified JSON object, describing the config for a provider. 
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerConfig`    __[OPTIONAL]__ Stringified JSON object, describing the config for a provider.  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (defaults to `{ "auth": { "type": "null_auth" }}`).  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--methodKey`         __[OPTIONAL]__ [JMESPath](https://jmespath.org/) used to identify resource methods from a providers OpenAPI spec. 
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--methodKey`         __[OPTIONAL]__ [JMESPath](https://jmespath.org/) used to identify resource methods from a providers OpenAPI spec.  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (defaults to `operationId`).  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
