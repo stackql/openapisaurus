@@ -118,7 +118,8 @@ Build deployable stackql provider docs.
 > &nbsp;&nbsp;&nbsp;__Flags:__  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      __[REQUIRED]__ Name of the provider.  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--outputDir`         __[REQUIRED]__ Output directory to write compiled docs to.  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--servers`    __[OPTIONAL]__ Stringified JSON array containing servers for the provider (overrides the `servers` list in the original OpenAPI spec).  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--servers`    __[OPTIONAL]__ Stringified JSON array containing servers for the provider.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (overrides the `servers` list in the original OpenAPI spec).  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
 
