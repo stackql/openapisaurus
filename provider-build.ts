@@ -1,19 +1,11 @@
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import { 
-    existsSync,
-    readFileSync,
-    writeFileSync,
-} from 'https://deno.land/std/fs/mod.ts';
+import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
+import { existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as types from "./types.ts";
 import { logger } from "./util/logging.ts";
 import { createDestDir } from "./util/fs.ts";
-import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
-import {
-    providerVersion,
-  } from "./util/constants.ts";
-import {
-    fixAllOffIssue,
-} from "./util/build-functions.ts";
+import { providerVersion } from "./util/constants.ts";
+import { fixAllOffIssue } from "./util/build-functions.ts";
 
 export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 

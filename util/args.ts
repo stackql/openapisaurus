@@ -2,6 +2,9 @@ import { red } from "https://deno.land/std@0.178.0/fmt/colors.ts";
 import { usage } from "./usage.ts";
 import * as types from "../types.ts";
 
+//
+// split args
+//
 export function parseSplitArgs(args: any): types.splitArgs | false {
 
     if (args._.length !== 2) {
@@ -63,7 +66,10 @@ export function parseSplitArgs(args: any): types.splitArgs | false {
   
     return splitArgs;
 }
-  
+
+//
+// dev args
+//
 export function parseDevArgs(args: any): types.devArgs | false {
   
     if (args._.length !== 2) {
@@ -114,11 +120,14 @@ export function parseDevArgs(args: any): types.devArgs | false {
     
     return devArgs;
 }
-  
+
+//
+// build args
+//
 export function parseBuildArgs(args: any): any | false {
 
   if (args._.length !== 2) {
-    console.log(`${red('ERROR: need to provide an apiDocDir containing OpenAPI docs to process.')}
+    console.log(`${red('ERROR: need to provide an apiDocDir containing OpenAPI specs and StackQL dev docs to process.')}
     ${usage.build}
     `);
     return false;
@@ -134,6 +143,7 @@ export function parseBuildArgs(args: any): any | false {
 
   // mandatory named args
   let providerName: string;
+  let outputDir: string;
 
   if ('providerName' in args){
     providerName = args.providerName;
@@ -146,13 +156,30 @@ export function parseBuildArgs(args: any): any | false {
     return false;
   }
 
+  if ('outputDir' in args){
+    outputDir = args.outputDir;
+  } else if('outputdir' in args) {
+    outputDir = args.outputdir;
+  } else {
+    console.log(`${red('ERROR: outputDir not provided')}
+    ${usage.split}
+    `);
+    return false;
+  }  
 
-  return false;
+  // optional named args
+  let servers: string | false = args.servers || false;
+  let verbose: boolean = args.verbose || false;
+  let overwrite: boolean = args.overwrite || false;
+
+  const buildArgs: types.buildArgs = {
+    apiDocDir: apiDocDir,
+    providerName: providerName,
+    outputDir: outputDir,
+    servers: servers,
+    overwrite: overwrite,
+    verbose: verbose,
+  };  
+
+  return buildArgs;
 }
-
-// Flags:
-//   --providerName      [REQUIRED] Name of the provider.
-//   --outputDir         [REQUIRED] Output directory to write compiled docs to.
-//   --servers           [OPTIONAL] Stringified JSON array containing servers for the provider. (defaults to '[]').
-//   --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
-//   --verbose           [OPTIONAL] Verbose output (defaults to false). 

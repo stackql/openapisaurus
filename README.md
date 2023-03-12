@@ -8,11 +8,10 @@
 ## Installation
 
 1. Install Deno by following the instructions at [deno.land](https://deno.land/).
-2. Download the `openapisaurus` script by running the following command:
+2. Clone the `openapisaurus` repository to your local machine:
 ```
-curl -o openapisaurus https://raw.githubusercontent.com/<username>/<repository>/main/app.ts
+git clone git@github.com:stackql/openapisaurus.git
 ```
-Replace `<username>` and `<repository>` with your GitHub username and the name of your repository, respectively.
 3. Make the `openapisaurus` script executable by running the following command:
 ```
 chmod +x openapisaurus
@@ -38,134 +37,9 @@ Splits an OpenAPI spec into multiple service scoped documents.
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
 
-#### Example
+#### Examples
 
-```bash
-deno run \
---allow-net \
---allow-read \
---allow-write \
-app.ts split \
-../../local-registry/ref/fivetran/swagger.json \
---providerName=fivetran \
---svcdiscriminator='["tags"][0]' \
---overwrite \
---verbose 
-```
-
-In the example we gave the `search` function input data of
-`{foo: {bar: {baz: [0, 1, 2, 3, 4]}}}` as well as the JMESPath
-expression `foo.bar.baz[2]`, and the `search` function evaluated
-the expression against the input data to produce the result `2`.
-
-The JMESPath language can do *a lot* more than select an element
-from a list.  Here are a few more examples:
-
-```javascript
-import { search } from "https://deno.land/x/jmespath/index.ts";
-
-/* --- EXAMPLE 1 --- */
-
-let JSON_DOCUMENT = {
-  foo: {
-    bar: {
-      baz: [0, 1, 2, 3, 4]
-    }
-  }
-};
-
-search(JSON_DOCUMENT, "foo.bar");
-// OUTPUTS: { baz: [ 0, 1, 2, 3, 4 ] }
-
-
-/* --- EXAMPLE 2 --- */
-
-JSON_DOCUMENT = {
-  "foo": [
-    {"first": "a", "last": "b"},
-    {"first": "c", "last": "d"}
-  ]
-};
-
-search(JSON_DOCUMENT, "foo[*].first")
-// OUTPUTS: [ 'a', 'c' ]
-
-
-/* --- EXAMPLE 3 --- */
-
-JSON_DOCUMENT = {
-  "foo": [
-    {"age": 20},
-    {"age": 25},
-    {"age": 30},
-    {"age": 35},
-    {"age": 40}
-  ]
-}
-
-search(JSON_DOCUMENT, "foo[?age > `30`]");
-// OUTPUTS: [ { age: 35 }, { age: 40 } ]
-```
-
-
-### `registerFunction(functionName: string, customFunction: RuntimeFunction, signature: InputSignature[]): void`
-
-Extend the list of built in JMESpath expressions with your own functions.
-
-```javascript
-  import {search, registerFunction, TYPE_NUMBER} from "https://deno.land/x/jmespath/index.ts";
-
-
-  search({ foo: 60, bar: 10 }, 'divide(foo, bar)')
-  // THROWS ERROR: Error: Unknown function: divide()
-
-  registerFunction(
-    'divide', // FUNCTION NAME
-    (resolvedArgs) => {   // CUSTOM FUNCTION
-      const [dividend, divisor] = resolvedArgs;
-      return dividend / divisor;
-    },
-    [{ types: [TYPE_NUMBER] }, { types: [TYPE_NUMBER] }] //SIGNATURE
-  );
-
-  search({ foo: 60,bar: 10 }, 'divide(foo, bar)');
-  // OUTPUTS: 6
-
-```
-
-### `compile(expression: string): ASTNode`
-
-You can precompile all your expressions ready for use later on. the `compile`
-function takes a JMESPath expression and returns an abstract syntax tree that
-can be used by the TreeInterpreter function
-
-```javascript
-import { compile, TreeInterpreter } from "https://deno.land/x/jmespath/index.ts";
-
-const ast = compile('foo.bar');
-
-TreeInterpreter.search(ast, {foo: {bar: 'BAZ'}})
-// RETURNS: "BAZ"
-
-```
-
-## Local Development
-
-```
-deno run \
---allow-net \
---allow-read \
---allow-write \
-app.ts split \
-../../local-registry/ref/fivetran/swagger.json \
---providerName=fivetran \
---svcdiscriminator='["tags"][0]' \
---overwrite \
---verbose 
-```
-```
-chmod +x openapisaurus
-```
+`fivetran` example:  
 
 ```
 ./openapisaurus split \
@@ -176,6 +50,8 @@ ref/fivetran/swagger.json \
 --overwrite \
 --verbose
 ```
+
+`digitalocean` example:  
 
 ```
 ./openapisaurus split \
@@ -183,19 +59,30 @@ ref/digitalocean/digitalocean-openapi-bundled.yaml \
 --providerName=digitalocean \
 --svcdiscriminator='["tags"][0]' \
 --outputDir=dev \
---overwrite --verbose
+--overwrite
 ```
 
+### `dev`
 
-```
-./openapisaurus split \
-ref/fivetran/swagger.json \
---providerName=fivetran \
---svcdiscriminator='["tags"][0]' \
---outputDir=dev \
---overwrite \
---verbose
-```
+Generate stackql provider development provider docs.    
+
+> &nbsp;&nbsp;&nbsp;__Usage:__   
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`openapisaurus dev <apiDocDir> <flags>`  
+> 
+> &nbsp;&nbsp;&nbsp;__Arguments:__  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`apiDocDir`  __[REQUIRED]__ Directory containing OpenAPI specifications documents used to create StackQL dev docs.  
+> 
+> &nbsp;&nbsp;&nbsp;__Flags:__  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      __[REQUIRED]__ Name of the provider.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--resDiscriminator`  __[REQUIRED]__ [JMESPath](https://jmespath.org/) used to identify stackql resources from a providers OpenAPI spec. (defaults to `path_tokens`).  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerConfig`    __[OPTIONAL]__ Stringified JSON object, describing the config for a provider. (defaults to `{ "auth": { "type": "null_auth" }}`).  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--methodKey`         __[OPTIONAL]__ [JMESPath](https://jmespath.org/) used to identify resource methods from a providers OpenAPI spec. (defaults to `operationId`).
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
+
+#### Examples
+
+`fivetran` example:  
 
 ```
 ./openapisaurus dev \
@@ -204,6 +91,8 @@ dev \
 --overwrite \
 --verbose
 ```
+
+`digitalocean` example:  
 
 ```
 ./openapisaurus dev \
@@ -213,8 +102,65 @@ dev \
 --verbose
 ```
 
+### `build`
 
-If you have any issues with `openapisaurus`, please report them at [the issue tracker](https://github.com/<username>/<repository>/issues).
+Build deployable stackql provider docs.   
+
+> &nbsp;&nbsp;&nbsp;__Usage:__   
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`openapisaurus build <apiDocDir> <flags>`  
+> 
+> &nbsp;&nbsp;&nbsp;__Arguments:__  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`apiDocDir`  __[REQUIRED]__ Directory containing OpenAPI service specifications and StackQL dev docs.  
+> 
+> &nbsp;&nbsp;&nbsp;__Flags:__  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--providerName`      __[REQUIRED]__ Name of the provider.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--outputDir`         __[REQUIRED]__ Output directory to write compiled docs to.  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--servers`    __[OPTIONAL]__ Stringified JSON array containing servers for the provider (overrides the `servers` list in the original OpenAPI spec).
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--overwrite`         __[OPTIONAL]__ Overwrite existing files. (defaults to `false`)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`--verbose`           __[OPTIONAL]__ Verbose output (defaults to `false`).  
+
+#### Examples
+
+`fivetran` example:  
+
+```
+./openapisaurus build \
+dev \
+--providerName=fivetran \
+--outputDir=src \
+--overwrite \
+--verbose
+```
+
+`digitalocean` example:  
+
+```
+./openapisaurus build \
+dev \
+--providerName=digitalocean \
+--outputDir=src \
+--overwrite \
+--verbose
+```
+
+## Local Development
+
+To run directly without using the `openapisaurus` script, you can use the following command as an example:  
+
+```
+deno run \
+--allow-net \
+--allow-read \
+--allow-write \
+app.ts split \
+../../local-registry/ref/fivetran/swagger.json \
+--providerName=fivetran \
+--svcdiscriminator='["tags"][0]' \
+--overwrite \
+--verbose 
+```
+
+If you have any issues with `openapisaurus`, please report them [here](https://github.com/stackql/openapisaurus/issues).
 
 ## License
 

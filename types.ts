@@ -21,7 +21,7 @@ export interface buildArgs {
   apiDocDir: string;
   providerName: string;
   outputDir: string;
-  servers: string;
+  servers: string | false;
   overwrite: boolean;
   verbose: boolean;
 }

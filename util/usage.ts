@@ -28,6 +28,9 @@ const banner2 = String.raw`
 `
 
 export const usage = {
+  //
+  // program usage
+  //
   program: `${banner}
   Usage: 
     ${yellow('openapisaurus <command> [options]')}
@@ -37,6 +40,9 @@ export const usage = {
     dev     Generate stackql provider development provider docs.
     build   Build deployable stackql provider docs. 
   `,
+  //
+  // split usage
+  //
   split: `${banner2}
   Usage: 
     ${yellow('openapisaurus split <apiDoc> <flags>')}  
@@ -52,6 +58,9 @@ export const usage = {
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
+  //
+  // dev usage
+  //
   dev: `${banner2}
   Usage: 
     ${yellow('openapisaurus dev <apiDocDir> <flags>')}  
@@ -67,6 +76,9 @@ export const usage = {
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
+  //
+  // build usage
+  //
   build: `${banner2}
   Usage: 
     ${yellow('openapisaurus build <apiDocDir> <flags>')}
@@ -77,7 +89,7 @@ export const usage = {
   Flags:
     --providerName      [REQUIRED] Name of the provider.
     --outputDir         [REQUIRED] Output directory to write compiled docs to.
-    --servers           [OPTIONAL] Stringified JSON array containing servers for the provider. (defaults to '[]').
+    --servers           [OPTIONAL] Stringified JSON array containing servers for the provider (overrides the servers list in the original OpenAPI spec).
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,
