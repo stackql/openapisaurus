@@ -38,11 +38,12 @@ export function getMeaningfulPathTokens(pathKey: string): string[] {
 }
 
 export function getAllValuesForKey(
+    service: string,
     obj: any,
     key: string,
     excludeKeys: string[] = [],
-    refs: string[] = []
-  ): string[] {
+    refs: any[] = []
+  ): any[] {
     for (let k in obj) {
       if (typeof obj[k] === "object") {
         if (!excludeKeys.includes(k)) {
@@ -50,7 +51,8 @@ export function getAllValuesForKey(
         }
       } else {
         if (k === key) {
-          refs.push(obj[k].split('/').pop());
+          refs.push({$ref: `${service}.yaml${obj[k]}`});
+          // refs.push(obj[k].split('/').pop());
         }
       }
     }
