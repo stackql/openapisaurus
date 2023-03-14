@@ -100,3 +100,65 @@ export function addRefsToComponents(refs: string[], service: any, apiComp: any, 
         }
     }
 }
+
+interface OpenAPIPaths {
+  [path: string]: OpenAPIPathItem;
+}
+
+interface OpenAPIPathItem {
+  [httpMethod: string]: OpenAPIOperation;
+}
+
+interface OpenAPIOperation {
+  responses: {
+    [statusCode: string]: OpenAPIResponse;
+  };
+}
+
+interface OpenAPIResponse {
+  content?: {
+    [mediaType: string]: OpenAPIContent;
+  };
+}
+
+interface OpenAPIContent {
+  schema?: OpenAPISchema;
+}
+
+interface OpenAPISchema {
+  type?: string;
+  properties?: {
+    [propertyName: string]: OpenAPISchema;
+  };
+}
+
+export function addMissingObjectTypes(paths: OpenAPIPaths): OpenAPIPaths {
+  const newPaths: OpenAPIPaths = JSON.parse(JSON.stringify(paths));
+
+  Object.values(newPaths).forEach((pathItem) => {
+    Object.values(pathItem).forEach((operation) => {
+      Object.values(operation.responses).forEach((response) => {
+        recursivelyAddObjectType(response.content?.['application/json']?.schema);
+      });
+    });
+  });
+
+  return newPaths;
+
+  function recursivelyAddObjectType(schema?: OpenAPISchema): void {
+    if (!schema) {
+      return;
+    }
+
+    if (schema.properties && !schema.type) {
+      schema.type = 'object';
+    }
+
+    Object.values(schema.properties || {}).forEach((property) => {
+      if (!property.type && property.properties) {
+        property.type = 'object';
+      }
+      recursivelyAddObjectType(property.properties);
+    });
+  }
+}

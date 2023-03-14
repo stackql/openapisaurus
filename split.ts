@@ -13,7 +13,8 @@ import {
     retServiceNameAndDesc,
     initService,
     getAllRefs,
-    addRefsToComponents
+    addRefsToComponents,
+    addMissingObjectTypes
 } from "./util/split-functions.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
@@ -129,14 +130,20 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                     // interim fix
                     if(nonOperations[nonOpIx] == 'parameters'){
                         Object.keys(services[service]['paths'][pathKey]).forEach(verbKey => {
-                            services[service]['paths'][pathKey][verbKey]['parameters'] = apiPaths[pathKey]['parameters'];
+                          services[service]['paths'][pathKey][verbKey]['parameters'] = apiPaths[pathKey]['parameters'];
                         });
                     };
                 }
             }
         });
     });
-    
+
+    // update paths, fix missing type: object
+    Object.keys(services).forEach(service => {
+        debug ? logger.debug(`updating paths for ${service}`) : null;
+        services[service]['paths'] = addMissingObjectTypes(services[service]['paths']);
+    });
+       
     // write out service docs
     Object.keys(services).forEach((service: string) => {
       logger.info(`writing out openapi doc for [${service}]`);
