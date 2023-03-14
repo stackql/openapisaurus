@@ -121,16 +121,20 @@ export function addOperation(
     resource: string,
     operationId: string,
     apiPaths: any,
+    componentsSchemas: any,
     pathKey: string,
     verbKey: string,
     providerName: string
   ): any {
+    const respCode = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
+    const schemaObj = apiPaths[pathKey][verbKey].responses[respCode].content['application/json'].schema;
     resData.components['x-stackQL-resources'][resource]['methods'][operationId] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = getOperationRef(serviceDirName, pathKey, verbKey);
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
+    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
+    // schemaObj ? resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = getRespSchemaPath(schemaObj, componentsSchemas) : null;
     return resData;
 }
 
@@ -251,4 +255,41 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
         }
         return verb;
     }
+}
+
+// testing
+
+interface SchemaObj {
+  [key: string]: any;
+  type?: string;
+  items?: SchemaObj;
+  properties?: { [key: string]: SchemaObj };
+  $ref?: string;
+}
+
+function getRespSchemaPath(schemaObj: any, schemaComponents: any, path: string = ""): string {
+  if (schemaObj && 'type' in schemaObj) {
+    if (schemaObj.type === "array") {
+      return `${path}.items`;
+    }
+  }
+  if (schemaObj && '$ref' in schemaObj) {
+    const refPath = schemaObj.$ref.replace("#/components/schemas/", "");
+    const refObj = schemaComponents[refPath];
+    return getRespSchemaPath(refObj, `${path}`);
+  }
+  if (schemaObj && 'properties' in schemaObj) {
+    for (const prop in schemaObj.properties) {
+      const subPath = `${path}.properties.${prop}`;
+      const subSchemaObj = schemaObj.properties[prop];
+      const subSchemaResult = getRespSchemaPath(subSchemaObj, subPath);
+      if (subSchemaResult) {
+        return subSchemaResult;
+      }
+    }
+  }
+  if (schemaObj && 'items' in schemaObj) {
+    return getRespSchemaPath(schemaObj.items, `${path}.items`);
+  }
+  return "";
 }

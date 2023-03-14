@@ -147,7 +147,21 @@ dev \
 --verbose
 ```
 
-## Local Development
+## Run provider meta tests
+
+> to run tests locally you will need to download `stackql`, to download the latest `stackql` release for Linux you can use the following commands:  
+> `curl -L https://bit.ly/stackql-zip -O && unzip stackql-zip`
+
+## Testing providers using the local registry
+
+To test providers using the local registry, you can use the following commands:  
+
+```
+PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
+REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
+./stackql shell --registry="${REG_STR}"
+```
+## Running without `openapisaurus`
 
 To run directly without using the `openapisaurus` script, you can use the following command as an example:  
 

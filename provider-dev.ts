@@ -70,6 +70,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
 
         // iterate over paths
         const apiPaths = apiDoc.paths;
+        const componentsSchemas = apiDoc.components.schemas;
         logger.info(`iterating over ${Object.keys(apiPaths).length} paths`);
 
         Object.keys(apiPaths).forEach(pathKey => {
@@ -105,7 +106,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
 
                         // add operation to resource
-                        resData = addOperation(resData, service, resource, operationId, apiPaths, pathKey, verbKey, providerName);
+                        resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName);
     
                         // map sqlVerbs for operation
                         resData = addSqlVerb(apiPaths[pathKey][verbKey], resData, operationId, resource, pathKey, verbKey, providerName);

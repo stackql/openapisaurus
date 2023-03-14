@@ -53,11 +53,13 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 
     // write out provider.yaml to target
     try {
-      console.log(`writing out ${inputDir}/provider.yaml`);
-      const data = readFileSync(`${inputDir}/provider.yaml`, { encoding: 'utf8' });
-      writeFileSync(`${destDir}/provider.yaml`, data);
+        logger.info(`writing out ${inputDir}/provider.yaml`);
+        const data = Deno.readTextFileSync(`${inputDir}/provider.yaml`, { encoding: 'utf8' });
+        Deno.writeTextFileSync(`${destDir}/provider.yaml`, data);
     } catch (e) {
-      console.log(`failed to write ${destDir}/provider.yaml`);
+        logger.error(`failed to write ${destDir}/provider.yaml`);
+        console.log(e);
+        return false;
     }
     
     // iterate through services dir
