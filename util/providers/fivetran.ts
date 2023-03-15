@@ -47,3 +47,11 @@ export const objectKeys = {
         }
     }
 };
+
+export const sqlVerbs = {
+    connectors: {
+        column_config: {
+            connector_column_config: 'select'
+        }
+    }
+};

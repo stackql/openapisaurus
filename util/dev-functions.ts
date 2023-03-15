@@ -10,6 +10,7 @@ import {
 import {
   updateResourceName,
   getObjectKeyforProvider,
+  getSqlVerbforProvider,
 } from "./providers.ts";
 import { logger } from "./logging.ts";
 
@@ -200,7 +201,7 @@ export function addSqlVerb(
     providerName: string
   ): any {
     const pattern = /\{(\+)?[\w]*\}/g;
-    switch (getSqlVerb(op, operationId, verbKey, providerName)) {
+    switch (getSqlVerb(op, operationId, verbKey, providerName, service, resource)) {
       case 'select':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
           {
@@ -268,7 +269,7 @@ function getRespSchemaName(op: any, service: string): any[] {
     return [];
 }
   
-function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string): string {
+function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string, service: string, resource: string): string {
     if (op['x-stackQL-verb']) {
         return op['x-stackQL-verb'];
     } else {
@@ -285,6 +286,11 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
             }
         } else if (operationId.includes('get') || operationId.startsWith('list') || operationId.startsWith('select') || operationId.startsWith('read') || operationId.endsWith('list')) {
             verb = 'select';
+        }
+        // if its still exec, check if there is a verb in the provider
+        const providerVerb = getSqlVerbforProvider(operationId, verbKey, providerName, service, resource);
+        if (providerVerb) {
+            verb = providerVerb;
         }
         return verb;
     }
