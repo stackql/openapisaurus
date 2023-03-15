@@ -1,10 +1,15 @@
+import { search } from "https://deno.land/x/jmespath/index.ts";
 import {
   getMeaningfulPathTokens,
   snakeToTitleCase,
   getAllPathTokens,
   convertLowerCaseToTitleCase,
   getAllValuesForKey,
+  camelToSnake,
 } from "./shared.ts";
+import {
+  updateResourceName,
+} from "./providers.ts";
 import { logger } from "./logging.ts";
 
 export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
@@ -31,7 +36,7 @@ export function initResData(): Record<string, any> {
     return resData;
 }
 
-export function getResourceName(providerName: string, operation: string, service: string, resDiscriminator: string, pathKey: string): string {
+export function getResourceName(providerName: string, operation: string, service: string, resDiscriminator: string, pathKey: string, debug: boolean, logger: any): string {
     let resourceName = service;
     if(resDiscriminator == 'path_tokens'){
         let resTokens: string[] = [];
@@ -46,6 +51,7 @@ export function getResourceName(providerName: string, operation: string, service
       let resValue = search(operation, resDiscriminator)[0];
       resourceName = resValue ? camelToSnake(resValue) : service;
     }
+    resourceName = updateResourceName(providerName, service, resourceName, debug, logger);
     return resourceName;
 }
 

@@ -81,7 +81,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                 if (operations.includes(verbKey)){
                     try {
                         // get resource name
-                        let resource = getResourceName(providerName, apiPaths[pathKey][verbKey], service, resDiscriminator, pathKey);
+                        let resource = getResourceName(providerName, apiPaths[pathKey][verbKey], service, resDiscriminator, pathKey, debug, logger);
                         logger.info(`processing resource: ${resource}`);
     
                         if (!resData['components']['x-stackQL-resources'].hasOwnProperty(resource)){

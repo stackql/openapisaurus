@@ -10,4 +10,17 @@ export function updateServiceName(providerName: string, inServiceName: string, d
     }
     return outServiceName;
 }
-  
+ 
+export function updateResourceName(providerName: string, service: string, inResourceName: string, debug: boolean, logger: any): string {
+    debug ? logger.debug(`checking for resource name updates for [${inResourceName}] in [${providerName}.${service}]...`) : null;
+    let outResourceName = inResourceName;
+    if (providerName in providers) {
+        debug ? logger.debug(`provider data found for ${providerName}`) : null;
+        if (service in providers[providerName].resourcesMap) {
+            debug ? logger.debug(`service data found for ${providerName}.${service}`) : null;
+            outResourceName = providers[providerName].resourcesMap[service][inResourceName] || inResourceName;
+            debug ? logger.debug(`service name changed from ${inResourceName} to ${outResourceName}`) : null;
+        }
+    }
+    return outResourceName;
+}
