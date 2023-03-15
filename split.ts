@@ -61,7 +61,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
             // if verbKey in operations, then process
             if (operations.includes(verbKey) && !isOperationExcluded(exclude, apiPaths[pathKey][verbKey], svcDiscriminator)){
                 // determine service using discriminator
-                let [service, serviceDesc] = retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey], pathKey, svcDiscriminator, apiDoc.tags);
+                let [service, serviceDesc] = retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey], pathKey, svcDiscriminator, apiDoc.tags, debug, logger);
                 logger.info(`service name : ${service}`);
                 debug ? logger.debug(`service desc : ${serviceDesc}`) : null;
 

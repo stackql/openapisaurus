@@ -6,6 +6,9 @@ import {
     getMeaningfulPathTokens,
     camelToSnake,
 } from "./shared.ts";
+import {
+  updateServiceName,
+} from "./providers.ts";
 import { logger } from "./logging.ts";
 
 export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
@@ -20,7 +23,7 @@ export function isOperationExcluded(exOption: any, operation: any, discriminator
   }
 } 
 
-export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, tags: any[]): [string, string] {
+export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, tags: any[], debug: boolean, logger: any): [string, string] {
     
     if (discriminator.startsWith('svcName:')) {
       return [discriminator.split(':')[1], discriminator.split(':')[1]];
@@ -31,8 +34,9 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
       } else {
         thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_') : getMeaningfulPathTokens(pathKey)[0];
       }
-      const serviceName = camelToSnake(thisSvc);
-      return [serviceName, serviceName];
+      const serviceDesc = thisSvc;
+      const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
+      return [serviceName, serviceDesc];
     }
 }
 
