@@ -9,6 +9,7 @@ import {
 } from "./shared.ts";
 import {
   updateResourceName,
+  getObjectKeyforProvider,
 } from "./providers.ts";
 import { logger } from "./logging.ts";
 
@@ -121,24 +122,51 @@ export function getOperationId(
     }
 }
 
+function getObjectKey(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
+  const objectKey = getObjectKeyforProvider(providerName, service, resource, operationId, debug);
+  if (objectKey) {
+    return objectKey;
+  } else {
+    // do something rules based here...
+    debug ? logger.debug(`no object key found for ${providerName}.${service}.${resource}.${operationId}`) : null;
+  }
+  return false
+}
+
 export function addOperation(
     resData: any,
-    serviceDirName: string,
+    service: string,
     resource: string,
     operationId: string,
     apiPaths: any,
     componentsSchemas: any,
     pathKey: string,
     verbKey: string,
-    providerName: string
+    providerName: string,
+    debug: boolean,
   ): any {
+
     const respCode = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
+    const opRef = getOperationRef(service, pathKey, verbKey);
+
     resData.components['x-stackQL-resources'][resource]['methods'][operationId] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response'] = {};
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = getOperationRef(serviceDirName, pathKey, verbKey);
+    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = opRef;
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
+    // get objectKey if exists
+    const objectKey = getObjectKey(providerName, service, resource, operationId, debug);
+    if (objectKey) {
+      resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = objectKey;
+      // add hidden method for unaltered response
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`] = {};
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation'] = {};
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response'] = {};
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation']['$ref'] = opRef;
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['mediaType'] = 'application/json';
+      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['openAPIDocKey'] = respCode;
+    }
     return resData;
 }
 

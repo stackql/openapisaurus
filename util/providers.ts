@@ -24,3 +24,17 @@ export function updateResourceName(providerName: string, service: string, inReso
     }
     return outResourceName;
 }
+
+export function getObjectKeyforProvider(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
+    if (providerName in providers) {
+        if (service in providers[providerName].objectKeys) {
+            if (resource in providers[providerName].objectKeys[service]) {
+                if (operationId in providers[providerName].objectKeys[service][resource]) {
+                    return providers[providerName].objectKeys[service][resource][operationId];
+                }
+            }
+        }
+    }
+    return false;
+}
+  

@@ -39,3 +39,11 @@ export const resourcesMap = {
         test: 'webhooks',
     }
 };
+
+export const objectKeys = {
+    roles: {
+        roles: {
+            list_all_roles: '$.data.items'
+        }
+    }
+};
