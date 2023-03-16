@@ -45,6 +45,30 @@ export const objectKeys = {
         roles: {
             list_all_roles: '$.data.items'
         }
+    },
+    connectors: {
+        column_config: {
+            connector_column_config: '$.data'
+        },
+        connectors: {
+            connector_details: '$.data',
+        },
+        metadata: {
+            connectors: '$.data.items',
+            connector_config: '$.data.items',
+        },
+        schemas: {
+            connector_schema_config: '$.data',
+        },
+        schema_metadata: {
+            schema_metadata: '$.data.items',
+        },
+        column_metadata: {
+            column_metadata: '$.data.items',
+        },
+        table_metadata: {
+            table_metadata: '$.data.items',
+        }        
     }
 };
 
@@ -52,6 +76,25 @@ export const sqlVerbs = {
     connectors: {
         column_config: {
             connector_column_config: 'select'
+        },
+        connectors: {
+            connector_details: 'select',
+        },
+        metadata: {
+            connectors: 'select',
+            connector_config: 'select',
+        },
+        schemas: {
+            connector_schema_config: 'select',
+        },
+        schema_metadata: {
+            schema_metadata: 'select',
+        },
+        column_metadata: {
+            column_metadata: 'select',
+        },
+        table_metadata: {
+            table_metadata: 'select',
         }
-    }
+    },
 };
