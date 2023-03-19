@@ -40,61 +40,207 @@ export const resourcesMap = {
     }
 };
 
-export const objectKeys = {
+
+/*
+objectKeysAndSqlVerbs:
+
+service
+└── resource
+    └── method
+        ├── objectKey: string
+        └── sqlVerb: string
+*/
+
+export const objectKeysAndSqlVerbs = {
     roles: {
         roles: {
-            list_all_roles: '$.data.items'
+            list_all_roles: {
+                objectKey: '$.data.items',
+            }
         }
     },
     connectors: {
         column_config: {
-            connector_column_config: '$.data'
+            connector_column_config: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            }
         },
         connectors: {
-            connector_details: '$.data',
+            connector_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            }
         },
         metadata: {
-            connectors: '$.data.items',
-            connector_config: '$.data.items',
+            connectors: {
+                objectKey: '$.data.items',
+                sqlVerb: 'select',
+            },
+            connector_config: {
+                objectKey: '$.data.items',
+                sqlVerb: 'select',                
+            }
         },
         schemas: {
-            connector_schema_config: '$.data',
+            connector_schema_config: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            }
         },
         schema_metadata: {
-            schema_metadata: '$.data.items',
+            schema_metadata: {
+                objectKey: '$.data.items',
+                sqlVerb: 'select',
+            }
         },
         column_metadata: {
-            column_metadata: '$.data.items',
+            column_metadata: {
+                objectKey: '$.data.items',
+                sqlVerb: 'select',
+            }
         },
         table_metadata: {
-            table_metadata: '$.data.items',
+            table_metadata: {
+                objectKey: '$.data.items',
+                sqlVerb: 'select',
+            }
         }        
-    }
-};
-
-export const sqlVerbs = {
-    connectors: {
-        column_config: {
-            connector_column_config: 'select'
+    },
+    dbt_transformations: {
+        dbt_transformations: {
+            dbt_transformation_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            }
         },
-        connectors: {
-            connector_details: 'select',
+        dbt_projects: {
+            dbt_project_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            },
+            list_dbt_projects: {
+                objectKey: '$.data.items',
+            }
         },
-        metadata: {
-            connectors: 'select',
-            connector_config: 'select',
+        dbt_project_transformations: {
+            list_dbt_project_transformations: {
+                objectKey: '$.data.items',
+            }
         },
-        schemas: {
-            connector_schema_config: 'select',
-        },
-        schema_metadata: {
-            schema_metadata: 'select',
-        },
-        column_metadata: {
-            column_metadata: 'select',
-        },
-        table_metadata: {
-            table_metadata: 'select',
+        dbt_project_models: {
+            list_dbt_project_models: {
+                objectKey: '$.data.items',
+            }
+        },   
+        dbt_models: {
+            dbt_model_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',                
+            }
+        },        
+    },
+    destinations: {
+        destinations: {
+            destination_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            }
         }
     },
-};
+    groups: {
+        groups: {
+            group_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            },
+            list_all_groups: {
+                objectKey: '$.data.items',
+            }
+        },
+        users: {
+            list_all_users_in_group: {
+                objectKey: '$.data.items',
+            }
+        },
+        connectors: {
+            list_all_connectors_in_group: {
+                objectKey: '$.data.items',
+            }
+        }
+    },
+    teams: {
+        connectors: {
+            get_team_memberships_in_connectors: {
+                objectKey: '$.data.items',
+            },
+            get_team_membership_in_connector: {
+                objectKey: '$.data',
+            },            
+        },
+        users: {
+            get_user_in_team: {
+                objectKey: '$.data',
+            },
+            list_users_in_team: {
+                objectKey: '$.data.items',
+            },
+        },
+        teams: {
+            team_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            },
+            list_all_teams: {
+                objectKey: '$.data.items',
+            }
+
+        },
+        groups: {
+            get_team_memberships_in_groups: {
+                objectKey: '$.data.items',
+            },
+            get_team_membership_in_group: {
+                objectKey: '$.data',
+            },
+        }
+    },
+    users: {
+        users: {
+            user_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            },
+            list_all_users: {
+                objectKey: '$.data.items',
+            }
+        },
+        groups: {
+            get_user_memberships_in_groups: {
+                objectKey: '$.data.items',
+            },
+            get_user_membership_in_group: {
+                objectKey: '$.data',
+            },
+        },
+        connectors: {
+            get_user_memberships_in_connectors: {
+                objectKey: '$.data.items',
+            },
+            get_user_membership_in_connector: {
+                objectKey: '$.data',
+            },
+        }
+    },
+    webhooks: {
+        webhooks: {
+            webhook_details: {
+                objectKey: '$.data',
+                sqlVerb: 'select',
+            },
+            list_all_webhooks: {
+                objectKey: '$.data.items',
+            }
+        },
+    }
+}

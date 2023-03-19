@@ -139,6 +139,7 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
     });
 
     // update paths, fix missing type: object
+
     Object.keys(services).forEach(service => {
         debug ? logger.debug(`updating paths for ${service}`) : null;
         services[service]['paths'] = addMissingObjectTypes(services[service]['paths']);

@@ -27,23 +27,27 @@ export function updateResourceName(providerName: string, service: string, inReso
 
 export function getObjectKeyforProvider(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
     if (providerName in providers) {
-        if (service in providers[providerName].objectKeys) {
-            if (resource in providers[providerName].objectKeys[service]) {
-                if (operationId in providers[providerName].objectKeys[service][resource]) {
-                    return providers[providerName].objectKeys[service][resource][operationId];
+        if (service in providers[providerName].objectKeysAndSqlVerbs) {
+            if (resource in providers[providerName].objectKeysAndSqlVerbs[service]) {
+                if (operationId in providers[providerName].objectKeysAndSqlVerbs[service][resource]) {
+                    if ('objectKey' in providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]){
+                        return providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]['objectKey'];
+                    }
                 }
             }
         }
     }
     return false;
 }
-  
+
 export function getSqlVerbforProvider(operationId: string, verbKey: string, providerName: string, service: string, resource: string): string | false {
     if (providerName in providers) {
-        if (service in providers[providerName].sqlVerbs) {
-            if (resource in providers[providerName].sqlVerbs[service]) {
-                if (operationId in providers[providerName].sqlVerbs[service][resource]) {
-                    return providers[providerName].sqlVerbs[service][resource][operationId];
+        if (service in providers[providerName].objectKeysAndSqlVerbs) {
+            if (resource in providers[providerName].objectKeysAndSqlVerbs[service]) {
+                if (operationId in providers[providerName].objectKeysAndSqlVerbs[service][resource]) {
+                    if ('sqlVerb' in providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]){
+                        return providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]['sqlVerb'];
+                    }
                 }
             }
         }

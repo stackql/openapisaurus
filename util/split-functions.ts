@@ -65,6 +65,8 @@ export function initService(
     for (let compChild in componentsChildren) {
       if(componentsChildren[compChild] == 'schemas'){
         services[service]['components']['schemas'] = {};
+      } else if(componentsChildren[compChild] == 'responses') {
+        services[service]['components']['responses'] = {};
       } else {
         api.components[componentsChildren[compChild]] ? services[service]['components'][componentsChildren[compChild]] = api.components[componentsChildren[compChild]] : null;
       }

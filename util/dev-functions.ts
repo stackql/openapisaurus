@@ -38,7 +38,10 @@ export function initResData(): Record<string, any> {
     return resData;
 }
 
-export function getResourceName(providerName: string, operation: string, service: string, resDiscriminator: string, pathKey: string, debug: boolean, logger: any): string {
+export function getResourceName(providerName: string, operation: any, service: string, resDiscriminator: string, pathKey: string, debug: boolean, logger: any): string {
+    if (operation['x-stackQL-resource']) {
+      return operation['x-stackQL-resource'];
+    }
     let resourceName = service;
     if(resDiscriminator == 'path_tokens'){
         let resTokens: string[] = [];
@@ -270,7 +273,13 @@ function getRespSchemaName(op: any, service: string): any[] {
 }
   
 function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string, service: string, resource: string): string {
-    if (op['x-stackQL-verb']) {
+    
+    // check if there is a verb in the provider
+    const providerVerb = getSqlVerbforProvider(operationId, verbKey, providerName, service, resource);
+
+    if (providerVerb) {
+        return providerVerb;
+    } else if (op['x-stackQL-verb']) {
         return op['x-stackQL-verb'];
     } else {
         let verb: string = 'exec';
@@ -286,11 +295,6 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
             }
         } else if (operationId.includes('get') || operationId.startsWith('list') || operationId.startsWith('select') || operationId.startsWith('read') || operationId.endsWith('list')) {
             verb = 'select';
-        }
-        // if its still exec, check if there is a verb in the provider
-        const providerVerb = getSqlVerbforProvider(operationId, verbKey, providerName, service, resource);
-        if (providerVerb) {
-            verb = providerVerb;
         }
         return verb;
     }
