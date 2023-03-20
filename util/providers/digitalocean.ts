@@ -90,6 +90,7 @@ export const resourcesMap = {
         clusters_node_pools_recycle: 'node_pools',
         clusters_user: 'user',
         clusters_clusterlint: 'clusterlint',
+        registry: 'container_registry',
     },
     monitoring: {
         metrics_droplet_bandwidth: 'droplet_bandwidth',

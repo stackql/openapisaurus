@@ -1,4 +1,5 @@
-// node tests/inspectProvider.js fivetran
+// node tests/inspectProvider.js fivetran > fivetran.log
+// node tests/inspectProvider.js digitalocean > digitalocean.log
 
 const { execSync } = require("child_process");
 

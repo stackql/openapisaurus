@@ -4,3 +4,4 @@ src/
 /.vscode
 stackql
 stackql-zip
+*.log

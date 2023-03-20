@@ -91,6 +91,7 @@ Generate stackql provider development provider docs.
 ./openapisaurus dev \
 dev \
 --providerName=fivetran \
+--providerConfig='{ "auth": { "type": "basic", "credentialsenvvar": "FIVETRAN_CREDS" }}' \
 --overwrite \
 --verbose
 ```
@@ -101,6 +102,7 @@ dev \
 ./openapisaurus dev \
 dev \
 --providerName=digitalocean \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DIGITALOCEAN_TOKEN" }}' \
 --overwrite \
 --verbose
 ```
