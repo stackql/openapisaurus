@@ -58,7 +58,7 @@ export function initService(
     }
     services[service]['info']['title'] = `${api.info.title} - ${service}`;
     services[service]['info']['description'] = serviceDesc;
-    services[service]['security'] = api.security;
+    api.security ? services[service]['security'] = api.security : null;
     api.tags ? services[service]['tags'] = api.tags : null;
     api.externalDocs ? services[service]['externalDocs'] = api.externalDocs : null;
     services[service]['components'] = {};

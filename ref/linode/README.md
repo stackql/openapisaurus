@@ -6,7 +6,7 @@
 ./openapisaurus split \
 ref/linode/linode-openapi.yaml \
 --providerName=linode \
---svcdiscriminator='$["x-linode-cli-command"]' \
+--svcdiscriminator='["x-linode-cli-command"]' \
 --outputDir=dev \
 --overwrite \
 --verbose
