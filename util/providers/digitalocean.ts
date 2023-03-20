@@ -74,8 +74,21 @@ export const resourcesMap = {
         sql_mode: 'sql_mode', //
         upgrade: 'clusters',
     },
-    // droplets: {
-    // },
+    droplets: {
+        droplets: 'droplets', //
+        backups: 'backups', //
+        snapshots: 'snapshots', //
+        actions: 'actions', //
+        kernels: 'kernels', //
+        firewalls: 'firewalls', //
+        neighbors: 'neighbors', //
+        destroy_with_associated_resources: 'droplets',
+        destroy_with_associated_resources_selective: 'droplets',
+        destroy_with_associated_resources_dangerous: 'droplets',
+        destroy_with_associated_resources_status: 'droplets',
+        destroy_with_associated_resources_retry: 'droplets',
+        reports_droplet_neighbors_ids: 'droplets',
+    },
     functions: {
         namespaces_triggers: 'namespace_triggers',
     },
@@ -385,8 +398,58 @@ export const objectKeysAndSqlVerbs = {
             },
         },
     },
-    // droplets: {
-    // },
+    droplets: {
+        droplets: {
+            list: {
+                objectKey: '$.droplets',
+            },
+            get: {
+                objectKey: '$.droplet',
+            },
+            list_associatedResources: {
+                sqlVerb: 'exec',
+            },
+            get_DestroyAssociatedResourcesStatus: {
+                sqlVerb: 'exec',
+            },
+            list_neighborsIds: {
+                sqlVerb: 'exec',
+            }
+        },
+        backups: {
+            list_backups: {
+                objectKey: '$.backups',
+            },
+        },
+        snapshots: {
+            list_snapshots: {
+                objectKey: '$.snapshots',
+            },
+        },
+        actions: {
+            dropletActions_list: {
+                objectKey: '$.actions',
+            },
+            dropletActions_get: {
+                objectKey: '$.action',
+            },
+        },
+        kernels: {
+            list_kernels: {
+                objectKey: '$.kernels',
+            },
+        },
+        firewalls: {
+            list_firewalls: {
+                objectKey: '$.firewalls',
+            },
+        },
+        neighbors: {
+            list_neighbors: {
+                objectKey: '$.droplets',
+            },
+        },
+    },
     firewalls: {
         firewalls: {
             list: {
