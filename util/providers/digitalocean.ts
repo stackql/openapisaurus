@@ -54,34 +54,19 @@ export const resourcesMap = {
         registry_options: 'options',
     },
     databases: {
-        options: 'options', //
         databases: 'clusters',
-        config: 'config', //
-        ca: 'ca', //
         online_migration: 'migrations',
         migrate: 'migrations',
         resize: 'clusters',
         firewall: 'firewall_rules',
         maintenance: 'clusters',
-        backups: 'backups', //
-        replicas: 'replicas', //
         replicas_promote: 'replicas',
-        users: 'users', //
         users_reset_auth: 'users',
         dbs: 'databases',
         pools: 'connection_pools',
         eviction_policy: 'clusters',
-        sql_mode: 'sql_mode', //
-        upgrade: 'clusters',
     },
     droplets: {
-        droplets: 'droplets', //
-        backups: 'backups', //
-        snapshots: 'snapshots', //
-        actions: 'actions', //
-        kernels: 'kernels', //
-        firewalls: 'firewalls', //
-        neighbors: 'neighbors', //
         destroy_with_associated_resources: 'droplets',
         destroy_with_associated_resources_selective: 'droplets',
         destroy_with_associated_resources_dangerous: 'droplets',
@@ -93,7 +78,6 @@ export const resourcesMap = {
         namespaces_triggers: 'namespace_triggers',
     },
     kubernetes: {
-        clusters: 'clusters', //
         clusters_destroy_with_associated_resources: 'clusters',
         clusters_destroy_with_associated_resources_selective: 'clusters',
         clusters_destroy_with_associated_resources_dangerous: 'clusters',
@@ -105,12 +89,9 @@ export const resourcesMap = {
         clusters_node_pools_nodes: 'nodes',
         clusters_node_pools_recycle: 'node_pools',
         clusters_user: 'user',
-        options: 'options', //
         clusters_clusterlint: 'clusterlint',
-        registry: 'registry', //
     },
     monitoring: {
-        alerts: 'alert_policies', //
         metrics_droplet_bandwidth: 'droplet_bandwidth',
         metrics_droplet_cpu: 'droplet_cpu',
         metrics_droplet_filesystem_free: 'droplet_filesystem_free',
@@ -139,15 +120,15 @@ export const objectKeysAndSqlVerbs = {
         kubernetes: {
             oneClicks_install_kubernetes: {
                 sqlVerb: 'exec',
-            }
-        }
+            },
+        },
     },
     account: {
         account: {
             get: {
                 objectKey: '$.account',
             },
-        }
+        },
     },
     actions: {
         actions: {
@@ -210,7 +191,7 @@ export const objectKeysAndSqlVerbs = {
             },
             get_pdfByUUID: {
                 sqlVerb: 'exec',
-            }     
+            },    
         },
     },
     block_storage: {
@@ -268,7 +249,7 @@ export const objectKeysAndSqlVerbs = {
         subscription: {
             registry_get_subscription: {
                 objectKey: '$.subscription',
-            }
+            },
         },
         repositories: {
             registry_list_repositories: {
@@ -280,7 +261,7 @@ export const objectKeysAndSqlVerbs = {
             registry_list_repositoriesV2: {
                 objectKey: '$.repositories',
                 sqlVerb: 'select',
-            }
+            },
         },
         tags: {
             registry_list_repositoryTags: {
@@ -292,7 +273,7 @@ export const objectKeysAndSqlVerbs = {
             registry_list_repositoryManifests: {
                 objectKey: '$.manifests',
                 sqlVerb: 'select',
-            }
+            },
         },
         garbage_collection: {
             registry_list_garbageCollections: {
@@ -302,12 +283,12 @@ export const objectKeysAndSqlVerbs = {
             registry_get_garbageCollection: {
                 objectKey: '$.garbage_collection',
                 sqlVerb: 'exec',
-            }
+            },
         },
         options: {
             registry_get_options: {
                 objectKey: '$.options',
-            }
+            },
         },
     },
     databases: {
@@ -414,7 +395,7 @@ export const objectKeysAndSqlVerbs = {
             },
             list_neighborsIds: {
                 sqlVerb: 'exec',
-            }
+            },
         },
         backups: {
             list_backups: {
