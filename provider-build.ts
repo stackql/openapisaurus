@@ -109,6 +109,9 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         let xStackQLResources = resourceDefs['components']['x-stackQL-resources'];
         try {
             Object.keys(xStackQLResources).forEach(xStackQLResKey => {
+                // delete resTokens
+                delete xStackQLResources[xStackQLResKey]['resTokens'];
+                
                 // clean up pointers
                 Object.keys(xStackQLResources[xStackQLResKey]['methods']).forEach(methodName => {
                     let newOp = xStackQLResources[xStackQLResKey]['methods'][methodName]['operation']['$ref'].split('#/').pop();

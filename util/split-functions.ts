@@ -32,7 +32,7 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
       if (discriminator == 'path_tokens') {
         thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
       } else {
-        thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_') : getMeaningfulPathTokens(pathKey)[0];
+        thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_').replace(/\//g, '_') : getMeaningfulPathTokens(pathKey)[0];
       }
       const serviceDesc = thisSvc;
       const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
@@ -100,7 +100,7 @@ export function addRefsToComponents(refs: string[], service: any, apiComp: any, 
             if (componentsChildren.includes(thisSection)) {
               if(!service['components'][thisSection][thisKey]){
                 debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;
-                service['components'][thisSection][thisKey] = apiComp[thisSection][thisKey];
+                apiComp[thisSection][thisKey] ? service['components'][thisSection][thisKey] = apiComp[thisSection][thisKey] : null;
               }
             }
         }

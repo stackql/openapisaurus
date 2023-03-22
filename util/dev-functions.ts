@@ -38,14 +38,23 @@ export function initResData(): Record<string, any> {
     return resData;
 }
 
-export function getResourceName(providerName: string, operation: any, service: string, resDiscriminator: string, pathKey: string, debug: boolean, logger: any): string {
+export function getResourceName(
+  providerName: string, 
+  operation: any, 
+  service: string, 
+  resDiscriminator: string, 
+  pathKey: string, 
+  debug: boolean, 
+  logger: any): 
+  [string, string[]] {
+    let resTokens: string[] = [];
     if (operation['x-stackQL-resource']) {
-      return operation['x-stackQL-resource'];
+      return [operation['x-stackQL-resource'], resTokens];
     }
     let resourceName = service;
     if(resDiscriminator == 'path_tokens'){
-        let resTokens: string[] = [];
-        let pathTokens = getMeaningfulPathTokens(pathKey);
+        let pathTokens: string[] = [];
+        pathTokens = getMeaningfulPathTokens(pathKey);
         pathTokens.forEach(token => {
           if (token != service && token.length > 0){
             resTokens.push(token);
@@ -57,14 +66,15 @@ export function getResourceName(providerName: string, operation: any, service: s
       resourceName = resValue ? camelToSnake(resValue) : service;
     }
     resourceName = updateResourceName(providerName, service, resourceName, debug, logger);
-    return resourceName;
+    return [resourceName, resTokens];
 }
 
-export function addResource(resData: any, providerName: string, service: string, resource: string): any {
+export function addResource(resData: any, providerName: string, service: string, resource: string, resTokens: string[]): any {
     resData.components['x-stackQL-resources'][resource] = {
       id: `${providerName}.${service}.${resource}`,
       name: resource,
       title: snakeToTitleCase(resource),
+      resTokens: resTokens,
       methods: {},
       sqlVerbs: {
         select: [],
@@ -87,10 +97,11 @@ export function getOperationId(
   ): string {
     let operationId = apiPaths[pathKey][verbKey][methodKey];
     if (operationId) {
-      if (operationId.includes('/')) {
-        operationId = operationId.split('/')[1];
-      }
-      operationId = operationId.replace(/-/g, '_').replace(/\./g, '_');
+      operationId = operationId
+            .replace(/v-([0-9]+)/g, 'v$1') // replace v-<anynumber> with v<anynumber>
+            .replace(/\//g, '_') // replace / with _
+            .replace(/-/g, '_') // replace - with _
+            .replace(/\./g, '_'); // replace . with _
       // remove service prefix
       if (operationId.startsWith(`${service}_`)) {
         operationId = operationId.replace(`${service}_`, '');
@@ -272,6 +283,24 @@ function getRespSchemaName(op: any, service: string): any[] {
     return [];
 }
   
+function startsOrEndsWith(str: string, arr: string[]): boolean {
+    for (let i = 0; i < arr.length; i++) {
+      if (str.startsWith(arr[i]) || str.endsWith(arr[i])) {
+        return true;
+      }
+    }
+    return false;
+}
+
+function includes(str: string, arr: string[]): boolean {
+    for (let i = 0; i < arr.length; i++) {
+      if (str.includes(arr[i])) {
+        return true;
+      }
+    }
+    return false;
+}
+
 function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string, service: string, resource: string): string {
     
     // check if there is a verb in the provider
@@ -283,18 +312,46 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
         return op['x-stackQL-verb'];
     } else {
         let verb: string = 'exec';
-        if (operationId.includes('recreate') || operationId.startsWith('undelete') || verbKey === 'patch' || verbKey === 'put') {
+        switch (verbKey) {
+          case 'get':
+            if (includes(operationId, ['get', 'list'])){
+              verb = 'select';
+            }
+            if (startsOrEndsWith(operationId, [
+              'select',
+              'read',
+              'describe',
+              'show',
+              'find',
+              'search',
+              'query',
+              'fetch',
+              'retrieve',
+              'inspect',
+              'check',
+              'details',
+            ])) {
+              verb = 'select';
+            }
+            break;  
+          case 'post':
+            if (includes(operationId, ['create', 'insert']) && !includes(operationId, ['recreate'])){
+              verb = 'insert';
+            }
+            if (startsOrEndsWith(operationId, [
+              'add',
+              'post',
+            ])){
+              verb = 'insert';
+            }
+            break;
+          case 'delete':
+            if (includes(operationId, ['delete', 'remove']) && !includes(operationId, ['undelete'])){
+              verb = 'delete';
+            }
+            break;  
+          default:
             verb = 'exec';
-        } else if (verbKey === 'delete') {
-            if (operationId.includes('delete') || operationId.startsWith('remove')) {
-                verb = 'delete';
-            }
-        } else if (verbKey === 'post') {
-            if (operationId.includes('create') || operationId.startsWith('insert') || operationId.startsWith('add') || operationId.startsWith('post')) {
-                verb = 'insert';
-            }
-        } else if (operationId.includes('get') || operationId.startsWith('list') || operationId.startsWith('select') || operationId.startsWith('read') || operationId.endsWith('list')) {
-            verb = 'select';
         }
         return verb;
     }
