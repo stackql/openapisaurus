@@ -32,6 +32,12 @@ dev \
 --verbose
 ```
 
+### Inspect Objects
+
+```
+node tests/inspectProvider.js cloudflare 2>&1 | tee cloudflare.log
+```
+
 ### Test Locally
 
 ```

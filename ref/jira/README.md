@@ -35,7 +35,7 @@ openapi-doc-util provider-build \
 ```bash
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
-export JIRA_CREDS=$(echo -n 'javen@stackql.io:EFCOquf8zHdVurmnbL9p55EF' | base64)
+export JIRA_CREDS=xxx
 AUTH_STR='{ "jira": { "type": "basic", "credentialsenvvar": "JIRA_CREDS" } }'
 ./stackql shell --auth="${AUTH_STR}" --registry="${REG_STR}"
 ```

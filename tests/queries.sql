@@ -1,0 +1,9 @@
+DESCRIBE cloudflare.api_shield.zones_api_gateway_configuration
+DESCRIBE cloudflare.api_shield.zones_api_gateway_discovery
+DESCRIBE cloudflare.api_shield.zones_api_gateway_operations
+DESCRIBE cloudflare.api_shield.zones_api_gateway_schemas
+DESCRIBE cloudflare.argo.zones_analytics_latency
+DESCRIBE cloudflare.certificates.zones_ssl_analyze
+DESCRIBE cloudflare.cloudflare_stream.accounts_stream_token
+DESCRIBE cloudflare.cloudflare_stream.accounts_stream_webhook
+DESCRIBE cloudflare.data_loss_prevention.accounts_dlp_patterns_validate

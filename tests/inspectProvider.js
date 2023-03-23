@@ -1,5 +1,4 @@
-// node tests/inspectProvider.js fivetran > fivetran.log
-// node tests/inspectProvider.js digitalocean > digitalocean.log
+// node tests/inspectProvider.js cloudflare 2>&1 | tee cloudflare.log
 
 const { execSync } = require("child_process");
 
@@ -20,9 +19,19 @@ const servicesJson = JSON.parse(servicesOutput);
 // Loop through the services and get the resources for each service
 for (const service of servicesJson) {
   const serviceName = service.name;
+  console.log(`/*`);
+  console.log(`*`);
+  console.log(`* Processing resources in ${serviceName}`);
+  console.log(`*`);
+  console.log(`*/`);
   const resourcesCommand = `./stackql exec --registry='${regStr}' --output=json 'SHOW RESOURCES IN ${provider}.${serviceName}'`;
   const resourcesOutput = execSync(resourcesCommand);
-  const resourcesJson = JSON.parse(resourcesOutput);
+  let resourcesJson;
+  try {
+    resourcesJson = JSON.parse(resourcesOutput);
+  } catch (e) {
+    console.log(resourcesOutput);
+  }
 
   // Loop through the resources and describe each resource
   for (const resource of resourcesJson) {

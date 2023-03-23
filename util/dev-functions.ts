@@ -65,7 +65,7 @@ export function getResourceName(
       let resValue = search(operation, resDiscriminator)[0];
       resourceName = resValue ? camelToSnake(resValue) : service;
     }
-    resourceName = updateResourceName(providerName, service, resourceName, debug, logger);
+    resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
     return [resourceName, resTokens];
 }
 
@@ -98,10 +98,16 @@ export function getOperationId(
     let operationId = apiPaths[pathKey][verbKey][methodKey];
     if (operationId) {
       operationId = operationId
+            .replace(/'-/g, '') // replace '- with '' - cloudflare thing
+            .replace(/'/g, '') // replace ' with ''
             .replace(/v-([0-9]+)/g, 'v$1') // replace v-<anynumber> with v<anynumber>
             .replace(/\//g, '_') // replace / with _
             .replace(/-/g, '_') // replace - with _
-            .replace(/\./g, '_'); // replace . with _
+            .replace(/\(/g, '_') // replace ( with _
+            .replace(/\)/g, '_') // replace ) with _
+            .replace(/\./g, '_') // replace . with _
+            ; 
+
       // remove service prefix
       if (operationId.startsWith(`${service}_`)) {
         operationId = operationId.replace(`${service}_`, '');
@@ -170,17 +176,19 @@ export function addOperation(
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = opRef;
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
-    // get objectKey if exists
-    const objectKey = getObjectKey(providerName, service, resource, operationId, debug);
-    if (objectKey) {
-      resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = objectKey;
-      // add hidden method for unaltered response
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`] = {};
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation'] = {};
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response'] = {};
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation']['$ref'] = opRef;
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['mediaType'] = 'application/json';
-      resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['openAPIDocKey'] = respCode;
+    // get objectKey if exists (get only)
+    if (verbKey == 'get'){
+      const objectKey = getObjectKey(providerName, service, resource, operationId, debug);
+      if (objectKey) {
+        resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = objectKey;
+        // add hidden method for unaltered response
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation'] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response'] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation']['$ref'] = opRef;
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['mediaType'] = 'application/json';
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['openAPIDocKey'] = respCode;
+      }
     }
     return resData;
 }
