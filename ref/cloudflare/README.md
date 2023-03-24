@@ -58,3 +58,8 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 ./stackql shell --registry="${REG_STR}"
 ```
 
+```
+
+
+```
+

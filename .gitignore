@@ -1,6 +1,7 @@
 dev/
 src/
 /.stackql
+stackql_linux_amd64/
 /.vscode
 stackql
 stackql-zip
