@@ -423,7 +423,12 @@ export const objectKeysAndSqlVerbs = {
         },
         accounts_images_variants: {
             cloudflare_images_variants_list_variants: {
-                objectKey: '$.result.variants.hero',
+                sqlVerb: 'exec',
+                // objectKey: '$.result.variants',
+            },
+            cloudflare_images_variants_variant_details: {
+                sqlVerb: 'exec',
+                // objectKey: '$.result',
             },
         },
     },
@@ -812,7 +817,7 @@ export const objectKeysAndSqlVerbs = {
             account_rulesets_get_an_account_entry_point_ruleset_version: {
                 sqlVerb: 'exec',
             },
-			account_rulesets_list_an_account_entry_point_ruleset_s_versions: {
+			account_rulesets_list_an_account_entry_point_rulesets_versions: {
 				sqlVerb: 'exec',
 			},
         },
@@ -820,7 +825,7 @@ export const objectKeysAndSqlVerbs = {
             account_rulesets_get_an_account_ruleset_version: {
                 sqlVerb: 'exec',
             },
-			account_rulesets_list_an_account_ruleset_s_versions: {
+			account_rulesets_list_an_account_rulesets_versions: {
                 sqlVerb: 'exec',
 			},
         },

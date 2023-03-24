@@ -18,7 +18,7 @@ ref/fivetran/swagger.json \
 ./openapisaurus dev \
 dev \
 --providerName=fivetran \
---providerConfig='{ "auth": { "type": "basic", "credentialsenvvar": "FIVETRAN_CREDS" }}' \
+--providerConfig='{ "auth": { "type": "basic", "username_var": "FIVETRAN_API_KEY", "password_var": "FIVETRAN_API_SECRET" }}' \
 --overwrite \
 --verbose
 ```
@@ -32,6 +32,18 @@ dev \
 --outputDir=src \
 --overwrite \
 --verbose
+```
+
+### Run Test Suite
+
+from the `stackql-provider-tests` directory:
+
+```
+sh test-provider.sh \
+fivetran \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
 ```
 
 ### Test Locally

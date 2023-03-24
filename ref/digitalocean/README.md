@@ -33,6 +33,19 @@ dev \
 --verbose
 ```
 
+### Run Test Suite
+
+from the `stackql-provider-tests` directory:
+
+```
+sh test-provider.sh \
+digitalocean \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+```
+
+
 ### Test Locally
 
 ```

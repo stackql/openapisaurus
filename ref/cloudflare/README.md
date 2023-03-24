@@ -38,6 +38,18 @@ dev \
 node tests/inspectProvider.js cloudflare 2>&1 | tee cloudflare.log
 ```
 
+### Run Test Suite
+
+from the `stackql-provider-tests` directory:
+
+```
+sh test-provider.sh \
+cloudflare \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+```
+
 ### Test Locally
 
 ```
@@ -45,3 +57,4 @@ PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
 ```
+

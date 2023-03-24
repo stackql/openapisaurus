@@ -12,32 +12,49 @@ export const servicesMap = {
     role_management: 'roles',
 };
 
+    // service: {
+    //     nameMap: {
+    //         inResourceName: 'outResourceName',
+    //     },
+    //     opIdMap: {
+    //         opId: 'resourceName',
+    //     },
+    // },
+
 export const resourcesMap = {
     connectors: {
-        sync: 'connectors',
-        resync: 'connectors',
-        test: 'connectors',
-        connect_card: 'connectors',
-        metadata: 'metadata',
-        schemas_reload: 'schemas',
-        metadata_schemas: 'schema_metadata',
-        schemas_tables_columns: 'column_config',
-        metadata_columns: 'column_metadata',
-        schemas_tables: 'table_config',
-        metadata_tables: 'table_metadata',
-        schemas_tables_resync: 'table_config',
+        nameMap: {
+            sync: 'connectors',
+            resync: 'connectors',
+            test: 'connectors',
+            connect_card: 'connectors',
+            metadata: 'metadata',
+            schemas_reload: 'schemas',
+            metadata_schemas: 'schema_metadata',
+            schemas_tables_columns: 'column_config',
+            metadata_columns: 'column_metadata',
+            schemas_tables: 'table_config',
+            metadata_tables: 'table_metadata',
+            schemas_tables_resync: 'table_config',
+        },
     },
     dbt_transformations: {
-        dbt_projects_models: 'dbt_project_models',
-        dbt_projects_test: 'dbt_projects',
-        dbt_projects_transformations: 'dbt_project_transformations',
+        nameMap: {
+            dbt_projects_models: 'dbt_project_models',
+            dbt_projects_test: 'dbt_projects',
+            dbt_projects_transformations: 'dbt_project_transformations',
+        },
     },
     destinations: {
-        test: 'destinations',
+        nameMap: {
+            test: 'destinations',
+        },
     },
     webhooks: {
-        test: 'webhooks',
-    }
+        nameMap: {        
+            test: 'webhooks',
+        },
+    },
 };
 
 
