@@ -113,9 +113,9 @@ export const servicesMap = {
     passive_dnsby_ip: 'intelligence',
     per_hostname_authenticated_origin_pull: 'origin_pulls',
     permission_groups: 'users',
-    phishing_url_scanner: 'phishing',
+    phishing_url_scanner: 'intelligence',
     queue: 'workers',
-    r2_bucket: 'r2',
+    r2_bucket: 'pages',
     radar_bgp: 'radar',
     radar_dns: 'radar',
     radar_http: 'radar',
@@ -252,7 +252,7 @@ export const objectKeysAndSqlVerbs = {
         accounts_keys: {
             key_configuration_get_the_access_key_configuration: {
                 objectKey: '$',
-            }
+            },
         },
         zones_apps: {
             zone_level_access_applications_list_access_applications: {
@@ -309,7 +309,7 @@ export const objectKeysAndSqlVerbs = {
             smart_routing_get_argo_smart_routing_setting: {
                 objectKey: '$',
             },
-        }
+        },
     },
     certificates: {
         zones_ssl_certificate_packs: {
@@ -324,8 +324,7 @@ export const objectKeysAndSqlVerbs = {
             certificate_packs_get_certificate_pack_quotas: {
                 objectKey: '$.result.advanced',
             },
-
-        }
+        },
     },
     cloudflare_stream: {
         accounts_stream_downloads: {
@@ -337,7 +336,6 @@ export const objectKeysAndSqlVerbs = {
             stream_live_inputs_list_all_outputs_associated_with_a_specified_live_input: {
                 objectKey: '$',
             },
-
         },
     },
     cloudflare_tunnel: {
@@ -381,216 +379,219 @@ export const objectKeysAndSqlVerbs = {
     email_routing: {
         zones_email_routing_rules_catch_all: {
             routing_rules_get_catch_all_rule: {
-                objectKey: '$'
-            }
+                objectKey: '$',
+            },
         },
         zones_email_routing: {
             settings_get_email_routing_settings: {
-                objectKey: '$'
-            }
-        }
+                objectKey: '$',
+            },
+        },
     },
     dns: {
         zones_dns_records: {
             records_for_a_zone_dns_record_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
             records_for_a_zone_list_dns_records: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         zones_dnssec: {
             dnssec_dnssec_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_secondary_dns_outgoing_status: {
             secondary_dns___primary_zone__get_outgoing_zone_transfer_status: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     domains: {
         accounts_registrar: {
             registrar_domains_get_domain: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     image_optimization: {
         accounts_images_keys: {
             cloudflare_images_keys_list_signing_keys: {
-                objectKey: '$.result.keys'
+                objectKey: '$.result.keys',
             },
         },
         accounts_images_variants: {
             cloudflare_images_variants_list_variants: {
-                objectKey: '$.result.variants.hero'
+                objectKey: '$.result.variants.hero',
             },
         },
     },
     intelligence: {
         accounts_intel_asn: {
             asn_intelligence_get_asn_overview: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_asn_subnets: {
             asn_intelligence_get_asn_subnets: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_dns: {
             passive_dns_by_ip_get_passive_dns_by_ip: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_domain: {
             domain_intelligence_get_domain_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_domain_bulk: {
             domain_intelligence_get_multiple_domain_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_domain_history: {
             domain_history_get_domain_history: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_ip: {
             ip_intelligence_get_ip_overview: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_ip_list: {
             ip_list_get_ip_lists: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_intel_whois: {
             whois_record_get_whois_record: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     load_balancers: {
         accounts_pools_health: {
             account_load_balancer_pools_pool_health_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_regions: {
             load_balancer_regions_get_region: {
-                objectKey: '$'
+                objectKey: '$',
             },
             load_balancer_regions_list_regions: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         user_pools_health: {
             load_balancer_pools_pool_health_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     logs: {
         accounts_workers_scripts_tails: {
             worker_tail_logs_list_tails: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_logpush_datasets_fields: {
             logpush_jobs_list_fields: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_logpush_datasets_jobs: {
             logpush_jobs_list_logpush_jobs_for_a_dataset: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_logpush_jobs: {
             logpush_jobs_get_logpush_job_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
-        },
+            logpush_jobs_list_logpush_jobs: {
+                objectKey: '$',
+            },			
+        },        
         zones_rayids: {
             received_get_logs_ray_i_ds: {
-                objectKey: '$'
+                sqlVerb: 'exec',
             },
         },
         zones_received: {
             received_get_logs_received: {
-                objectKey: '$'
+                sqlVerb: 'exec',
             },
         },
         zones_received_fields: {
             received_list_fields: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     magic: {
         accounts_cf_interconnects: {
             interconnects_list_interconnect_details: {
-                objectKey: '$.result.interconnect'
+                objectKey: '$.result.interconnect',
             },
             interconnects_list_interconnects: {
-                objectKey: '$.result.interconnects'
+                objectKey: '$.result.interconnects',
             },
         },
         accounts_gre_tunnels: {
             gre_tunnels_list_gre_tunnels: {
-                objectKey: '$.result.gre_tunnels'
+                objectKey: '$.result.gre_tunnels',
             },
             gre_tunnels_list_gre_tunnel_details: {
-                objectKey: '$.result.gre_tunnel'
+                objectKey: '$.result.gre_tunnel',
             },
         },
         accounts_ipsec_tunnels: {
             i_psec_tunnels_list_i_psec_tunnel_details: {
-                objectKey: '$.result.ipsec_tunnel'
+                objectKey: '$.result.ipsec_tunnel',
             },
             i_psec_tunnels_list_i_psec_tunnels: {
-                objectKey: '$.result.ipsec_tunnels'
+                objectKey: '$.result.ipsec_tunnels',
             },
         },
         accounts_mnm_config: {
             network_monitoring_configuration_list_account_configuration: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_mnm_config_full: {
             network_monitoring_configuration_list_rules_and_account_configuration: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_mnm_rules: {
             network_monitoring_rules_get_rule: {
-                objectKey: '$'
+                objectKey: '$',
             },
             network_monitoring_rules_list_rules: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_routes: {
             static_routes_list_routes: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     notifications: {
         accounts_alerting_available_alerts: {
             notification_alert_types_get_alert_types: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_alerting_destinations_eligible: {
             notification_mechanism_eligibility_get_delivery_mechanism_eligibility: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
@@ -603,175 +604,193 @@ export const objectKeysAndSqlVerbs = {
         },
         organizations_invites: {
             invites_invitation_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
             invites_list_invitations: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
     },
     origin_pulls: {
         zones_origin_tls_client_auth_hostnames: {
             per_hostname_authenticated_origin_pull_get_the_hostname_status_for_client_authentication: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_origin_tls_client_auth_settings: {
             zone_level_authenticated_origin_pulls_get_enablement_setting_for_zone: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     page_shield: {
         zones: {
             get_page_shield_settings: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_connections: {
             list_page_shield_connections: {
-                objectKey: '$'
+                objectKey: '$',
             },
             get_a_page_shield_connection: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_scripts: {
             get_a_page_shield_script: {
-                objectKey: '$'
+                objectKey: '$',
             },
             list_page_shield_scripts: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     pages: {
         accounts_custom_pages: {
             custom_pages_for_an_account_get_a_custom_page: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            custom_pages_for_an_account_list_custom_pages: {
+                objectKey: '$',
+            },			
         },
         accounts_projects: {
             project_get_project: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            project_get_projects: {
+                objectKey: '$',
+            },			
         },
         accounts_projects_deployments: {
             deployment_get_deployment_info: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            deployment_get_deployments: {
+                objectKey: '$',
+            },			
         },
         accounts_projects_deployments_history_logs: {
             deployment_get_deployment_logs: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_projects_domains: {
             domains_get_domain: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            domains_get_domains: {
+                objectKey: '$',
+            },			
         },
         zones_custom_pages: {
             custom_pages_for_a_zone_get_a_custom_page: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            custom_pages_for_a_zone_list_custom_pages: {
+                objectKey: '$',
+            },			
         },
         zones_pagerules: {
             page_rules_get_a_page_rule: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            page_rules_list_page_rules: {
+                objectKey: '$',
+            },			
         },
         zones_pagerules_settings: {
             available_page_rules_settings_list_available_page_rules_settings: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     radar: {
         annotations_outages: {
             annotations_get_outages_annotations: {
-                objectKey: '$.result.annotations'
+                objectKey: '$.result.annotations',
             },
         },
         annotations_outages_locations: {
             annotations_get_top_outages_annotations: {
-                objectKey: '$.result.annotations'
+                objectKey: '$.result.annotations',
             },
         },
         attacks_layer7_top_ases_origin: {
             attacks_get_layer_7_top_origin_a_ses: {
-                objectKey: '$.result.top_0'
+                objectKey: '$.result.top_0',
             },
         },
         attacks_layer7_top_attacks: {
             attacks_get_layer_7_top_attack_pairs___origin_and_target_locations_: {
-                objectKey: '$.result.top_0'
+                objectKey: '$.result.top_0',
             },
         },
         attacks_layer7_top_locations_origin: {
             attacks_get_layer_7_top_origin_locations: {
-                objectKey: '$.result.top_0'
+                objectKey: '$.result.top_0',
             },
         },
         attacks_layer7_top_locations_target: {
             attacks_get_layer_7_top_target_locations: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         datasets: {
             get_datasets: {
-                objectKey: '$.result.datasets'
+                objectKey: '$.result.datasets',
             },
         },
         entities_asns: {
             entities_get_autonomous_system___as__by_id: {
-                objectKey: '$.result.asn'
+                objectKey: '$.result.asn',
             },
             entities_get_autonomous_systems: {
-                objectKey: '$.ases'
+                objectKey: '$.ases',
             },			
         },
         entities_asns_ip: {
             entities_get_autonomous_system_information_by_ip_address: {
-                objectKey: '$.result.asn'
+                objectKey: '$.result.asn',
             },
         },
         entities_locations: {
             entities_get_locations: {
-                objectKey: '$.result.locations'
+                objectKey: '$.result.locations',
             },
             entities_get_location: {
-                objectKey: '$.result.location'
+                objectKey: '$.result.location',
             },			
         },
         netflows_top_ases: {
             net_flows_get_top_autonomous_systems: {
-                objectKey: '$.result.top_0'
+                objectKey: '$.result.top_0',
             },
         },
         netflows_top_locations: {
             net_flows_get_top_locations: {
-                objectKey: '$.result.top_0'
+                objectKey: '$.result.top_0',
             },
         },
         reports_datasets: {
             datasets_get_datasets: {
-                objectKey: '$.result.datasets'
+                objectKey: '$.result.datasets',
             },
         },
         specialevents: {
             list_special_events: {
-                objectKey: '$.result.specialEvents'
+                objectKey: '$.result.specialEvents',
             },
             get_a_single_special_events: {
-                objectKey: '$.result.specialEvent'
+                objectKey: '$.result.specialEvent',
             },			
         },
     },
     railgun: {
         zones_railguns: {
             connections_for_a_zone_list_available_railguns: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
@@ -786,242 +805,254 @@ export const objectKeysAndSqlVerbs = {
         },        
         accounts_phases_entrypoint: {
             account_rulesets_get_an_account_entry_point_ruleset: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_phases_versions: {
             account_rulesets_get_an_account_entry_point_ruleset_version: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
 			account_rulesets_list_an_account_entry_point_ruleset_s_versions: {
-				objectKey: '$'
+				sqlVerb: 'exec',
 			},
         },
         accounts_versions: {
             account_rulesets_get_an_account_ruleset_version: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
 			account_rulesets_list_an_account_ruleset_s_versions: {
-                objectKey: '$'			
-			}
+                sqlVerb: 'exec',
+			},
         },
         accounts_versions_by_tag: {
             account_rulesets_list_an_account_ruleset_versions_rules_by_tag: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones: {
             zone_rulesets_get_a_zone_ruleset: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
             zone_rulesets_list_zone_rulesets: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         zones_phases_entrypoint: {
             zone_rulesets_get_a_zone_entry_point_ruleset: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_phases_http_custom_errors_entrypoint: {
             custom_error_responses_get_custom_error_responses: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
         },
         zones_phases_versions: {
             zone_rulesets_get_a_zone_entry_point_ruleset_version: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
             zone_rulesets_list_a_zone_entry_point_rulesets_versions: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         zones_versions: {
             zone_rulesets_get_a_zone_ruleset_version: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
             zone_rulesets_list_a_zone_rulesets_versions: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
     },
     spectrum: {
         zones_analytics_aggregate_current: {
             aggregate_analytics_get_current_aggregated_analytics: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_analytics_events_bytime: {
             analytics___by_time__get_analytics_by_time: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_analytics_events_summary: {
             analytics___summary__get_analytics_summary: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_apps: {
             applications_list_spectrum_applications: {
-                objectKey: '$'
+                objectKey: '$',
             },
             applications_get_spectrum_application_configuration: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
     },
     ssl_tls: {
         zones_acm_total_tls: {
             total_tls_total_tls_settings_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     teamnet: {
         accounts_routes_ip: {
             tunnel_route_get_tunnel_route_by_ip: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     users: {
         user: {
             user_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         user_billing_profile: {
             billing_profile_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         user_invites: {
             invites_list_invitations: {
-                objectKey: '$'
+                objectKey: '$',
             },
             users_invites_invitation_details: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },        
         user_tokens: {
             user_api_tokens_list_tokens: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         user_tokens_permission_groups: {
             permission_groups_list_permission_groups: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     waf: {
         zones_firewall_packages: {
             packages_get_a_waf_package: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            packages_list_waf_packages: {
+                objectKey: '$',
+            },			
         },
         zones_firewall_packages_rules: {
             rules_get_a_waf_rule: {
-                objectKey: '$'
+                objectKey: '$',
             },
-        },
+            rules_list_waf_rules: {
+                objectKey: '$',
+            },			
+        },    
     },
     web3: {
         zones_hostnames_ipfs_universal_path_content_list_entries: {
             hostname_list_ipfs_universal_path_gateway_content_list_entries: {
-                objectKey: '$.result.entries'
+                objectKey: '$.result.entries',
             },
         },
     },
     workers: {
         accounts_domains: {
             worker_domain_get_a_domain: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            worker_domain_list_domains: {
+                objectKey: '$',
+            },			
         },
         accounts_scripts: {
             worker_script_list_workers: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_scripts_schedules: {
             worker_cron_trigger_get_cron_triggers: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_storage_kv_namespaces_keys: {
             kv_namespace_list_a_namespaces_keys: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_subdomain: {
             worker_subdomain_get_subdomain: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_filters: {
             worker_filters___deprecated__list_filters: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         zones_routes: {
             worker_routes_get_route: {
-                objectKey: '$'
+                objectKey: '$',
             },
+            worker_routes_list_routes: {
+                objectKey: '$',
+            },			
         },
         zones_script_bindings: {
             worker_binding___deprecated__list_bindings: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     zero_trust: {
         accounts_gateway_app_types: {
             gateway_application_and_application_type_mappings_list_application_and_application_type_mappings: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         accounts_gateway_configuration: {
             accounts_get_zero_trust_account_configuration: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },
     zones: {
         cache_variants: {
             zone_cache_settings_get_variants_setting: {
-                objectKey: '$.result.value'
+                objectKey: '$.result.value',
             },
         },
         firewall_lockdown_rules: {
             zone_lockdown_get_a_zone_lockdown_rule: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
             zone_lockdown_list_zone_lockdown_rules: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         firewall_rules: {
             get_a_firewall_rule: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
             list_firewall_rules: {
-                objectKey: '$'
+                objectKey: '$',
             },			
         },
         managed_headers: {
             managed_transforms_list_managed_transforms: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         rulesets_phases_entrypoint: {
             transform_rules_list_transform_rules: {
-                sqlVerb: 'exec'
+                sqlVerb: 'exec',
             },
         },
         settings: {
             zone_settings_get_all_zone_settings: {
-                objectKey: '$'
+                objectKey: '$',
             },
             zone_settings_get_0_rtt_session_resumption_setting: {
                 sqlVerb: 'exec',
@@ -1035,12 +1066,12 @@ export const objectKeysAndSqlVerbs = {
         },
         subscription: {
             zone_subscription_zone_subscription_details: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
         url_normalization: {
             get_url_normalization_settings: {
-                objectKey: '$'
+                objectKey: '$',
             },
         },
     },      
