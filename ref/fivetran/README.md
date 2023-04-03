@@ -18,7 +18,7 @@ ref/fivetran/swagger.json \
 ./openapisaurus dev \
 dev \
 --providerName=fivetran \
---providerConfig='{ "auth": { "type": "basic", "username_var": "FIVETRAN_API_KEY", "password_var": "FIVETRAN_API_SECRET" }}' \
+--providerConfig='{ "auth": { "type": "basic", "valuePrefix": "Basic ", "username_var": "FIVETRAN_API_KEY", "password_var": "FIVETRAN_API_SECRET" }}' \
 --overwrite \
 --verbose
 ```
@@ -55,8 +55,7 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 ```
 
 ```
-
-
+select * from fivetran.users.users;
 ```
 
 ### Test in Dev Registry

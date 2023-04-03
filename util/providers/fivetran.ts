@@ -90,14 +90,6 @@ export const objectKeysAndSqlVerbs = {
             }
         },
         metadata: {
-            connectors: {
-                objectKey: '$.data.items',
-                sqlVerb: 'select',
-            },
-            connector_config: {
-                objectKey: '$.data.items',
-                sqlVerb: 'select',                
-            }
         },
         schemas: {
             connector_schema_config: {
