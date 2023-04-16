@@ -268,10 +268,12 @@ function getResponseCode(responses: any): string {
     let respcode = '200';
     if (responses) {
       Object.keys(responses).forEach(respKey => {
+        // find the first response code that starts with 2 and return it
         if (respKey.startsWith('2')) {
-          if (responses[respKey]?.content?.['application/json']?.schema) {
-            respcode = respKey;
-          }
+          respcode = respKey;
+          // if (responses[respKey]?.content?.['application/json']?.schema) {
+          //   respcode = respKey;
+          // }
         }
       });
     }

@@ -1,35 +1,38 @@
-## split the api into services
+## `jira` Provider Dev
 
-```bash
-openapi-doc-util split \
--n jira \
--v v0.0.1 \
--s path_tokens \
--o ./dev \
-ref/jira/jira.yaml
+### `split`
+
+```
+./openapisaurus split \
+ref/jira/jira.yaml \
+--providerName=jira \
+--svcdiscriminator='["tags"][0]' \
+--outputDir=dev \
+--overwrite
 ```
 
-## generate resources
+### `dev`
 
-```bash
-openapi-doc-util provider-dev \
--n jira \
--v v0.0.1 \
--r path_tokens \
+```
+./openapisaurus dev \
+dev \
+--providerName=digitalocean \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DIGITALOCEAN_TOKEN" }}' \
 --overwrite \
-./dev
+--verbose
 ```
 
-# compile docs
+### `build`
 
-```bash
-openapi-doc-util provider-build \
--n jira \
--v v0.0.1 \
--o ./src \
+```
+./openapisaurus build \
+dev \
+--providerName=digitalocean \
+--outputDir=src \
 --overwrite \
-./dev
+--verbose
 ```
+
 
 
 ```bash
