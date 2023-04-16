@@ -16,8 +16,8 @@ ref/jira/jira.yaml \
 ```
 ./openapisaurus dev \
 dev \
---providerName=digitalocean \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DIGITALOCEAN_TOKEN" }}' \
+--providerName=jira \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "JIRA_TOKEN" }}' \
 --overwrite \
 --verbose
 ```
@@ -27,7 +27,7 @@ dev \
 ```
 ./openapisaurus build \
 dev \
---providerName=digitalocean \
+--providerName=jira \
 --outputDir=src \
 --overwrite \
 --verbose
