@@ -350,7 +350,7 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
             }
             if (startsOrEndsWith(operationId, [
               'add',
-              'post',
+              // 'post',
             ])){
               verb = 'insert';
             }
