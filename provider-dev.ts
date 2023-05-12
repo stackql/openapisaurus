@@ -96,8 +96,8 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         let methodKeyVal = apiPaths[pathKey][verbKey][methodKey];
                         
                         if (!methodKeyVal){
-                            logger.error(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}`);
-                            throw 'Break';
+                            logger.warning(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
+                            methodKeyVal = verbKey;
                         }
                         
                         debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;

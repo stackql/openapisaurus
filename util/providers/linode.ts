@@ -30,19 +30,46 @@ export const resourcesMap = {
     },
     instances: {
         nameMap: {
-            instances_backups: 'backups',
-            instances_configs: 'configs',
-            instances_disks: 'disks',
-            instances_firewalls: 'firewalls',
-            instances_ips: 'ips',
-            instances_nodebalancers: 'nodebalancers',
-            instances_transfer: 'transfer',
-            instances_stats: 'stats',
-            instances_volumes: 'volumes',
+            linode: 'linodes',
+            linode_boot: 'linodes',
+            linode_clone: 'linodes',
+            linode_migrate: 'linodes',
+            linode_mutate: 'linodes',
+            linode_password: 'linodes',
+            linode_reboot: 'linodes',
+            linode_rebuild: 'linodes',
+            linode_rescue: 'linodes',
+            linode_resize: 'linodes',
+            linode_shutdown: 'linodes',
+            linode_backups: 'backups',
+            linode_backups_cancel: 'backups',
+            linode_backups_enable: 'backups',
+            linode_backups_restore: 'backups',
+            linode_configs: 'configs',
+            linode_disks: 'disks',
+            linode_disks_clone: 'disks',
+            linode_disks_password: 'disks',
+            linode_disks_resize: 'disks',
+            linode_firewalls: 'firewalls',
+            linode_ips: 'ips',
+            linode_kernels: 'kernels',
+            linode_nodebalancers: 'nodebalancers',
+            linode_transfer: 'transfer',
+            linode_stats: 'stats',
+            linode_volumes: 'volumes',
+            linode_stackscripts: 'stackscripts',
+            linode_types: 'types',
         },
     },
+    volumes: {
+        nameMap: {
+            attach: 'volumes',
+            clone: 'volumes',
+            detach: 'volumes',
+            resize: 'volumes',
+        },        
+    }
 };
-
 export const objectKeysAndSqlVerbs = {
     _defaultObjectKey: '$.data',
     account: {
@@ -167,6 +194,13 @@ export const objectKeysAndSqlVerbs = {
             }
         }
     },
+    managed: {
+        stats: {
+            getManagedStats: {
+                sqlVerb: 'exec',
+            }
+        },
+    },
     networking: {
         firewalls_rules: {
             getFirewallRules: {
@@ -194,7 +228,7 @@ export const objectKeysAndSqlVerbs = {
         },
         preferences: {
             getUserPreferences: {
-                objectKey: '$',
+                sqlVerb: 'exec',
             }
         },
         profile: {
