@@ -62,7 +62,12 @@ export function getResourceName(
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
         });
     } else {
-      let resValue = search(operation, resDiscriminator)[0];
+      let resValue
+      try { 
+        resValue = search(operation, resDiscriminator)[0];
+      } catch (error) {
+        resValue = service;
+      }
       resourceName = resValue ? camelToSnake(resValue) : service;
     }
     resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
