@@ -134,7 +134,7 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                     });
                     // check if tokens are unique
                     if (tokens.length !== new Set(tokens).size){
-                        logger.error(`unreachable routes in ${service}/${xStackQLResKey}`);
+                        logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
                         throw 'Break';
                     };
                     newSqlVerbs[sqlVerb] = newSqlVerb;
