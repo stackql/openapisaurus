@@ -1,7 +1,6 @@
 ### Create Dev directory for purestorage provider
 mkdir -p dev/purestorage/v00.00.00000/services
 
-
 ### Create service directory and service file for fusion service
 mkdir dev/purestorage/v00.00.00000/services/fusion
 cp ref/purestorage/Fusion1.1.openapi3.spec.yaml dev/purestorage/v00.00.00000/services/fusion/fusion.yaml
@@ -25,4 +24,10 @@ dev \
 --outputDir=src \
 --overwrite \
 --verbose
+```
+
+### Inspect
+
+```
+node tests/inspectProvider.js purestorage
 ```
