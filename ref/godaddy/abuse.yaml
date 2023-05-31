@@ -78,58 +78,57 @@ paths:
       responses:
         '200':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/AbuseTicketList'
           description: Success
         '401':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authentication info not sent or invalid
         '403':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authenticated user is not allowed access
         '422':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Error
       security:
         - sso_key: []
       operationId: getTickets
-      summary:
-        - List all abuse tickets ids that match user provided filters
+      description: List all abuse tickets ids that match user provided filters
     post:
       responses:
         '200':
           description: No response was specified
         '201':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/AbuseTicketId'
           description: Success
         '401':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authentication info not sent or invalid
         '403':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authenticated user is not allowed access
         '422':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Error
@@ -143,8 +142,7 @@ paths:
               $ref: '#/components/schemas/AbuseTicketCreate'
         description: The endpoint which allows the Reporter to create a new abuse ticket
         required: true
-      summary:
-        - Create a new abuse ticket
+      description: Create a new abuse ticket
   '/v1/abuse/tickets/{ticketId}':
     get:
       parameters:
@@ -157,33 +155,32 @@ paths:
       responses:
         '200':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/AbuseTicket'
           description: Success
         '401':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authentication info not sent or invalid
         '403':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Authenticated user is not allowed access
         '404':
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Invalid ticket id provided
       security:
         - sso_key: []
       operationId: getTicketInfo
-      summary:
-        - Return the abuse ticket data for a given ticket id
+      description: Return the abuse ticket data for a given ticket id
 components:
   schemas:
     AbuseTicket:
@@ -325,14 +322,12 @@ components:
           description: 'Human-readable, English description of the error'
           type: string
         stack:
-          description:
-            - Stack trace indicating where the error occurred.<br/>
-            - >-
-              NOTE: This attribute <strong>MAY</strong> be included for
-              Development and Test environments.
-            - >-
-              However, it <strong>MUST NOT</strong> be exposed from OTE nor
-              Production systems.
+          description: >-
+            Stack trace indicating where the error occurred.<br/>
+            NOTE: This attribute <strong>MAY</strong> be included for
+            Development and Test environments.
+            However, it <strong>MUST NOT</strong> be exposed from OTE nor
+            Production systems.
           items:
             type: string
           minItems: 1

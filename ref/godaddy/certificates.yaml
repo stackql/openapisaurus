@@ -577,17 +577,16 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description:
-        - >-
-          <p>Rekeying is the process by which the private and public key is
-          changed for a certificate.
-        - ' It is a simplified reissue,where only the CSR is changed. Reissuing is the process by which domain'
-        - ' names are added or removed from a certificate.Once a request is validated and approved, the certificate'
-        - ' will be reissued with the new common name and sans specified. Unlimited reissues are available during the'
-        - ' lifetime of the certificate.New names added to a certificate that do not share the base domain of the'
-        - ' common name may take additional time to validate. If this API call is made before a previous pending'
-        - ' reissue has been validated and issued, the previous reissue request is automatically rejected and replaced'
-        - ' with the current request.</p>'
+      description: >-
+        <p>Rekeying is the process by which the private and public key is
+        changed for a certificate.
+        It is a simplified reissue,where only the CSR is changed. Reissuing is the process by which domain 
+        names are added or removed from a certificate.Once a request is validated and approved, the certificate 
+        will be reissued with the new common name and sans specified. Unlimited reissues are available during the 
+        lifetime of the certificate.New names added to a certificate that do not share the base domain of the 
+        common name may take additional time to validate. If this API call is made before a previous pending 
+        reissue has been validated and issued, the previous reissue request is automatically rejected and replaced 
+        with the current request.</p>'
       operationId: certificate_reissue
       requestBody:
         content:
@@ -655,15 +654,14 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description:
-        - >-
-          <p>Renewal is the process by which the validity of a certificate is
-          extended.
-        - ' Renewal is only available 60 days prior to expiration of the previous certificate and 30 days after the expiration of the previous certificate. '
-        - ' The renewal supports modifying a set of the original certificate order information. Once a request is validated and approved, the certificate'
-        - ' will be issued with extended validity. Since subject alternative names can be removed during a renewal, we'
-        - ' require that you provide the subject alternative names you expect in the renewed certificate. New names added to a certificate that do not share the base domain of the'
-        - ' common name may take additional time to validate. </p>'
+      description: >-
+        <p>Renewal is the process by which the validity of a certificate is
+        extended.
+        Renewal is only available 60 days prior to expiration of the previous certificate and 30 days after the expiration of the previous certificate. 
+        The renewal supports modifying a set of the original certificate order information. Once a request is validated and approved, the certificate 
+        will be issued with extended validity. Since subject alternative names can be removed during a renewal, we 
+        require that you provide the subject alternative names you expect in the renewed certificate. New names added to a certificate that do not share the base domain of the 
+        common name may take additional time to validate. </p>
       operationId: certificate_renew
       requestBody:
         content:
@@ -822,17 +820,16 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description:
-        - >-
-          <p>This method is used to obtain the site seal information for an
-          issued certificate.
-        - ' A site seal is a graphic that the certificate purchaser can embed on their web site to show'
-        - ' their visitors information about their SSL certificate. If a web site visitor clicks on the'
-        - ' site seal image, a pop-up page is displayed that contains detailed information about the SSL'
-        - ' certificate. The site seal token is used to link the site seal graphic image to the appropriate'
-        - ' certificate details pop-up page display when a user clicks on the site seal. The site seal'
-        - ' images are expected to be static images and hosted on the reseller''s website, to minimize'
-        - ' delays for customer page load times.</p>'
+      description: >-
+        <p>This method is used to obtain the site seal information for an
+        issued certificate.
+        A site seal is a graphic that the certificate purchaser can embed on their web site to show 
+        their visitors information about their SSL certificate. If a web site visitor clicks on the 
+        site seal image, a pop-up page is displayed that contains detailed information about the SSL 
+        certificate. The site seal token is used to link the site seal graphic image to the appropriate 
+        certificate details pop-up page display when a user clicks on the site seal. The site seal 
+        images are expected to be static images and hosted on the reseller''s website, to minimize 
+        delays for customer page load times.</p>
       operationId: certificate_siteseal_get
       summary: Get Site seal
   '/v1/certificates/{certificateId}/verifyDomainControl':

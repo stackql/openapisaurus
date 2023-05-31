@@ -1155,9 +1155,9 @@ components:
           format: currency-micro-unit
           type: integer
         category:
-          description:
-            - The category of payment method used at the time of purchase.
-            - Most common values are listed in the enum.
+          description: >-
+            The category of payment method used at the time of purchase.
+            Most common values are listed in the enum.
           enum:
             - CREDIT_CARD
             - PAYPAL
@@ -1170,12 +1170,11 @@ components:
           description: Unique identifier of the payment profile used by current payment
           type: string
         subcategory:
-          description:
-            - The subcategory of payment method used at the time of purchase.
-            - >-
-              This field is only set for certain payment categories, such as ACH
-              and CREDIT_CARD.
-            - Most common values are listed in the enum.
+          description: >-
+            The subcategory of payment method used at the time of purchase.
+            This field is only set for certain payment categories, such as ACH
+            and CREDIT_CARD.
+            Most common values are listed in the enum.
           enum:
             - CHECKING_PERSONAL
             - CHECKING_BUSINESS

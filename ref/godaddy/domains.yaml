@@ -1087,13 +1087,11 @@ paths:
   /v1/domains/identityDocuments:
     get:
       parameters:
-        - description:
-            - >-
-              Shopper ID of the owner of the identity document. This is only
-              required if you are a Reseller managing
-            - >-
-              identity documents for your customers. Use this header to pass in
-              their subaccount ID
+        - description: >-
+            Shopper ID of the owner of the identity document. This is only
+            required if you are a Reseller managing
+            identity documents for your customers. Use this header to pass in
+            their subaccount ID
           in: header
           name: X-Shopper-Id
           required: false
@@ -1224,13 +1222,11 @@ paths:
       summary: Get a collection of identity documents the current shopper owns
     post:
       parameters:
-        - description:
-            - >-
-              Shopper ID of the owner of the identity document. This is only
-              required if you are a Reseller managing
-            - >-
-              identity documents for your customers. Use this header to pass in
-              their subaccount ID
+        - description: >-
+            Shopper ID of the owner of the identity document. This is only
+            required if you are a Reseller managing
+            identity documents for your customers. Use this header to pass in
+            their subaccount ID
           in: header
           name: X-Shopper-Id
           required: false
@@ -1387,13 +1383,11 @@ paths:
   '/v1/domains/identityDocuments/{identityDocumentId}/verifications':
     get:
       parameters:
-        - description:
-            - >-
-              Shopper ID of the owner of the identity document. This is only
-              required if you are a Reseller managing
-            - >-
-              identity documents for your customers. Use this header to pass in
-              their subaccount ID
+        - description: >-
+            Shopper ID of the owner of the identity document. This is only
+            required if you are a Reseller managing
+            identity documents for your customers. Use this header to pass in
+            their subaccount ID
           in: header
           name: X-Shopper-Id
           required: false
@@ -1577,13 +1571,11 @@ paths:
       summary: Retrieve a list of Verifications for the specified Identity Document
     post:
       parameters:
-        - description:
-            - >-
-              Shopper ID of the owner of the identity document. This is only
-              required if you are a Reseller managing
-            - >-
-              identity documents for your customers. Use this header to pass in
-              their subaccount ID
+        - description: >-
+            Shopper ID of the owner of the identity document. This is only
+            required if you are a Reseller managing
+            identity documents for your customers. Use this header to pass in
+            their subaccount ID
           in: header
           name: X-Shopper-Id
           required: false
@@ -1763,17 +1755,14 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description:
-        - >-
-          Only one verification job is needed for one TLD, Top Level Domain, per
-          identity document.
-        - >-
-          Sending in request(s) with multiple domains for the same TLD, will not
-          create multiple verification
-        - >-
-          jobs. We accept domain names for the convenience of our customers so
-          that they don't need to
-        - worry about parsing TLDs out of domain names
+      description: >-
+        Only one verification job is needed for one TLD, Top Level Domain, per
+        identity document.
+        Sending in request(s) with multiple domains for the same TLD, will not
+        create multiple verification
+        jobs. We accept domain names for the convenience of our customers so
+        that they don't need to
+        worry about parsing TLDs out of domain names
       operationId: createVerification
       summary: Initiate verifications for the specified Domains
   /v1/domains/purchase:
@@ -6542,11 +6531,10 @@ components:
         contactTech:
           $ref: '#/components/schemas/Contact'
         domains:
-          description:
-            - >-
-              An array of domain names to be validated against. Alternatively,
-              you can specify the extracted tlds.
-            - 'However, full domain names are required if the tld is `uk`'
+          description: >-
+            An array of domain names to be validated against. Alternatively,
+            you can specify the extracted tlds.
+            However, full domain names are required if the tld is `uk`'
           items:
             format: domain
             type: string
@@ -6618,14 +6606,12 @@ components:
           description: 'Human-readable, English description of the error'
           type: string
         stack:
-          description:
-            - Stack trace indicating where the error occurred.<br/>
-            - >-
-              NOTE: This attribute <strong>MAY</strong> be included for
-              Development and Test environments.
-            - >-
-              However, it <strong>MUST NOT</strong> be exposed from OTE nor
-              Production systems
+          description: >-
+            Stack trace indicating where the error occurred.<br/>
+            NOTE: This attribute <strong>MAY</strong> be included for
+            Development and Test environments.
+            However, it <strong>MUST NOT</strong> be exposed from OTE nor
+            Production systems
           items:
             type: string
           minItems: 1
@@ -6681,16 +6667,13 @@ components:
           format: constant
           type: string
         domains:
-          description:
-            - >-
-              An array of domain names the error is for. If tlds are specified
-              in the request, `domains` will contain tlds.
-            - >-
-              For example, if `domains` in request is ["test1.com", "test2.uk",
-              "net"], and the field is invalid for
-            - >-
-              com and net, then one of the `fields` in response will have
-              ["test1.com", "net"] as `domains`
+          description: >-
+            An array of domain names the error is for. If tlds are specified
+            in the request, `domains` will contain tlds.
+            For example, if `domains` in request is ["test1.com", "test2.uk",
+            "net"], and the field is invalid for
+            com and net, then one of the `fields` in response will have
+            ["test1.com", "net"] as `domains`
           items:
             type: string
           type: array
@@ -6749,12 +6732,11 @@ components:
         contact:
           $ref: '#/components/schemas/Contact'
         identificationCountry:
-          description:
-            - >-
-              Two-letter ISO country code to be used as a hint for target
-              region<br/><br/>
-            - 'NOTE: These are sample values, there are many'
-            - '<a href="http://www.iso.org/iso/country_codes.htm">more</a>'
+          description: >-
+            Two-letter ISO country code to be used as a hint for target
+            region<br/><br/>
+            NOTE: These are sample values, there are many 
+            <a href="http://www.iso.org/iso/country_codes.htm">more</a>
           enum:
             - AD
             - AE
@@ -7023,11 +7005,10 @@ components:
             - RESIDENT_ID_TEMPORARY
           type: string
         image:
-          description:
-            - >-
-              The base64 encoded string of the document image. The document
-              image size must be between 4KB and 10MB. Supported formats
-            - 'are bmp, jpg/jpeg, jfif, png, gif, and tiff'
+          description: >-
+            The base64 encoded string of the document image. The document
+            image size must be between 4KB and 10MB. Supported formats
+            are bmp, jpg/jpeg, jfif, png, gif, and tiff
           type: string
         legalEntityName:
           description: >-
@@ -7055,12 +7036,11 @@ components:
         contact:
           $ref: '#/components/schemas/Contact'
         identificationCountry:
-          description:
-            - >-
-              Two-letter ISO country code to be used as a hint for target
-              region<br/><br/>
-            - 'NOTE: These are sample values, there are many'
-            - '<a href="http://www.iso.org/iso/country_codes.htm">more</a>'
+          description: >-
+            Two-letter ISO country code to be used as a hint for target
+            region<br/><br/>
+            NOTE: These are sample values, there are many 
+            <a href="http://www.iso.org/iso/country_codes.htm">more</a> 
           enum:
             - AD
             - AE
@@ -7511,125 +7491,99 @@ components:
     VerificationRealName:
       properties:
         status:
-          description:
-            - Status of the real name verification<br/><ul>
-            - >-
-              <li><strong style='margin-left: 12px;'>APPROVED</strong> - All is
-              well</li>
-            - >-
-              <li><strong style='margin-left: 12px;'>PENDING</strong> - Real
-              name verification is working its way through the workflow</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_DOCUMENT_OUTDATED</strong> - Local government
-              verification shows there is a newer version of your document. 
-              Upload the latest version of the document and retry real name
-              verification</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_EXPIRED_BUSINESS_LICENSE</strong> - Business
-              license is expired</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_EXPIRED_ORGANIZATION_CODE</strong> - Organization
-              code certificate number has expired</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_ILLEGIBLE_DOCUMENT_NAME</strong> - There isn’t a
-              clear name on your uploaded document, please upload a different
-              document to retry real name verification</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_ILLEGIBLE_IDENTIFICATION</strong> - Registrant
-              identification is not clear.  Upload a better image to retry</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INCOMPLETE_IDENTIFICATION</strong> - Registrant
-              identification is incomplete</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INCOMPLETE_REGISTRATION_LETTER</strong> -
-              Registration letter is incomplete</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INCONSISTENT_IDENTITY_CARD</strong> - Provided
-              identity card is inconsistent with the identity card on
-              record</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INCONSISTENT_ORGANIZATION_CODE</strong> - Provided
-              organization information is inconsistent with the results obtained
-              using the submitted organization code</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INCONSISTENT_REGISTRANT_NAME</strong> - Name on
-              the registrant identification does not match the name in the
-              system</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INVALID_BUSINESS_LICENSE_OR_ORGANIZATION_CODE</strong>
-              - Your document contains an invalid business license or
-              organization code certificate number</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_INVALID_DOCUMENT</strong> - Document is invalid. 
-              Please upload another document to retry real name
-              verification</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_BUSINESS_ID</strong> - Business id does
-              not match the business id in the document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_BUSINESS_NAME</strong> - Business name
-              does not match the business name in the document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_DOCUMENT_ID</strong> - Document id does
-              not match the id in the document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_DOCUMENT_NAME</strong> - Document name
-              does not match the name in the document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_DOCUMENT_TYPE</strong> - Document type
-              does not match the document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_REGISTRANT_INFO</strong> - The
-              information provided for the registrant does not match the
-              document</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_REGISTRANT_LOCALITY</strong> - Registrant
-              region is overseas, but a local identity document was
-              provided</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_MISMATCH_REGISTRANT_NAME</strong> - Registrant
-              name has been changed, so the request must be resubmitted</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_UNABLE_TO_OPEN</strong> - Registrant
-              identification could not be opened.  Please upload the document
-              again to retry real name verification</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_UNABLE_TO_VERIFY</strong> - Unable to initiate
-              verification.  Please upload the document again to retry real name
-              verification</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>REJECTED_UNKNOWN_ERROR</strong> - Document was rejected due
-              to an unknown error. For more information, contact customer
-              support</li>
-            - >-
-              <li><strong style='margin-left:
-              12px;'>UNABLE_TO_RETRIEVE_STATUS</strong> - Unable to retrieve
-              status for the real name verification process.  Retry, if this
-              status persists, contact customer support</li>
-            - </ul>
+          description: >-
+            Status of the real name verification<br/><ul>
+            <li><strong style='margin-left: 12px;'>APPROVED</strong> - All is
+            well</li>
+            <li><strong style='margin-left: 12px;'>PENDING</strong> - Real
+            name verification is working its way through the workflow</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_DOCUMENT_OUTDATED</strong> - Local government
+            verification shows there is a newer version of your document. 
+            Upload the latest version of the document and retry real name
+            verification</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_EXPIRED_BUSINESS_LICENSE</strong> - Business
+            license is expired</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_EXPIRED_ORGANIZATION_CODE</strong> - Organization
+            code certificate number has expired</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_ILLEGIBLE_DOCUMENT_NAME</strong> - There isn’t a
+            clear name on your uploaded document, please upload a different
+            document to retry real name verification</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_ILLEGIBLE_IDENTIFICATION</strong> - Registrant
+            identification is not clear.  Upload a better image to retry</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INCOMPLETE_IDENTIFICATION</strong> - Registrant
+            identification is incomplete</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INCOMPLETE_REGISTRATION_LETTER</strong> -
+            Registration letter is incomplete</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INCONSISTENT_IDENTITY_CARD</strong> - Provided
+            identity card is inconsistent with the identity card on
+            record</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INCONSISTENT_ORGANIZATION_CODE</strong> - Provided
+            organization information is inconsistent with the results obtained
+            using the submitted organization code</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INCONSISTENT_REGISTRANT_NAME</strong> - Name on
+            the registrant identification does not match the name in the
+            system</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INVALID_BUSINESS_LICENSE_OR_ORGANIZATION_CODE</strong>
+            - Your document contains an invalid business license or
+            organization code certificate number</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_INVALID_DOCUMENT</strong> - Document is invalid. 
+            Please upload another document to retry real name
+            verification</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_BUSINESS_ID</strong> - Business id does
+            not match the business id in the document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_BUSINESS_NAME</strong> - Business name
+            does not match the business name in the document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_DOCUMENT_ID</strong> - Document id does
+            not match the id in the document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_DOCUMENT_NAME</strong> - Document name
+            does not match the name in the document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_DOCUMENT_TYPE</strong> - Document type
+            does not match the document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_REGISTRANT_INFO</strong> - The
+            information provided for the registrant does not match the
+            document</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_REGISTRANT_LOCALITY</strong> - Registrant
+            region is overseas, but a local identity document was
+            provided</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_MISMATCH_REGISTRANT_NAME</strong> - Registrant
+            name has been changed, so the request must be resubmitted</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_UNABLE_TO_OPEN</strong> - Registrant
+            identification could not be opened.  Please upload the document
+            again to retry real name verification</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_UNABLE_TO_VERIFY</strong> - Unable to initiate
+            verification.  Please upload the document again to retry real name
+            verification</li>
+            <li><strong style='margin-left:
+            12px;'>REJECTED_UNKNOWN_ERROR</strong> - Document was rejected due
+            to an unknown error. For more information, contact customer
+            support</li>
+            <li><strong style='margin-left:
+            12px;'>UNABLE_TO_RETRIEVE_STATUS</strong> - Unable to retrieve
+            status for the real name verification process.  Retry, if this
+            status persists, contact customer support</li>
+            </ul>
           enum:
             - APPROVED
             - PENDING
