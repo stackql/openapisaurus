@@ -206,7 +206,7 @@ export function updateProviderData(
     serviceTitle, 
     serviceDescription){
         providerData.providerServices[service] = {};
-        providerData.providerServices[service].description = convertLowerCaseToTitleCase(snakeToTitleCase(serviceDescription));
+        serviceDescription ? providerData.providerServices[service].description = convertLowerCaseToTitleCase(snakeToTitleCase(serviceDescription)) : null;
         providerData.providerServices[service].id = `${service}:${providerVersion}`;
         providerData.providerServices[service].name = service;
         providerData.providerServices[service].preferred = true;
