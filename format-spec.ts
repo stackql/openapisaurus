@@ -37,9 +37,9 @@ export async function formatApiSpec(formatArgs: types.formatArgs): Promise<boole
         }
 
         if (key === 'summary' && spec['description'] === undefined) {
-          spec['description'] = spec[key];
-          delete spec['summary'];
-        }
+            spec['description'] = spec[key];
+          }
+
       }
     }
 
