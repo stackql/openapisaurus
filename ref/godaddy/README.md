@@ -6,7 +6,8 @@ services=("aftermarket" "certificates" "domains" "shoppers" "abuse" "agreements"
 for service in "${services[@]}"
 do
   mkdir ${servicesdir}/${service}
-  cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+  ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+  # cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
 done
 
 ./openapisaurus dev \

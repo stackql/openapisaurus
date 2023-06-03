@@ -25,3 +25,10 @@ export interface buildArgs {
   overwrite: boolean;
   verbose: boolean;
 }
+
+export interface formatArgs {
+  apiDoc: string;
+  outputFileName: string;
+  overwrite: boolean;
+  verbose: boolean;
+}

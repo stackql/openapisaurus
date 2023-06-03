@@ -150,10 +150,6 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
             }
         });
 
-
-
-
-       
         if (existsSync(resDoc) && !overwrite) {
             logger.error(`${resDoc} exists and overwrite is false`);
             return false;

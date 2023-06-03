@@ -3,6 +3,24 @@ import { usage } from "./usage.ts";
 import * as types from "../types.ts";
 
 //
+// format args
+//
+export function parseFormatArgs(args: any): types.formatArgs | false {
+  const apiDoc = args._[1];
+  const outputFileName = args._[2];
+  
+  const formatArgs: types.formatArgs = {
+    apiDoc: apiDoc,
+    outputFileName: outputFileName,
+    overwrite: true,
+    verbose: true,
+  };
+
+  return formatArgs;
+
+}
+
+//
 // split args
 //
 export function parseSplitArgs(args: any): types.splitArgs | false {
