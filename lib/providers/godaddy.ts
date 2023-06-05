@@ -1,15 +1,33 @@
 export const servicesMap = {
 };
 
+// operationIdMap: {
+
 export const resourcesMap = {
     abuse: {
-        // nameMap: {
+        // nameMap: {  // resourceRenameMap
         //     tickets: {outResourceName},
         // },
-        opIdMap: {
+        opIdMap: {  // originalOpIdtoResourceMap
             getTickets: 'ticket_ids',
             getTicketInfo: 'tickets',
             createTicket: 'tickets',
+        },
+    },
+    certificates: {
+        opIdMap: {
+            certificate_cancel: 'certificates',
+            certificate_download: 'certificates',
+            certificate_reissue: 'certificates',
+            certificate_renew: 'certificates',
+            certificate_revoke: 'certificates',
+            certificate_validate: 'certificates',
+            certificate_verifydomaincontrol: 'certificates',
+        },        
+    },
+    countries: {
+        opIdMap: {
+            getCountry: 'country_info',
         },
     },
 };

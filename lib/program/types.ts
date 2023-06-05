@@ -1,10 +1,11 @@
 export interface splitArgs {
-    apiDoc: string;
-    providerName: string;
-    svcDiscriminator: string;
-    outputDir: string;
-    overwrite: boolean;
-    verbose: boolean;
+  apiDoc: string,
+  providerName: string,
+  svcDiscriminator: string,
+  exclude: string | false,
+  outputDir: string,
+  overwrite: boolean,
+  verbose: boolean,
 }
 
 export interface devArgs {
@@ -19,8 +20,8 @@ export interface devArgs {
 
 export interface buildArgs {
   apiDocDir: string;
-  providerName: string;
-  outputDir: string;
+  providerName: string | undefined;
+  outputDir: string | undefined;
   servers: string | false;
   overwrite: boolean;
   verbose: boolean;

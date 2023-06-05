@@ -1,4 +1,7 @@
-import { search } from "https://deno.land/x/jmespath/index.ts";
+// deno modules
+import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
+// import { search } from "https://deno.land/x/jmespath/index.ts";
+// relative imports
 import {
   getMeaningfulPathTokens,
   snakeToTitleCase,
@@ -9,13 +12,14 @@ import {
 } from "./shared.ts";
 import {
   updateResourceName,
+  updateOperationIdName,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
 } from "./providers.ts";
-import { logger } from "./logging.ts";
+import { logger } from "../util/logging.ts";
 
 export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
-    let providerData: {
+    const providerData: {
       id: string;
       name: string;
       version: string;
@@ -32,7 +36,7 @@ export function initProviderData(providerName: string, providerVersion: string, 
 }
 
 export function initResData(): Record<string, any> {
-    let resData: Record<string, any> = {};
+    const resData: Record<string, any> = {};
     resData['components'] = {};
     resData['components']['x-stackQL-resources'] = {};
     return resData;
@@ -47,7 +51,7 @@ export function getResourceName(
   debug: boolean, 
   logger: any): 
   [string, string[]] {
-    let resTokens: string[] = [];
+    const resTokens: string[] = [];
     if (operation['x-stackQL-resource']) {
       return [operation['x-stackQL-resource'], resTokens];
     }
@@ -60,12 +64,14 @@ export function getResourceName(
             resTokens.push(token);
           }       
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
+          // convert to snake case
+          resourceName = camelToSnake(resourceName);
         });
     } else {
       let resValue
       try { 
         resValue = search(operation, resDiscriminator)[0];
-      } catch (error) {
+      } catch (_error) {
         resValue = service;
       }
       resourceName = resValue ? camelToSnake(resValue) : service;
@@ -92,13 +98,16 @@ export function addResource(resData: any, providerName: string, service: string,
 }
 
 export function getOperationId(
+    providerName: string,
     apiPaths: Record<string, Record<string, Record<string, string>>>,
     pathKey: string,
     verbKey: string,
     existingOpIds: string[],
     methodKey: string,
     service: string,
-    resource: string
+    resource: string,
+    debug: boolean,
+    logger: any
   ): string {
     let operationId = apiPaths[pathKey][verbKey][methodKey];
     if (operationId) {
@@ -141,11 +150,15 @@ export function getOperationId(
         }
         operationId = `${operationId}_${opSuffixes.join('_')}`;
       }
-      return operationId;
+      // return operationId;
     } else {
       logger.warning(`no method key found for ${pathKey}/${verbKey}, using path tokens and verb`);
-      return `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;
+      operationId = `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;
+      // return `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;
     }
+    // look for provider specific operationId overrides
+    operationId = updateOperationIdName(providerName, service, resource, debug, logger);
+    return operationId;
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {

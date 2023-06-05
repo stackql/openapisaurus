@@ -1,10 +1,14 @@
+// deno modules
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import * as types from "./types.ts";
-import { logger } from "./util/logging.ts";
+import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
+import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
+// relative imports
+import * as types from "../lib/program/types.ts";
+import { logger } from "../lib/util/logging.ts";
 import {
     providerVersion,
     operations,
-  } from "./util/constants.ts";
+  } from "../lib/functions/constants.ts";
 import { 
     initProviderData,
     initResData,
@@ -14,9 +18,7 @@ import {
     addOperation,
     updateProviderData,
     addSqlVerb,
-} from "./util/dev-functions.ts";
-import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
-import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
+} from "../lib/functions/dev-functions.ts";
 
 export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> {
 
@@ -102,7 +104,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                         
                         debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
 
-                        let operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
+                        let operationId = getOperationId(providerName, apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource, debug, logger);
                       
                         debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
 
