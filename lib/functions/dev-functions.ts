@@ -42,7 +42,7 @@ export function initResData(): Record<string, any> {
     return resData;
 }
 
-export function getResourceName(
+export async function getResourceName(
   providerName: string, 
   operation: any, 
   service: string, 
@@ -50,7 +50,7 @@ export function getResourceName(
   pathKey: string, 
   debug: boolean, 
   logger: any): 
-  [string, string[]] {
+  Promise<[string,string[]]> {
     const resTokens: string[] = [];
     if (operation['x-stackQL-resource']) {
       return [operation['x-stackQL-resource'], resTokens];
@@ -76,7 +76,7 @@ export function getResourceName(
       }
       resourceName = resValue ? camelToSnake(resValue) : service;
     }
-    resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
+    resourceName = await updateResourceName(providerName, service, resourceName, operation, debug, logger);
     return [resourceName, resTokens];
 }
 

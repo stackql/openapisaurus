@@ -1,9 +1,9 @@
 // deno modules
-import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
-import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
+import { JSONValue } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
+import { read } from "https://deno.land/x/openapi@0.1.0/mod.ts";
+import { ensureDirSync, existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
+import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
 // relative imports
-import * as types from "../lib/program/types.ts";
 import { logger } from "../lib/util/logging.ts";
 import { createDestDir } from "../lib/util/fs.ts";
 import {
@@ -20,13 +20,15 @@ import {
     addRefsToComponents,
     addMissingObjectTypes
 } from "../lib/functions/split-functions.ts";
+import * as types from "../lib/types/args.d.ts";
+import { IOpenAPIDoc, IOpenAPIPaths, IOpenAPIPathItem, IOpenAPIOperation } from "../lib/types/openapi.d.ts";
 
-export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> {
+export async function splitApiDoc(splitArgs: types.ISplitArgs): Promise<boolean> {
     
     logger.info(`splitting doc for ${splitArgs.providerName}`);
     splitArgs.verbose ? logger.debug(`splitArgs: ${JSON.stringify(splitArgs)}`) : null;
 
-    const apiDoc = readSync(splitArgs.apiDoc);
+    const apiDoc = await read(splitArgs.apiDoc) as IOpenAPIDoc;
     if (!apiDoc){
         logger.error(`failed to parse ${splitArgs.apiDoc}`);
         return false;
@@ -47,27 +49,29 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
     }
     
     // iterate over paths
-    const apiPaths = apiDoc.paths;
+    const apiPaths: IOpenAPIPaths = apiDoc.paths;
 
     logger.info(`iterating over ${Object.keys(apiPaths).length} paths`);
-    let services = {};
+    let services: { [key: string]: IOpenAPIDoc } = {};
     let opCounter = 0;
     
     Object.keys(apiPaths).forEach(pathKey => {
         debug ? logger.debug(`processing path ${pathKey}`) : null;
-        Object.keys(apiPaths[pathKey]).forEach(verbKey => {
+        Object.keys(apiPaths[pathKey] as IOpenAPIPathItem).forEach(async verbKey => {
+            
             opCounter += 1;
             logger.info(`operations processed : ${opCounter}`);
             debug ? logger.debug(`processing operation ${pathKey}:${verbKey}`) : null;
 
             // if verbKey in operations, then process
-            if (operations.includes(verbKey) && !isOperationExcluded(exclude, apiPaths[pathKey][verbKey], svcDiscriminator)){
+            if (operations.includes(verbKey) && !isOperationExcluded(exclude, apiPaths[pathKey][verbKey] as JSONValue, svcDiscriminator)){
                 // determine service using discriminator
-                let [service, serviceDesc] = retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey], pathKey, svcDiscriminator, apiDoc.tags, debug, logger);
+                const [service, serviceDesc]: [string, string] = await retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey] as JSONValue, pathKey, svcDiscriminator, debug);
                 logger.info(`service name : ${service}`);
                 debug ? logger.debug(`service desc : ${serviceDesc}`) : null;
 
-                if (!services.hasOwnProperty(service)){
+                if (!Object.prototype.hasOwnProperty.call(services, service)){ // if (!services.hasOwnProperty(service))
+                
                     // fisrt occurance of the service, init service map
                     debug ? logger.debug(`first occurance of ${service}`) : null;
 
@@ -76,16 +80,14 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                 }
 
                 // add operation to service
-                if (!services[service]['paths'].hasOwnProperty(pathKey)){
+                if (!Object.prototype.hasOwnProperty.call(services[service]['paths'], pathKey)){ // if (!services[service]['paths'].hasOwnProperty(pathKey))
                     debug ? logger.debug(`first occurance of ${pathKey}`) : null;
                     services[service]['paths'][pathKey] = {};
-                    services[service]['paths'][pathKey][verbKey] = apiPaths[pathKey][verbKey];
-                } else {
-                    services[service]['paths'][pathKey][verbKey] = apiPaths[pathKey][verbKey];
-                };
+                }
+                services[service]['paths'][pathKey][verbKey] = apiPaths[pathKey][verbKey];
 
                 // get all refs for operation
-                let opRefs = getAllRefs(apiPaths[pathKey][verbKey]);
+                const opRefs = getAllRefs(apiPaths[pathKey][verbKey]);
                 debug ? logger.debug(`found ${opRefs.length} refs for ${service}`) : null;
 
                 // add refs to components in service map
@@ -93,19 +95,23 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
 
                 // get internal refs
 
-                let internalRefDepth = 3;
+                const internalRefDepth = 3;
                 for (let i = 0; i < internalRefDepth; i++){
-                    let intRefs = getAllRefs(services[service]['components']);
+                    const intRefs = getAllRefs(services[service]['components']);
                     debug ? logger.debug(`found ${intRefs.length} INTERNAL refs for service ${service}`) : null;
                     addRefsToComponents(intRefs, services[service], apiDoc.components, debug);
                 }
 
                 // get internal refs for deeply nested schemas
 
-                let schemaMaxRefDepth = 10;
+                const schemaMaxRefDepth = 10;
                 for (let i = 0; i < schemaMaxRefDepth; i++){
-                    let intRefs = getAllRefs(services[service]['components']);
-                    intRefs = intRefs.filter((ref: string) => !services[service]['components']['schemas'].hasOwnProperty(ref.split('/').pop()));
+                    let intRefs = getAllRefs(services[service]?.['components']);
+                    intRefs = intRefs.filter((ref: string) => {
+                        const refKey = ref.split('/').pop();
+                        return refKey ? !Object.prototype.hasOwnProperty.call(services[service]?.['components']?.['schemas'], refKey) : false;
+                    });  
+    
                     debug ? logger.debug(`found ${intRefs.length} INTERNAL schema refs for service ${service}`) : null;
                     if(intRefs.length > 0){
                         debug ? logger.debug(`adding ${intRefs.length} INTERNAL schema refs for service ${service}`) : null;
@@ -124,17 +130,20 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
     Object.keys(services).forEach(service => {
         Object.keys(services[service]['paths']).forEach(pathKey => {
             debug ? logger.debug(`adding non operations to ${service} for path ${pathKey}`) : null;
-            for (let nonOpIx in nonOperations){
+            for (const nonOpIx in nonOperations){
                 debug ? logger.debug(`looking for non operation ${nonOperations[nonOpIx]} in ${service} under path ${pathKey}`) : null;
                 if(apiPaths[pathKey][nonOperations[nonOpIx]]){
                     debug ? logger.debug(`adding ${nonOperations[nonOpIx]} to ${service} for path ${pathKey}`) : null;                    
                     // services[service]['paths'][pathKey][nonOperations[nonOpIx]] = apiPaths[pathKey][nonOperations[nonOpIx]];
                     // interim fix
-                    if(nonOperations[nonOpIx] == 'parameters'){
+                    if(nonOperations[nonOpIx] === 'parameters'){
                         Object.keys(services[service]['paths'][pathKey]).forEach(verbKey => {
-                          services[service]['paths'][pathKey][verbKey]['parameters'] = apiPaths[pathKey]['parameters'];
+                            const pathItem = services[service]['paths'][pathKey][verbKey];
+                            if (typeof pathItem === 'object' && pathItem !== null && 'parameters' in pathItem) {
+                                (pathItem as IOpenAPIOperation)['parameters'] = apiPaths[pathKey]['parameters'];
+                            }
                         });
-                    };
+                    }
                 }
             }
         });

@@ -1,6 +1,10 @@
 // deno modules
-import { search } from "https://deno.land/x/jmespath/index.ts";
+import { search, JSONValue } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 // relative imports
+import { 
+  IOpenAPISchema, 
+  IOpenAPIPaths 
+} from "../types/openapi.d.ts";
 import {
     componentsChildren,
 } from "./constants.ts";
@@ -12,8 +16,9 @@ import {
   updateServiceName,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
+import { IOpenAPIDoc, IOpenAPIPaths, IOpenAPIPathItem } from "../lib/types/openapi.d.ts";
 
-export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
+export function isOperationExcluded(exOption: unknown, operation: JSONValue, discriminator: string): boolean {
   if (exOption) {
     if (search(operation, discriminator) == exOption) {
       return true;
@@ -25,7 +30,7 @@ export function isOperationExcluded(exOption: any, operation: any, discriminator
   }
 } 
 
-export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, tags: any[], debug: boolean, logger: any): [string, string] {
+export async function retServiceNameAndDesc(providerName: string, operation: JSONValue, pathKey: string, discriminator: string, debug: boolean): Promise<[string,string]> {
     
     if (discriminator.startsWith('svcName:')) {
       return [discriminator.split(':')[1], discriminator.split(':')[1]];
@@ -34,21 +39,22 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
       if (discriminator == 'path_tokens') {
         thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
       } else {
+        console.log(search(operation, discriminator)[0]);
         thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_').replace(/\//g, '_') : getMeaningfulPathTokens(pathKey)[0];
       }
       const serviceDesc = thisSvc;
-      const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
+      const serviceName = await updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
       return [serviceName, serviceDesc];
     }
 }
 
 export function initService(
-    services: Record<string, any>,
+    services: { [key: string]: IOpenAPIDoc },
     componentsChildren: string[],
     service: string,
     serviceDesc: string,
-    api: Record<string, any>
-  ): Record<string, any> {
+    api: IOpenAPIDoc
+  ): { [key: string]: IOpenAPIDoc } {
     services[service] = {};
     services[service]['openapi'] = api.openapi || '3.0.0';
     services[service]['servers'] = api.servers;
@@ -79,7 +85,7 @@ export function initService(
     return services;
 }
 
-export function getAllRefs(obj: any, refs: string[] = []): string[] {
+export function getAllRefs(obj: unknown, refs: string[] = []): string[] {
     for (let k in obj) {
       if (typeof obj[k] === "object") {
         getAllRefs(obj[k], refs);
@@ -92,7 +98,7 @@ export function getAllRefs(obj: any, refs: string[] = []): string[] {
     return refs;
 }
 
-export function addRefsToComponents(refs: string[], service: any, apiComp: any, debug: boolean = false): void {
+export function addRefsToComponents(refs: string[], service: unknown, apiComp: unknown, debug: boolean = false): void {
     for (let ref of refs) {
         debug ? logger.debug(`processing ${ref}`) : null;
         let refTokens = ref.split('/');
@@ -107,37 +113,6 @@ export function addRefsToComponents(refs: string[], service: any, apiComp: any, 
             }
         }
     }
-}
-
-interface OpenAPIPaths {
-  [path: string]: OpenAPIPathItem;
-}
-
-interface OpenAPIPathItem {
-  [httpMethod: string]: OpenAPIOperation;
-}
-
-interface OpenAPIOperation {
-  responses: {
-    [statusCode: string]: OpenAPIResponse;
-  };
-}
-
-interface OpenAPIResponse {
-  content?: {
-    [mediaType: string]: OpenAPIContent;
-  };
-}
-
-interface OpenAPIContent {
-  schema?: OpenAPISchema;
-}
-
-interface OpenAPISchema {
-  type?: string;
-  properties?: {
-    [propertyName: string]: OpenAPISchema;
-  };
 }
 
 export function addMissingObjectTypes(paths: OpenAPIPaths): OpenAPIPaths {

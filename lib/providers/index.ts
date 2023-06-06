@@ -40,4 +40,21 @@ export const objectKeysAndSqlVerbs = {
         }
     }
 };
+
+// NEW
+
+export const objectKeysAndSqlVerbs: IObjectKeysAndSqlVerbs = {
+    _defaultObjectKey: '$.{something}',  // sets the default object key for all select methods
+    services: {
+        {service}: {
+            {resource}: {
+                {operation}: {
+                    objectKey: '$.{something}',  // sets the object key for a specific operation, overrides the default if set
+                    sqlVerb: '{sqlVerb}',  // sets the sql verb for a specific operation, overrides the default
+                },
+            }
+        }
+    }
+};
+
 */

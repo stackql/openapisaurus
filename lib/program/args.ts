@@ -2,14 +2,14 @@
 import { red } from "https://deno.land/std@0.178.0/fmt/colors.ts";
 // relative imports
 import { usage } from "./usage.ts";
-import * as types from "./types.ts";
+import * as types from "../types/args.d.ts";
 
 type ArgsType = { _: unknown[]; [key: string]: unknown };
 
 //
 // format args
 //
-export function parseFormatArgs(args: unknown): types.formatArgs | false {
+export function parseFormatArgs(args: unknown): types.IFormatArgs | false {
 
   const typedArgs = args as ArgsType;
 
@@ -40,7 +40,7 @@ export function parseFormatArgs(args: unknown): types.formatArgs | false {
   const verbose: boolean = typeof typedArgs.verbose === 'boolean' ? typedArgs.verbose : false;
   const overwrite: boolean = typeof typedArgs.overwrite === 'boolean' ? typedArgs.overwrite : false;
   
-  const formatArgs: types.formatArgs = {
+  const formatArgs: types.IFormatArgs = {
     apiDoc: apiDoc,
     outputFileName: outputFileName,
     overwrite: verbose,
@@ -54,7 +54,7 @@ export function parseFormatArgs(args: unknown): types.formatArgs | false {
 //
 // split args
 //
-export function parseSplitArgs(args: unknown): types.splitArgs | false {
+export function parseSplitArgs(args: unknown): types.ISplitArgs | false {
 
   const typedArgs = args as ArgsType;
   
@@ -100,7 +100,7 @@ export function parseSplitArgs(args: unknown): types.splitArgs | false {
   const verbose: boolean = typeof typedArgs.verbose === 'boolean' ? typedArgs.verbose : false;
   const overwrite: boolean = typeof typedArgs.overwrite === 'boolean' ? typedArgs.overwrite : false;
 
-  const splitArgs: types.splitArgs = {
+  const splitArgs: types.ISplitArgs = {
     apiDoc: apiDoc,
     providerName: providerName,
     svcDiscriminator: svcDiscriminator,
@@ -116,7 +116,7 @@ export function parseSplitArgs(args: unknown): types.splitArgs | false {
 //
 // dev args
 //
-export function parseDevArgs(args: unknown): types.devArgs | false {
+export function parseDevArgs(args: unknown): types.IDevArgs | false {
   
   const typedArgs = args as ArgsType;
 
@@ -153,7 +153,7 @@ export function parseDevArgs(args: unknown): types.devArgs | false {
     const verbose: boolean = typeof typedArgs.verbose === 'boolean' ? typedArgs.verbose : false;
     const overwrite: boolean = typeof typedArgs.overwrite === 'boolean' ? typedArgs.overwrite : false;
   
-    const devArgs: types.devArgs = {
+    const devArgs: types.IDevArgs = {
       apiDocDir: apiDocDir,
       providerName: providerName,
       resDiscriminator: resDiscriminator,
@@ -169,7 +169,7 @@ export function parseDevArgs(args: unknown): types.devArgs | false {
 //
 // build args
 //
-export function parseBuildArgs(args: unknown): types.buildArgs | false {
+export function parseBuildArgs(args: unknown): types.IBuildArgs | false {
 
   const typedArgs = args as ArgsType;
 
@@ -208,7 +208,7 @@ export function parseBuildArgs(args: unknown): types.buildArgs | false {
   const verbose: boolean = typeof typedArgs.verbose === 'boolean' ? typedArgs.verbose : false;
   const overwrite: boolean = typeof typedArgs.overwrite === 'boolean' ? typedArgs.overwrite : false;
   
-  const buildArgs: types.buildArgs = {
+  const buildArgs: types.IBuildArgs = {
     apiDocDir: apiDocDir,
     providerName: providerName,
     outputDir: outputDir,

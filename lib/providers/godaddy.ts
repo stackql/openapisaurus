@@ -1,7 +1,13 @@
 export const servicesMap = {
 };
 
-// operationIdMap: {
+export const methodNameMap = {
+    // {service}: {
+    //     {resource}: {
+    //         {operationId}: '{methodName}',
+    //     },
+    // },
+};
 
 export const resourcesMap = {
     abuse: {
