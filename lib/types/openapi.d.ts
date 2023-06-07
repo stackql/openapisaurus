@@ -9,14 +9,20 @@ interface IOpenAPIDoc {
     externalDocs?: IOpenAPIExternalDocumentation;
 }
 
+// interface IOpenAPIInfo {
+//     title: string;
+//     description?: string;
+//     termsOfService?: string;
+//     contact?: IOpenAPIContact;
+//     license?: IOpenAPILicense;
+//     version: string;
+// }
+
 interface IOpenAPIInfo {
     title: string;
-    description?: string;
-    termsOfService?: string;
-    contact?: IOpenAPIContact;
-    license?: IOpenAPILicense;
     version: string;
-}
+    [key: string]: unknown;  // This allows additional properties with any name and type
+  }
 
 interface IOpenAPIContact {
     name?: string;

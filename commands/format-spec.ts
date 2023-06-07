@@ -3,7 +3,7 @@ import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
 import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
 // relative imports
-import * as types from "../lib/program/types.ts";
+import * as types from "../lib/types/args.d.ts";
 import { logger } from "../lib/util/logging.ts";
 
 // function to recursively process openapi spec
@@ -28,7 +28,7 @@ function processSpec(spec: Record<string, unknown>) {
 }
 
 export async function formatApiSpec(
-  formatArgs: types.formatArgs,
+  formatArgs: types.IFormatArgs,
 ): Promise<boolean> {
   await Promise.resolve();
   try {

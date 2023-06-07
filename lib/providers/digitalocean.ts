@@ -10,6 +10,10 @@ export const servicesMap = {
     cdn_endpoints: 'cdn',
 };
 
+export const serviceDescriptions = {
+    floating_ips: 'Floating IPs in Digital Ocean',
+};
+
     // service: {
     //     nameMap: {
     //         inResourceName: 'outResourceName',

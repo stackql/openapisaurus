@@ -1,26 +1,54 @@
 // deno modules
 
 // relative imports
-import { Logger } from "../util/logging.ts";
-import type { IProviderData, IResourceData } from '../program/types.ts';
+import { logger } from "../util/logging.ts";
+import type { IProviderData, IServicesMap, IServiceDescriptions } from '../types/providers.d.ts';
+import * as providers from '../providers/index.ts';
 
 //
 // renames a service if it exists in the provider data
 // used to combine services or to clean up service names
 //
-export async function updateServiceName(providerName: string, inServiceName: string, debug: boolean, logger: typeof Logger): Promise<string> {
+export function updateServiceName(providerName: string, inServiceName: string, debug: boolean): string {
     debug ? logger.debug(`checking for service name updates for [${inServiceName}] in [${providerName}]...`) : null;
     let outServiceName = inServiceName;
     
-    const providers = await import(`../providers/${providerName}.ts`);
+    debug ? logger.debug(`getting provider data for ${providerName}`) : null;
 
-    debug ? logger.debug(`provider data found for ${providerName}`) : null;
-    const providerData: IProviderData = providers.default;
-    outServiceName = providerData.servicesMap[inServiceName] || inServiceName;
+    const servicesMap = (providers[providerName as keyof typeof providers].servicesMap) as IServicesMap;
+
+    if (servicesMap) {
+        outServiceName = servicesMap[inServiceName] || inServiceName;
+    }
+
     debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     
     return outServiceName;
 }
+
+//
+// renames a service if it exists in the provider data
+// used to combine services or to clean up service names
+//
+export function getServiceDescription(providerName: string, serviceName: string, debug: boolean): string {
+    debug ? logger.debug(`checking for service decsription for [${serviceName}] in [${providerName}]...`) : null;
+    let outServiceDesc = serviceName;
+    
+    debug ? logger.debug(`getting provider data for ${providerName}`) : null;
+
+    const serviceDescriptions = (providers[providerName as keyof typeof providers].serviceDescriptions) as IServiceDescriptions;
+
+    if (serviceDescriptions) {
+        outServiceDesc = serviceDescriptions[serviceName] || outServiceDesc;
+    }
+
+    debug ? logger.debug(`service desc "${outServiceDesc}" added for  ${providerName}.${serviceName}`) : null;
+    
+    return outServiceDesc;
+}
+
+
+
 
 //
 // renames a resource given an operationId, if it exists in the provider data

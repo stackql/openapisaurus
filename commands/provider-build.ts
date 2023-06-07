@@ -3,13 +3,13 @@ import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 import { existsSync } from 'https://deno.land/std/fs/mod.ts';
 // relative imports
-import * as types from "../lib/program/types.ts";
+import * as types from "../lib/types/args.d.ts";
 import { logger } from "../lib/util/logging.ts";
 import { createDestDir } from "../lib/util/fs.ts";
 import { providerVersion } from "../lib/functions/constants.ts";
 import { fixAllOffIssue } from "../lib/functions/build-functions.ts";
 
-export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
+export async function buildDocs(buildArgs: types.IBuildArgs): Promise<boolean> {
 
     buildArgs.verbose ? logger.debug(`buildArgs: ${JSON.stringify(buildArgs)}`) : null;
 

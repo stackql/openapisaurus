@@ -6,6 +6,13 @@ export interface IServicesMap {
 }
 
 //
+// service descriptions
+//
+export interface IServiceDescriptions {
+    [serviceName: string]: string;
+}
+
+//
 // resource name mapping by name or operationId
 //
 interface INameMap {

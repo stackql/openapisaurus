@@ -12,6 +12,8 @@ export const servicesMap = {
     role_management: 'roles',
 };
 
+export const serviceDescriptions = {};
+
     // service: {
     //     nameMap: {
     //         inResourceName: 'outResourceName',

@@ -1,6 +1,8 @@
 export const servicesMap = {
 };
 
+export const serviceDescriptions = {};
+
 export const methodNameMap = {
     // {service}: {
     //     {resource}: {

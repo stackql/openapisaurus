@@ -57,7 +57,7 @@ export async function splitApiDoc(splitArgs: types.ISplitArgs): Promise<boolean>
     
     Object.keys(apiPaths).forEach(pathKey => {
         debug ? logger.debug(`processing path ${pathKey}`) : null;
-        Object.keys(apiPaths[pathKey] as IOpenAPIPathItem).forEach(async verbKey => {
+        Object.keys(apiPaths[pathKey] as IOpenAPIPathItem).forEach(verbKey => {
             
             opCounter += 1;
             logger.info(`operations processed : ${opCounter}`);
@@ -66,7 +66,7 @@ export async function splitApiDoc(splitArgs: types.ISplitArgs): Promise<boolean>
             // if verbKey in operations, then process
             if (operations.includes(verbKey) && !isOperationExcluded(exclude, apiPaths[pathKey][verbKey] as JSONValue, svcDiscriminator)){
                 // determine service using discriminator
-                const [service, serviceDesc]: [string, string] = await retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey] as JSONValue, pathKey, svcDiscriminator, debug);
+                const [service, serviceDesc]: [string, string] = retServiceNameAndDesc(providerName, apiPaths[pathKey][verbKey] as JSONValue, pathKey, svcDiscriminator, debug);
                 logger.info(`service name : ${service}`);
                 debug ? logger.debug(`service desc : ${serviceDesc}`) : null;
 

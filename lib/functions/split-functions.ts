@@ -1,10 +1,6 @@
 // deno modules
-import { search, JSONValue } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
+import { search, JSONValue, JSONArray } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 // relative imports
-import { 
-  IOpenAPISchema, 
-  IOpenAPIPaths 
-} from "../types/openapi.d.ts";
 import {
     componentsChildren,
 } from "./constants.ts";
@@ -14,9 +10,10 @@ import {
 } from "./shared.ts";
 import {
   updateServiceName,
+  getServiceDescription,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
-import { IOpenAPIDoc, IOpenAPIPaths, IOpenAPIPathItem } from "../lib/types/openapi.d.ts";
+import { IOpenAPIDoc, IOpenAPIPaths, IOpenAPIPathItem } from "../types/openapi.d.ts";
 
 export function isOperationExcluded(exOption: unknown, operation: JSONValue, discriminator: string): boolean {
   if (exOption) {
@@ -30,26 +27,48 @@ export function isOperationExcluded(exOption: unknown, operation: JSONValue, dis
   }
 } 
 
-export async function retServiceNameAndDesc(providerName: string, operation: JSONValue, pathKey: string, discriminator: string, debug: boolean): Promise<[string,string]> {
-    
-    if (discriminator.startsWith('svcName:')) {
-      return [discriminator.split(':')[1], discriminator.split(':')[1]];
-    } else {
-      let thisSvc = 'svc';
-      if (discriminator == 'path_tokens') {
-        thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
-      } else {
-        console.log(search(operation, discriminator)[0]);
-        thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_').replace(/\//g, '_') : getMeaningfulPathTokens(pathKey)[0];
+//
+// returns a service name and a description given an input name
+//
+export function retServiceNameAndDesc(providerName: string, operation: JSONValue, pathKey: string, discriminator: string, debug: boolean): [string, string] {
+  let thisSvcName = '';
+
+  // single service processing
+  if (discriminator.startsWith('svcName:')) {
+    thisSvcName = discriminator.split(':')[1];
+  }
+
+  // get service name by path tokens (default) or discriminator
+  if (discriminator === 'path_tokens') {
+    thisSvcName = getMeaningfulPathTokens(pathKey)[0] || thisSvcName;
+  } else {
+      const searchResult: JSONArray = search(operation, discriminator) as JSONArray;
+      if (searchResult.length > 0 && typeof searchResult[0] === 'string') {
+        thisSvcName = searchResult[0].replace(/-/g, '_').replace(/\//g, '_');
       }
-      const serviceDesc = thisSvc;
-      const serviceName = await updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
-      return [serviceName, serviceDesc];
-    }
+  }
+
+  // if service name is not found by now, error and exit
+  if (thisSvcName === '') {
+    logger.error(`Unable to determine service name for ${pathKey} using discriminator ${discriminator}`);
+    Deno.exit(1);
+  }
+
+  // update the service name based on the provider data
+  const serviceName = updateServiceName(providerName, camelToSnake(thisSvcName), debug);
+  const serviceDesc = getServiceDescription(providerName, serviceName, debug);
+
+  return [serviceName, serviceDesc];
+}
+
+type PartialOpenAPIDoc = Partial<IOpenAPIDoc>;
+
+interface IService {
+  [key: string]: PartialOpenAPIDoc;
 }
 
 export function initService(
-    services: { [key: string]: IOpenAPIDoc },
+    services: IService,
     componentsChildren: string[],
     service: string,
     serviceDesc: string,
@@ -58,19 +77,24 @@ export function initService(
     services[service] = {};
     services[service]['openapi'] = api.openapi || '3.0.0';
     services[service]['servers'] = api.servers;
-    services[service]['info'] = {};
-    for (let infoKey in api.info) {
-      if (infoKey !== 'title' || infoKey !== 'description') {
+    services[service]['info'] = {
+      title: `${api.info.title} - ${service}`,   //ensure title is set
+      version: api.info.version,  //ensure version is set
+    };
+  
+    for (const infoKey in api.info) {
+      if (infoKey !== 'title' && infoKey !== 'description') {
         services[service]['info'][infoKey] = api.info[infoKey];
       }
     }
-    services[service]['info']['title'] = `${api.info.title} - ${service}`;
+  
     services[service]['info']['description'] = serviceDesc;
+
     api.security ? services[service]['security'] = api.security : null;
     api.tags ? services[service]['tags'] = api.tags : null;
     api.externalDocs ? services[service]['externalDocs'] = api.externalDocs : null;
     services[service]['components'] = {};
-    for (let compChild in componentsChildren) {
+    for (const compChild in componentsChildren) {
       if(componentsChildren[compChild] == 'schemas'){
         services[service]['components']['schemas'] = {};
       } else if(componentsChildren[compChild] == 'responses') {
@@ -86,7 +110,7 @@ export function initService(
 }
 
 export function getAllRefs(obj: unknown, refs: string[] = []): string[] {
-    for (let k in obj) {
+    for (const k in obj) {
       if (typeof obj[k] === "object") {
         getAllRefs(obj[k], refs);
       } else {
@@ -99,12 +123,12 @@ export function getAllRefs(obj: unknown, refs: string[] = []): string[] {
 }
 
 export function addRefsToComponents(refs: string[], service: unknown, apiComp: unknown, debug: boolean = false): void {
-    for (let ref of refs) {
+    for (const ref of refs) {
         debug ? logger.debug(`processing ${ref}`) : null;
-        let refTokens = ref.split('/');
+        const refTokens = ref.split('/');
         if (refTokens[1] === 'components') {
-            let thisSection = refTokens[2];
-            let thisKey = refTokens[3];
+            const thisSection = refTokens[2];
+            const thisKey = refTokens[3];
             if (componentsChildren.includes(thisSection)) {
               if(!service['components'][thisSection][thisKey]){
                 debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;

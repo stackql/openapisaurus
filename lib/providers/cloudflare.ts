@@ -222,6 +222,8 @@ export const servicesMap: IServicesMap = {
     zone_subscription: 'zones',
 };
 
+export const serviceDescriptions = {};
+
 export const resourcesMap: IResourcesMap = {
     zones:{
         nameMap: {

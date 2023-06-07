@@ -3,7 +3,7 @@ import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 // relative imports
-import * as types from "../lib/program/types.ts";
+import * as types from "../lib/types/args.d.ts";
 import { logger } from "../lib/util/logging.ts";
 import {
     providerVersion,
@@ -20,7 +20,7 @@ import {
     addSqlVerb,
 } from "../lib/functions/dev-functions.ts";
 
-export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> {
+export async function generateDevDocs(devArgs: types.IDevArgs): Promise<boolean> {
 
     devArgs.verbose ? logger.debug(`devArgs: ${JSON.stringify(devArgs)}`) : null;
 
