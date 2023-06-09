@@ -154,7 +154,7 @@ paths:
       security:
         - sso_key: []
       operationId: get
-      summary: Retrieve Legal Agreements for provided agreements keys
+      description: Retrieve Legal Agreements for provided agreements keys
 components:
   schemas:
     Error:

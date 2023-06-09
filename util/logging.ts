@@ -14,3 +14,7 @@ await log.setup({
   });
 
 export const logger = log.getLogger('openapisaurus');
+
+export function logDebug(msg: string, debug: boolean){
+    debug && logger.debug(msg);
+}

@@ -80,11 +80,8 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description: Authorization is not required
+      description: Retrieves summary country information for the provided marketId and filters.  Authorization is not required.
       operationId: getCountries
-      summary: >-
-        Retrieves summary country information for the provided marketId and
-        filters
   '/v1/countries/{countryKey}':
     get:
       parameters:
@@ -157,9 +154,8 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description: Authorization is not required
       operationId: getCountry
-      summary: Retrieves country and summary state information for provided countryKey
+      description: Retrieves country and summary state information for provided countryKey. Authorization is not required.
 components:
   schemas:
     Country:

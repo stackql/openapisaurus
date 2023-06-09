@@ -150,7 +150,7 @@ paths:
               $ref: '#/components/schemas/SubaccountCreate'
         description: The subaccount to create
         required: true
-      summary: Create a Subaccount owned by the authenticated Reseller
+      description: Create a Subaccount owned by the authenticated Reseller
   '/v1/shoppers/{shopperId}':
     get:
       parameters:
@@ -290,7 +290,7 @@ paths:
       security:
         - sso_key: []
       operationId: get
-      summary: Get details for the specified Shopper
+      description: Get details for the specified Shopper
     post:
       parameters:
         - description: The ID of the Shopper to update
@@ -460,7 +460,7 @@ paths:
               $ref: '#/components/schemas/ShopperUpdate'
         description: The Shopper details to update
         required: true
-      summary: Update details for the specified Shopper
+      description: Update details for the specified Shopper
 components:
   schemas:
     Error:

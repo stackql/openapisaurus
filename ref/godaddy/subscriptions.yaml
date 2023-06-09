@@ -202,7 +202,7 @@ paths:
       security:
         - sso_key: []
       operationId: list
-      summary: Retrieve a list of Subscriptions for the specified Shopper
+      description: Retrieve a list of Subscriptions for the specified Shopper
   /v1/subscriptions/productGroups:
     get:
       parameters:
@@ -341,7 +341,7 @@ paths:
       security:
         - sso_key: []
       operationId: productGroups
-      summary: Retrieve a list of ProductGroups for the specified Shopper
+      description: Retrieve a list of ProductGroups for the specified Shopper
   '/v1/subscriptions/{subscriptionId}':
     delete:
       parameters:
@@ -509,7 +509,7 @@ paths:
       security:
         - sso_key: []
       operationId: cancel
-      summary: Cancel the specified Subscription
+      description: Cancel the specified Subscription
     get:
       parameters:
         - description: 'Shopper ID to be operated on, if different from JWT'
@@ -697,7 +697,7 @@ paths:
       security:
         - sso_key: []
       operationId: get
-      summary: Retrieve details for the specified Subscription
+      description: Retrieve details for the specified Subscription
     patch:
       parameters:
         - description: Unique identifier of the Subscription to update
@@ -758,11 +758,11 @@ paths:
           description: Internal server error
       security:
         - sso_key: []
-      description:
-        - Only Subscription properties that can be changed without immediate
-        - 'financial impact can be modified via PATCH, whereas some properties'
-        - can be changed by purchasing a renewal<br/>
-        - <strong>This endpoint only supports JWT authentication</strong>
+      description: >-
+        Only Subscription properties that can be changed without immediate 
+        financial impact can be modified via PATCH, whereas some properties 
+        can be changed by purchasing a renewal<br/> 
+        <strong>This endpoint only supports JWT authentication</strong>
       operationId: update
       requestBody:
         content:

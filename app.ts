@@ -3,10 +3,13 @@ import { usage } from "./util/usage.ts";
 import { splitApiDoc } from "./split.ts";
 import { generateDevDocs } from "./provider-dev.ts";
 import { buildDocs } from "./provider-build.ts";
+import { formatApiSpec } from "./format-spec.ts";
+
 import { 
   parseSplitArgs,
   parseDevArgs,
-  parseBuildArgs
+  parseBuildArgs,
+  parseFormatArgs,
 } from "./util/args.ts";
 
 const args = parse(Deno.args);
@@ -25,6 +28,10 @@ switch (command) {
     const buildArgs = parseBuildArgs(args);
     buildArgs ? await buildDocs(buildArgs) : null;
     break;
+  case "format":
+    const formatArgs = parseFormatArgs(args);
+    formatArgs ? await formatApiSpec(formatArgs) : null;
+    break;    
   case "help":
     console.log(`${usage.program}`);
     break;    

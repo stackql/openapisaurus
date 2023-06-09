@@ -1,46 +1,64 @@
+## prep
+
+```bash
 servicesdir=dev/godaddy/v00.00.00000/services
+
+# Delete the directory if it exists
+if [ -d "$servicesdir" ]; then
+  rm -rf $servicesdir
+fi
+
+# Create the directory
 mkdir -p $servicesdir
 
-service=aftermarket
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+services=("aftermarket" "certificates" "domains" "shoppers" "abuse" "agreements" "countries" "orders" "subscriptions")
 
-service=certificates
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+for service in "${services[@]}"
+do
+  mkdir ${servicesdir}/${service}
+  # format and move the service file
+  ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+done
+```
 
-service=domains
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+## dev
 
-service=shoppers
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-service=abuse
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-service=agreements
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-service=countries
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-service=orders
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-service=subscriptions
-mkdir ${servicesdir}/${service}
-cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
+```bash
 ./openapisaurus dev \
 dev \
 --providerName=godaddy \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "GODADDY_API_TOKEN" }}' \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "GODADDY_API_KEY" }}' \
 --overwrite \
 --verbose
+```
 
+## build
+
+```bash
+./openapisaurus build \
+dev \
+--providerName=godaddy \
+--outputDir=src \
+--overwrite \
+--verbose
+```
+
+## Run Test Suite
+
+```bash
+cd ..
+cd stackql-provider-tests
+sh test-provider.sh \
+godaddy \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+```
+
+## inspect
+
+```bash
+PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
+REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
+./stackql shell --registry="${REG_STR}"
+```

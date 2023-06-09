@@ -21,7 +21,7 @@ for (const service of servicesJson) {
   const serviceName = service.name;
   console.log(`/*`);
   console.log(`*`);
-  console.log(`* Processing resources in ${serviceName}`);
+  console.log(`* SHOW RESOURCES IN ${serviceName}`);
   console.log(`*`);
   console.log(`*/`);
   const resourcesCommand = `./stackql exec --registry='${regStr}' --output=json 'SHOW RESOURCES IN ${provider}.${serviceName}'`;
@@ -36,10 +36,17 @@ for (const service of servicesJson) {
   // Loop through the resources and describe each resource
   for (const resource of resourcesJson) {
     const resourceId = resource.id;
-    const describeStatement = `DESCRIBE ${resourceId}`;
+    // DESCRIBE
+    const describeStatement = `DESCRIBE EXTENDED ${resourceId}`;
     console.log(`/* ${describeStatement} */`);
     const describeCommand = `./stackql exec --registry='${regStr}' '${describeStatement}'`;
     const describeOutput = execSync(describeCommand).toString();
     console.log(describeOutput);
+    // SHOW METHODS
+    // const showMethodsStatement = `SHOW EXTENDED METHODS IN ${resourceId}`;
+    // console.log(`/* ${showMethodsStatement} */`);
+    // const showMethodsCommand = `./stackql exec --registry='${regStr}' '${showMethodsStatement}'`;
+    // const showMethodsOutput = execSync(showMethodsCommand).toString();
+    // console.log(showMethodsOutput);
   }
 }
