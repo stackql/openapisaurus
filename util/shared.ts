@@ -72,6 +72,9 @@ export function snakeToTitleCase(str: string): string {
 }
 
 export function getAllPathTokens(pathKey: string): string[] {
+  // create an operationId use the path and verb
+  // for example, this path /v2/metrics/{id} get would be v2_metrics_by_id_get
+  // /v2/metrics/{id}/{type} get would be v2_metrics_by_id_by_type_get
   let path = pathKey.replace(/\./g, '/').replace(/-/g, '_');
   let outTokens: string[] = [];
   let inTokens = path.split('/');

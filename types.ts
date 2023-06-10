@@ -15,6 +15,7 @@ export interface devArgs {
     methodKey: string;
     overwrite: boolean;
     verbose: boolean;
+    serviceName?: string;
 }
 
 export interface buildArgs {
@@ -22,13 +23,6 @@ export interface buildArgs {
   providerName: string;
   outputDir: string;
   servers: string | false;
-  overwrite: boolean;
-  verbose: boolean;
-}
-
-export interface formatArgs {
-  apiDoc: string;
-  outputFileName: string;
   overwrite: boolean;
   verbose: boolean;
 }
