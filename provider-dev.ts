@@ -1,18 +1,13 @@
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import * as types from "./types.ts";
 import { logger } from "./util/logging.ts";
-import { providerVersion, operations } from "./util/constants.ts";
+import { providerVersion } from "./util/constants.ts";
 import {
   initProviderData,
   initResData,
-  getResourceName,
-  addResource,
-  getOperationId,
-  addOperation,
   updateProviderData,
-  addSqlVerb,
 } from "./util/dev-functions/utils.ts";
-import { ensureDirSync, existsSync } from "https://deno.land/std/fs/mod.ts";
+import { existsSync } from "https://deno.land/std/fs/mod.ts";
 import * as yaml from "https://deno.land/x/js_yaml_port/js-yaml.js";
 import { parseServiceDoc } from "./util/dev-functions/service-dev.ts";
 
@@ -35,10 +30,10 @@ export async function generateDevDocs(
   const methodKey = devArgs.methodKey;
   const overwrite = devArgs.overwrite;
   const debug = devArgs.verbose;
+  const svcName = devArgs.serviceName;
 
   const providerDocDir = `${apiDocDirRoot}/${providerName}/${providerVersion}`;
   const svcDir = `${providerDocDir}/services`;
-
   logger.info(
     `generating StackQL resource definitions for services in ${svcDir}`
   );
@@ -62,6 +57,11 @@ export async function generateDevDocs(
       continue;
     }
     const service = dirEntry.name;
+
+    if(svcName && svcName !== service) {
+        logger.info(`skipping service ${service}...`)
+        continue;
+    }
     logger.info(`processing ${service}...`);
     const svcDoc = `${svcDir}/${service}/${service}.yaml`;
     const resDoc = `${svcDir}/${service}/${service}-resources.yaml`;

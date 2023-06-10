@@ -15,6 +15,7 @@ export interface devArgs {
     methodKey: string;
     overwrite: boolean;
     verbose: boolean;
+    serviceName?: string;
 }
 
 export interface buildArgs {

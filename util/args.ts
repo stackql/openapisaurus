@@ -120,21 +120,23 @@ export function parseDevArgs(args: any): types.devArgs | false {
     }
   
     // optional named args
-    let resDiscriminator: string = args.resDiscriminator || 'path_tokens';
-    let providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
-    let methodKey: string = args.methodKey || 'operationId';
-    let verbose: boolean = args.verbose || false;
-    let overwrite: boolean = args.overwrite || false;
+    const resDiscriminator: string = args.resDiscriminator || 'path_tokens';
+    const providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
+    const methodKey: string = args.methodKey || 'operationId';
+    const verbose: boolean = args.verbose || false;
+    const overwrite: boolean = args.overwrite || false;
+    const serviceName: string | undefined = args.serviceName && args.serviceName.length > 0 ? args.serviceName : undefined;
   
     const devArgs: types.devArgs = {
-      apiDocDir: apiDocDir,
-      providerName: providerName,
-      resDiscriminator: resDiscriminator,
-      providerConfig: providerConfig,
-      methodKey: methodKey,
-      overwrite: overwrite,
-      verbose: verbose,
-    };  
+      apiDocDir,
+      providerName,
+      resDiscriminator,
+      providerConfig,
+      methodKey,
+      overwrite,
+      verbose,
+      serviceName,
+    }
     
     return devArgs;
 }

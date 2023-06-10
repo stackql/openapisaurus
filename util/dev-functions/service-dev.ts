@@ -1,7 +1,7 @@
 import { Document } from "https://deno.land/x/openapi@0.1.0/parser/deps.ts";
 import { logDebug } from "../logging.ts";
 import { operations } from "../constants.ts";
-import { Verbs, addOperation, addResource, addSqlVerb, getOperationId, getResourceName } from "./utils.ts";
+import { Verbs, addOperation, addResource, addSqlVerb, createOperationId, getOperationId, getResourceName } from "./utils.ts";
 import { PathItemObject } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 
 
@@ -64,7 +64,8 @@ export function parseServiceDoc({
             resDiscriminator,
             pathKey,
             debug,
-            logger
+            logger,
+            verbKey
           );
 
           logger.info(`processing resource: ${resource}`);
@@ -112,7 +113,7 @@ export function parseServiceDoc({
             resource,
           });
 
-          logDebug(`updated operationId : ${operationId}...`, debug)
+          logDebug(`updated operationId : ${operationId}...`, true)
 
           // add operation to resource
           resData = addOperation(

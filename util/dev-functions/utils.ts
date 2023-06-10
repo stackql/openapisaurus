@@ -2,17 +2,16 @@ import { search } from "https://deno.land/x/jmespath/index.ts";
 import {
   getMeaningfulPathTokens,
   snakeToTitleCase,
-  getAllPathTokens,
   convertLowerCaseToTitleCase,
   getAllValuesForKey,
   camelToSnake,
-} from "./shared.ts";
+} from "../shared.ts";
 import {
   updateResourceName,
   getObjectKeyforProvider,
-  getSqlVerbforProvider,
-} from "./providers.ts";
-import { logger } from "./logging.ts";
+  getSqlVerbForProvider,
+} from "../providers.ts";
+import { logger } from "../logging.ts";
 import { OperationObject, PathItemObject, PathsObject } from "https://deno.land/x/openapi@0.1.0/types.ts";
 
 
@@ -49,7 +48,8 @@ export function getResourceName(
   resDiscriminator: string,
   pathKey: string,
   debug: boolean,
-  logger: any):
+  logger: any,
+  verbKey: string):
   [string, string[]] {
   let resTokens: string[] = [];
   if (operation['x-stackQL-resource']) {
@@ -74,7 +74,8 @@ export function getResourceName(
     }
     resourceName = resValue ? camelToSnake(resValue) : service;
   }
-  resourceName = updateResourceName({ providerName, service, inResourceName: resourceName, operation, debug, logger });
+  const operationId = operation.operationId || createOperationId(pathKey, verbKey);
+  resourceName = updateResourceName({ providerName, service, inResourceName: resourceName, operationId, debug, logger });
   return [resourceName, resTokens];
 }
 
@@ -159,11 +160,11 @@ export function getOperationId({
       }
       operationId = `${operationId}_${opSuffixes.join('_')}`;
     }
-    return operationId;
   } else {
-    logger.warning(`no method key found for ${pathKey}/${verbKey}, using path key and verb`);
-    return createOperationId(pathKey, verbKey);
+    operationId = createOperationId(pathKey, verbKey);
+    logger.warning(`no method key found for ${pathKey}/${verbKey}, using path key and verb, ${operationId}`);
   }
+  return operationId;
 }
 
 export function createOperationId(path: string, verb: string): string {
@@ -355,7 +356,7 @@ function includes(str: string, arr: string[]): boolean {
 function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string, service: string, resource: string): string {
 
   // check if there is a verb in the provider
-  const providerVerb = getSqlVerbforProvider(operationId, verbKey, providerName, service, resource);
+  const providerVerb = getSqlVerbForProvider(operationId, verbKey, providerName, service, resource);
 
   if (providerVerb) {
     return providerVerb;
