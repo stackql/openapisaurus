@@ -24,7 +24,7 @@ ref/datadog/datadog-openapi.json \
 ./openapisaurus dev \
 dev \
 --providerName=datadog \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DIGITALOCEAN_TOKEN" }}' \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DATADOG_TOKEN" }}' \
 --overwrite \
 --verbose
 ```
