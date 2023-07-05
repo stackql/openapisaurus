@@ -12,7 +12,7 @@ import {
   getObjectKeyforProvider,
   getSqlVerbforProvider,
 } from "./providers.ts";
-import { logger } from "./logging.ts";
+import { logger } from "../util/logging.ts";
 
 export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
     let providerData: {

@@ -1,6 +1,6 @@
 import { red } from "https://deno.land/std@0.178.0/fmt/colors.ts";
 import { usage } from "./usage.ts";
-import * as types from "../types.ts";
+import * as types from "../types/types.ts";
 
 //
 // format args

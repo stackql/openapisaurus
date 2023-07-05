@@ -1,4 +1,4 @@
-import * as providers from './providers/index.ts';
+import * as providers from '../providers/index.ts';
 
 export function updateServiceName(providerName: string, inServiceName: string, debug: boolean, logger: any): string {
     debug ? logger.debug(`checking for service name updates for [${inServiceName}] in [${providerName}]...`) : null;

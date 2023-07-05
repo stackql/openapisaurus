@@ -1,13 +1,13 @@
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import * as types from "./types.ts";
-import { createDestDir } from "./util/fs.ts";
-import { logger } from "./util/logging.ts";
+import * as types from "../types/types.ts";
+import { createDestDir } from "../util/fs.ts";
+import { logger } from "../util/logging.ts";
 import {
     providerVersion,
     operations,
     nonOperations,
     componentsChildren,
-  } from "./util/constants.ts";
+  } from "../types/constants.ts";
 import { 
     isOperationExcluded,
     retServiceNameAndDesc,
@@ -15,7 +15,7 @@ import {
     getAllRefs,
     addRefsToComponents,
     addMissingObjectTypes
-} from "./util/split-functions.ts";
+} from "../functions/split-functions.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 

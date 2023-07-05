@@ -1,7 +1,7 @@
 import { search } from "https://deno.land/x/jmespath/index.ts";
 import {
     componentsChildren,
-} from "./constants.ts";
+} from "../types/constants.ts";
 import {
     getMeaningfulPathTokens,
     camelToSnake,
@@ -9,7 +9,7 @@ import {
 import {
   updateServiceName,
 } from "./providers.ts";
-import { logger } from "./logging.ts";
+import { logger } from "../util/logging.ts";
 
 export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
   if (exOption) {

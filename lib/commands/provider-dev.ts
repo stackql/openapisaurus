@@ -1,10 +1,10 @@
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import * as types from "./types.ts";
-import { logger } from "./util/logging.ts";
+import * as types from "../types/types.ts";
+import { logger } from "../util/logging.ts";
 import {
     providerVersion,
     operations,
-  } from "./util/constants.ts";
+  } from "../types/constants.ts";
 import { 
     initProviderData,
     initResData,
@@ -14,7 +14,7 @@ import {
     addOperation,
     updateProviderData,
     addSqlVerb,
-} from "./util/dev-functions.ts";
+} from "../functions/dev-functions.ts";
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 

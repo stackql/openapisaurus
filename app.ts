@@ -1,16 +1,16 @@
 import { parse } from "https://deno.land/std/flags/mod.ts";
-import { usage } from "./util/usage.ts";
-import { splitApiDoc } from "./split.ts";
-import { generateDevDocs } from "./provider-dev.ts";
-import { buildDocs } from "./provider-build.ts";
-import { formatApiSpec } from "./format-spec.ts";
+import { usage } from "./lib/program/usage.ts";
+import { splitApiDoc } from "./lib/commands/split.ts";
+import { generateDevDocs } from "./lib/commands/provider-dev.ts";
+import { buildDocs } from "./lib/commands/provider-build.ts";
+import { formatApiSpec } from "./lib/commands/format-spec.ts";
 
 import { 
   parseSplitArgs,
   parseDevArgs,
   parseBuildArgs,
   parseFormatArgs,
-} from "./util/args.ts";
+} from "./lib/program/args.ts";
 
 const args = parse(Deno.args);
 const command = args._[0];

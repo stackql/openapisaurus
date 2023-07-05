@@ -1,5 +1,5 @@
-import * as types from "./types.ts";
-import { logger } from "./util/logging.ts";
+import * as types from "../types/types.ts";
+import { logger } from "../util/logging.ts";
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
