@@ -5,4 +5,3 @@ stackql
 stackql-zip
 *.log
 *.env
-.DS_Store

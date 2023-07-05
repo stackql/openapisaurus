@@ -1,7 +1,0 @@
-{
-    "compilerOptions": {
-        "allowImportingTsExtensions": true,
-        "moduleResolution": "node",
-        "noEmit": true
-    }
-}
