@@ -16,25 +16,30 @@ const args = parse(Deno.args);
 const command = args._[0];
 
 switch (command) {
-  case "split":
+  case "split": {
     const splitArgs = parseSplitArgs(args);
     splitArgs ? await splitApiDoc(splitArgs) : null;
     break;
-  case "dev":
+  }
+  case "dev": {
     const devArgs = parseDevArgs(args);
     devArgs ? await generateDevDocs(devArgs) : null;
     break;
-  case "build":
+  }
+  case "build": {
     const buildArgs = parseBuildArgs(args);
     buildArgs ? await buildDocs(buildArgs) : null;
     break;
-  case "format":
+  }
+  case "format": {
     const formatArgs = parseFormatArgs(args);
     formatArgs ? await formatApiSpec(formatArgs) : null;
     break;    
-  case "help":
+  }
+  case "help": {
     console.log(`${usage.program}`);
     break;    
+  }
   default:
     console.log(`${usage.program}`);
     break;
