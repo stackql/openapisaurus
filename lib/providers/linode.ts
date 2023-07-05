@@ -2,6 +2,8 @@ export const servicesMap = {
     linode: 'instances',
 };
 
+export const serviceDescriptions = {};
+
 export const resourcesMap = {
     account: {
         nameMap: {

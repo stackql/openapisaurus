@@ -1,6 +1,8 @@
 export const servicesMap = {
 };
 
+export const serviceDescriptions = {};
+
 export const resourcesMap = {
     fusion: {
         opIdMap: {

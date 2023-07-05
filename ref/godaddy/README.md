@@ -17,7 +17,7 @@ for service in "${services[@]}"
 do
   mkdir ${servicesdir}/${service}
   # format and move the service file
-  ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+  ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml --overwrite --verbose
 done
 ```
 
@@ -53,6 +53,8 @@ godaddy \
 false \
 /mnt/c/LocalGitRepos/stackql/openapisaurus \
 true
+cd ..
+cd openapisaurus
 ```
 
 ## inspect
