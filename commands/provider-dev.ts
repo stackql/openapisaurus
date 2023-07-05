@@ -1,12 +1,59 @@
 // deno modules
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
+<<<<<<< HEAD:commands/provider-dev.ts
 import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
 import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
 // relative imports
 import * as types from "../lib/types/args.d.ts";
 import { logger } from "../lib/util/logging.ts";
+=======
+import * as types from "./types.ts";
+import { logger } from "./util/logging.ts";
+import { providerVersion } from "./util/constants.ts";
+>>>>>>> 7292644cf998af3cefa325c880f0f3a17e3cd1ed:provider-dev.ts
 import {
+  initProviderData,
+  initResData,
+  updateProviderData,
+} from "./util/dev-functions/utils.ts";
+import { existsSync } from "https://deno.land/std/fs/mod.ts";
+import * as yaml from "https://deno.land/x/js_yaml_port/js-yaml.js";
+import { parseServiceDoc } from "./util/dev-functions/service-dev.ts";
+
+export async function generateDevDocs(
+  devArgs: types.devArgs
+): Promise<boolean> {
+  devArgs.verbose ? logger.debug(`devArgs: ${JSON.stringify(devArgs)}`) : null;
+
+  let providerConfig: any;
+  try {
+    providerConfig = JSON.parse(devArgs.providerConfig);
+  } catch (e) {
+    logger.error(`failed to parse ${devArgs.providerConfig}`);
+    return false;
+  }
+
+  const apiDocDirRoot = devArgs.apiDocDir;
+  const providerName = devArgs.providerName;
+  const resDiscriminator = devArgs.resDiscriminator;
+  const methodKey = devArgs.methodKey;
+  const overwrite = devArgs.overwrite;
+  const debug = devArgs.verbose;
+  const svcName = devArgs.serviceName;
+
+  const providerDocDir = `${apiDocDirRoot}/${providerName}/${providerVersion}`;
+  const svcDir = `${providerDocDir}/services`;
+  logger.info(
+    `generating StackQL resource definitions for services in ${svcDir}`
+  );
+
+  const providerDoc = `${providerDocDir}/provider.yaml`;
+
+  // init provider doc
+  let providerData = initProviderData(
+    providerName,
     providerVersion,
+<<<<<<< HEAD:commands/provider-dev.ts
     operations,
   } from "../lib/functions/constants.ts";
 import { 
@@ -21,34 +68,55 @@ import {
 } from "../lib/functions/dev-functions.ts";
 
 export async function generateDevDocs(devArgs: types.IDevArgs): Promise<boolean> {
+=======
+    providerConfig
+  );
 
-    devArgs.verbose ? logger.debug(`devArgs: ${JSON.stringify(devArgs)}`) : null;
+  const serviceDirs: Deno.DirEntry[] = [];
+  for await (const dirEntry of Deno.readDir(svcDir)) {
+    serviceDirs.push(dirEntry);
+  }
+>>>>>>> 7292644cf998af3cefa325c880f0f3a17e3cd1ed:provider-dev.ts
 
-    let providerConfig: any;
-    try {
-      providerConfig = JSON.parse(devArgs.providerConfig);
-    } catch (e) {
-        logger.error(`failed to parse ${devArgs.providerConfig}`);
-        return false;
+  for await (const dirEntry of serviceDirs) {
+    if (!dirEntry.isDirectory) {
+      continue;
     }
+    const service = dirEntry.name;
 
-    const apiDocDirRoot = devArgs.apiDocDir;
-    const providerName = devArgs.providerName;
-    const resDiscriminator = devArgs.resDiscriminator;
-    const methodKey = devArgs.methodKey;
-    const overwrite = devArgs.overwrite;
-    const debug = devArgs.verbose;
-    
-    const providerDocDir = `${apiDocDirRoot}/${providerName}/${providerVersion}`;
-    const svcDir = `${providerDocDir}/services`;
+    if(svcName && svcName !== service) {
+        logger.info(`skipping service ${service}...`)
+        continue;
+    }
+    logger.info(`processing ${service}...`);
+    const svcDoc = `${svcDir}/${service}/${service}.yaml`;
+    const resDoc = `${svcDir}/${service}/${service}-resources.yaml`;
 
-    logger.info(`generating StackQL resource definitions for services in ${svcDir}`);
+    let resData = initResData();
 
-    const providerDoc = `${providerDocDir}/provider.yaml`;
+    const serviceVersion = providerVersion;
 
-    // init provider doc
-    let providerData = initProviderData(providerName, providerVersion, providerConfig);
+    // read service doc
+    const apiDoc = readSync(svcDoc);
+    if (!apiDoc) {
+      logger.error(`failed to parse ${svcDoc}`);
+      return false;
+    }
+    // iterate over paths
+    resData = parseServiceDoc({
+      apiDoc,
+      dir: svcDoc,
+      debug,
+      logger,
+      providerName,
+      service,
+      resDiscriminator,
+      methodKey,
+      overwrite,
+      resData,
+    });
 
+<<<<<<< HEAD:commands/provider-dev.ts
     const serviceDirs: Deno.DirEntry[] = await Deno.readDir(svcDir);
     for await (const dirEntry of serviceDirs) {
         if (!dirEntry.isDirectory) {
@@ -150,36 +218,95 @@ export async function generateDevDocs(devArgs: types.IDevArgs): Promise<boolean>
                     debug ? logger.debug(`cannot reassign methods for ${resource} (${parentResource} does not exist)`) : null;
                 }
             }
+=======
+    // rehome lifecycle operations into parent resource
+    Object.keys(resData["components"]["x-stackQL-resources"]).forEach(
+      (resource) => {
+        debug
+          ? logger.debug(
+              `checking operation ${resource} for orphaned methods...`
+            )
+          : null;
+        let hasSqlVerbs = false;
+        const sqlVerbs =
+          resData["components"]["x-stackQL-resources"][resource]["sqlVerbs"];
+        Object.keys(sqlVerbs).forEach((sqlVerb) => {
+          if (sqlVerbs[sqlVerb].length > 0) {
+            hasSqlVerbs = true;
+          }
+>>>>>>> 7292644cf998af3cefa325c880f0f3a17e3cd1ed:provider-dev.ts
         });
-
-        if (existsSync(resDoc) && !overwrite) {
-            logger.error(`${resDoc} exists and overwrite is false`);
-            return false;
-        } else {
-            Deno.writeTextFileSync(resDoc, yaml.dump(resData, {lineWidth: -1}));
-            logger.info(`${resDoc} written`);
+        if (!hasSqlVerbs) {
+          // no sqlVerbs, move lifecycle operations to parent resource
+          const resTokens =
+            resData["components"]["x-stackQL-resources"][resource]["resTokens"];
+          const parentResource = resTokens
+            .slice(0, resTokens.length - 1)
+            .join("_");
+          // check if parent resource exists
+          if (
+            resData["components"]["x-stackQL-resources"].hasOwnProperty(
+              parentResource
+            )
+          ) {
+            debug
+              ? logger.debug(
+                  `reassigning all methods from ${resource} to ${parentResource}...`
+                )
+              : null;
+            // reassign all methods to parent resource
+            const methods =
+              resData["components"]["x-stackQL-resources"][resource]["methods"];
+            Object.keys(methods).forEach((method) => {
+              resData["components"]["x-stackQL-resources"][parentResource][
+                "methods"
+              ][method] = methods[method];
+            });
+            // delete resource
+            delete resData["components"]["x-stackQL-resources"][resource];
+          } else {
+            debug
+              ? logger.debug(
+                  `cannot reassign methods for ${resource} (${parentResource} does not exist)`
+                )
+              : null;
+          }
         }
+      }
+    );
 
-        // update provider doc
-        providerData = updateProviderData(
-            providerData, 
-            providerName,
-            providerVersion,
-            service, 
-            apiDoc.info.title, 
-            apiDoc.info.description);
-
-        // end resources for loop
-    }
-    
-    // write out provider doc
-    if (existsSync(providerDoc) && !overwrite){
-        logger.error(`${providerDoc} exists and overwrite is false`);
-        return false;
+    if (existsSync(resDoc) && !overwrite) {
+      logger.error(`${resDoc} exists and overwrite is false`);
+      return false;
     } else {
-        Deno.writeTextFileSync(providerDoc, yaml.dump(providerData, {lineWidth: -1}));
-        logger.info(`${providerDoc} written`);
+      Deno.writeTextFileSync(resDoc, yaml.dump(resData, { lineWidth: -1 }));
+      logger.info(`${resDoc} written`);
     }
 
-    return true;
+    // update provider doc
+    providerData = updateProviderData(
+      providerData,
+      providerName,
+      providerVersion,
+      service,
+      apiDoc.info.title,
+      apiDoc.info.description
+    );
+
+    // end resources for loop
+  }
+
+  // write out provider doc
+  if (existsSync(providerDoc) && !overwrite) {
+    logger.error(`${providerDoc} exists and overwrite is false`);
+    return false;
+  } else {
+    Deno.writeTextFileSync(
+      providerDoc,
+      yaml.dump(providerData, { lineWidth: -1 })
+    );
+    logger.info(`${providerDoc} written`);
+  }
+
+  return true;
 }

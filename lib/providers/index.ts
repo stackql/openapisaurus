@@ -1,10 +1,23 @@
-export * as fivetran from './fivetran.ts';
-export * as digitalocean from './digitalocean.ts';
-export * as cloudflare from './cloudflare.ts';
-export * as jira from './jira.ts';
-export * as linode from './linode.ts';
-export * as purestorage from './purestorage.ts';
-export * as godaddy from './godaddy.ts';
+import * as fivetran from './fivetran.ts';
+import * as digitalocean from './digitalocean.ts';
+import * as cloudflare from './cloudflare.ts';
+import * as jira from './jira.ts';
+import * as linode from './linode.ts';
+import * as purestorage from './purestorage.ts';
+import * as godaddy from './godaddy.ts';
+import * as datadog from './datadog.ts';
+
+
+export default {
+    fivetran,
+    digitalocean,
+    cloudflare,
+    jira,
+    linode,
+    purestorage,
+    godaddy,
+    datadog,
+};
 
 //
 // {provider}.ts contents
