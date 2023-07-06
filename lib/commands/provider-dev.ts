@@ -46,7 +46,8 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
     const providerDoc = `${providerDocDir}/provider.yaml`;
 
     // init provider doc
-    let providerData = initProviderData(providerName, providerVersion, providerConfig);
+    // let providerData = initProviderData(providerName, providerVersion, providerConfig);
+    let providerData: types.ProviderData = initProviderData(providerName, providerVersion, providerConfig);
 
     const serviceDirs: Deno.DirEntry[] = [];
     for await (const dirEntry of Deno.readDir(svcDir)) {
@@ -184,7 +185,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
             providerVersion,
             service, 
             apiDoc.info.title, 
-            apiDoc.info.description);
+            apiDoc.info.description ?? "");
 
         // end resources for loop
     }

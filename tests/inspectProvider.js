@@ -29,7 +29,7 @@ for (const service of servicesJson) {
   let resourcesJson;
   try {
     resourcesJson = JSON.parse(resourcesOutput);
-  } catch (e) {
+  } catch (_e) {
     console.log(resourcesOutput);
   }
 

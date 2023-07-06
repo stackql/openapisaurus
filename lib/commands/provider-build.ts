@@ -17,7 +17,7 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
     const servers = buildArgs.servers;
     const outputDir = buildArgs.outputDir;
     const overwrite = buildArgs.overwrite;
-    const _debug = buildArgs.verbose;
+    const debug = buildArgs.verbose;
     
     const inputDir = `${apiDocDirRoot}/${providerName}/${providerVersion}`;
     const destDir = `${outputDir}/${providerName}/${providerVersion}`;
@@ -124,20 +124,25 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 const newSqlVerbs: types.NewSqlVerbs = {}; 
                   
                 Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
+
+                    debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
+
                     const newSqlVerb: { $ref: string }[] = [];
                     const tokens: string[] = [];
                     
                     xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
                         if (sqlVerbObj.enabled) {
-                        tokens.push(sqlVerbObj.token);
-                        const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
-                        newSqlVerb.push(thisRef);
+                            tokens.push(sqlVerbObj.tokens);
+                            const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
+                            newSqlVerb.push(thisRef);
                         }
                     });
                     
                     // check if tokens are unique
                     if (tokens.length !== new Set(tokens).size) {
                         logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
+                        logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
+                        logger.error(`tokens: ${JSON.stringify(tokens)}`);    
                         throw 'Break';
                     }
                     

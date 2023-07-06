@@ -90,9 +90,13 @@ export interface OpenAPISchema {
 }
 
 export interface SqlVerbObj {
+  $ref: string;
+  path: string;
+  numTokens: number;
+  tokens: string;
   enabled: boolean;
   token: string;
-  $ref: string;
+  respSchema?: string;
 }
 
 export interface NewSqlVerbs {
@@ -100,6 +104,10 @@ export interface NewSqlVerbs {
 }
 
 export interface ProviderData {
+  id: string;
+  name: string;
+  version: string;
+  config: Record<string, unknown>;
   providerServices: {
       [service: string]: {
           description?: string;
@@ -114,3 +122,5 @@ export interface ProviderData {
       }
   }
 }
+
+

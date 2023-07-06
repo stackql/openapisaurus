@@ -17,21 +17,15 @@ import { logger } from "../util/logging.ts";
 import * as types from "../types/types.ts";
 // import { TypeConstructorOptions } from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml";
 
-export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
-    const providerData: {
-      id: string;
-      name: string;
-      version: string;
-      providerServices: Record<string, unknown>;
-      config: Record<string, unknown>;
-    } = {
-      id: providerName,
-      name: providerName,
-      version: providerVersion,
-      providerServices: {},
-      config: providerConfig,
-    };
-    return providerData;
+export function initProviderData(providerName: string, providerVersion: string, providerConfig: any): types.ProviderData {
+  const providerData: types.ProviderData = {
+    id: providerName,
+    name: providerName,
+    version: providerVersion,
+    providerServices: {},
+    config: providerConfig,
+  };
+  return providerData;
 }
 
 export function initResData(): Record<string, any> {

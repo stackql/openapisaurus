@@ -38,6 +38,7 @@ dev \
 from the `stackql-provider-tests` directory:
 
 ```
+cd ../stackql-provider-tests
 sh test-provider.sh \
 digitalocean \
 false \
