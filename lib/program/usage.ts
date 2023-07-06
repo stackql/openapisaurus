@@ -39,6 +39,7 @@ export const usage = {
     split   Split an OpenAPI spec into multiple service scoped documents.
     dev     Generate stackql provider development provider docs.
     build   Build deployable stackql provider docs. 
+    format  Format an OpenAPI spec to the OpenAPI 3.0.0 spec.
   `,
   //
   // split usage
@@ -90,6 +91,21 @@ export const usage = {
     --providerName      [REQUIRED] Name of the provider.
     --outputDir         [REQUIRED] Output directory to write compiled docs to.
     --servers           [OPTIONAL] Stringified JSON array containing servers for the provider (overrides the servers list in the original OpenAPI spec).
+    --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
+    --verbose           [OPTIONAL] Verbose output (defaults to false).
+  `,
+  //
+  // format usage
+  //
+  format: `${banner2}
+  Usage: 
+    ${yellow('openapisaurus format <apiDoc> <outputFileName> <flags>')}
+
+  Arguments:
+    apiDoc  [REQUIRED] OpenAPI service specifications to format.
+    outputFileName [REQUIRED] Output filename for formatted spec.
+
+  Flags:
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,

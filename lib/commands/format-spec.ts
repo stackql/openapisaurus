@@ -5,6 +5,29 @@ import { read } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
 import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
 
+// nullable type fix
+function nullableTypeFix(obj: any) {
+  for (const key in obj) {
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
+      nullableTypeFix(obj[key]);
+    }
+
+    if (key === 'type' && Array.isArray(obj[key])) {
+      // If type is an array and contains 'null', change it to a single type with nullable: true
+      const index = obj[key].indexOf('null');
+      if (index > -1) {
+        // Set 'type' to the first non-'null' value in the array
+        obj[key].splice(index, 1);
+        obj['type'] = obj[key][0];
+        
+        // Add nullable: true
+        obj['nullable'] = true;
+      }
+    }
+  }
+}
+
+
 // function to recursively process openapi spec
 function processSpec(spec: any) {
   for (const key in spec) {
@@ -22,6 +45,9 @@ function processSpec(spec: any) {
       }
 
   }
+
+  nullableTypeFix(spec);
+  
 }
 
 export async function formatApiSpec(formatArgs: types.formatArgs): Promise<boolean> {

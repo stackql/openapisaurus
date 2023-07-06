@@ -1,3 +1,8 @@
+## `godaddy` Provider Dev
+
+### `prep`
+
+```
 servicesdir=dev/godaddy/v00.00.00000/services
 mkdir -p $servicesdir
 
@@ -9,24 +14,37 @@ do
   ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
   # cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
 done
+```
 
+### `dev`
+
+```
 ./openapisaurus dev \
 dev \
 --providerName=godaddy \
 --providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "GODADDY_API_KEY" }}' \
 --overwrite \
 --verbose
+```
 
+### `build`
+
+```
 ./openapisaurus build \
 dev \
 --providerName=godaddy \
 --outputDir=src \
 --overwrite \
 --verbose
+```
 
+### `test`
+
+```
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
+```
 
 ### Run Test Suite
 

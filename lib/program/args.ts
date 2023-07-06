@@ -7,6 +7,14 @@ import * as types from "../types/types.ts";
 // format args
 //
 export function parseFormatArgs(args: any): types.formatArgs | false {
+
+  if (args._.length !== 3) {
+    console.log(`${red('ERROR: need to provide apiDoc and outputFileName arguments.')}
+    ${usage.format}
+    `);
+    return false;
+  }
+
   const apiDoc = args._[1];
   const outputFileName = args._[2];
   
