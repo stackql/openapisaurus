@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
@@ -15,8 +16,8 @@ import {
     updateProviderData,
     addSqlVerb,
 } from "../functions/dev-functions.ts";
-import { ensureDirSync, existsSync } from 'https://deno.land/std/fs/mod.ts';
-import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
+import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
+import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
 
 export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> {
 
@@ -25,7 +26,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
     let providerConfig: any;
     try {
       providerConfig = JSON.parse(devArgs.providerConfig);
-    } catch (e) {
+    } catch (_e) {
         logger.error(`failed to parse ${devArgs.providerConfig}`);
         return false;
     }
@@ -47,7 +48,11 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
     // init provider doc
     let providerData = initProviderData(providerName, providerVersion, providerConfig);
 
-    const serviceDirs: Deno.DirEntry[] = await Deno.readDir(svcDir);
+    const serviceDirs: Deno.DirEntry[] = [];
+    for await (const dirEntry of Deno.readDir(svcDir)) {
+        serviceDirs.push(dirEntry);
+    }
+
     for await (const dirEntry of serviceDirs) {
         if (!dirEntry.isDirectory) {
             continue;
@@ -59,7 +64,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
 
         let resData = initResData();
 
-        const serviceVersion = providerVersion;
+        const _serviceVersion = providerVersion;
 
         // read service doc
         const apiDoc = readSync(svcDoc);
@@ -70,54 +75,68 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
 
         // iterate over paths
         const apiPaths = apiDoc.paths;
+
+        // check if components and schemas are defined
+        if (!apiDoc.components || !apiDoc.components.schemas) {
+            logger.error('No components or schemas defined in the API document');
+            return false;
+        }
+
         const componentsSchemas = apiDoc.components.schemas;
+
         logger.info(`iterating over ${Object.keys(apiPaths).length} paths`);
 
         Object.keys(apiPaths).forEach(pathKey => {
             debug ? logger.debug(`processing path ${pathKey}`) : null;
-            Object.keys(apiPaths[pathKey]).forEach(verbKey => {
-                debug ? logger.debug(`processing operation ${pathKey}:${verbKey}`) : null;
-
-                if (operations.includes(verbKey)){
-                    try {
-                        // get resource name
-                        const [resource, resTokens] = getResourceName(providerName, apiPaths[pathKey][verbKey], service, resDiscriminator, pathKey, debug, logger);
-
-                        logger.info(`processing resource: ${resource}`);
+            const pathItem = apiPaths[pathKey];
+            if (pathItem) {
+                Object.keys(pathItem).forEach(verbKey => {
+                    debug ? logger.debug(`processing operation ${pathKey}:${verbKey}`) : null;
     
-                        if (!resData['components']['x-stackQL-resources'].hasOwnProperty(resource)){
-                            // first occurance of the resource, init resource
-                            resData = addResource(resData, providerName, service, resource, resTokens);
+                    const opItem = pathItem[verbKey as keyof typeof pathItem];
+
+                    if(opItem){
+                        if (operations.includes(verbKey)){
+                            try {
+                                // get resource name
+                                const [resource, resTokens] = getResourceName(providerName, opItem, service, resDiscriminator, pathKey, debug, logger);
+        
+                                logger.info(`processing resource: ${resource}`);
+        
+                                if (!Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], resource)){
+                                    // first occurrence of the resource, init resource
+                                    resData = addResource(resData, providerName, service, resource, resTokens);
+                                }
+                                                        
+                                const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
+        
+                                // get unique operation id 
+                                let methodKeyVal = (opItem as any)[methodKey];
+                                
+                                if (!methodKeyVal){
+                                    logger.warning(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
+                                    methodKeyVal = verbKey;
+                                }
+                                
+                                debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
+        
+                                const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
+                              
+                                debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
+        
+                                // add operation to resource
+                                resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
+            
+                                // map sqlVerbs for operation
+                                resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName);
+            
+                            } catch (e) {
+                                if (e !== 'Break') throw e
+                            }
                         }
-                        
-                        const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
-
-                        // get unique operation id 
-                        let methodKeyVal = apiPaths[pathKey][verbKey][methodKey];
-                        
-                        if (!methodKeyVal){
-                            logger.warning(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
-                            methodKeyVal = verbKey;
-                        }
-                        
-                        debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
-
-                        let operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
-                      
-                        debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
-
-                        // add operation to resource
-                        resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
-    
-                        // map sqlVerbs for operation
-                        resData = addSqlVerb(apiPaths[pathKey][verbKey], resData, operationId, service, resource, pathKey, verbKey, providerName);
-    
-                    } catch (e) {
-                        if (e !== 'Break') throw e
                     }
-                }
-
-            });
+                });
+            }
         });   
         
         // rehome lifecycle operations into parent resource
@@ -135,7 +154,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                 const resTokens = resData['components']['x-stackQL-resources'][resource]['resTokens']
                 const parentResource = resTokens.slice(0, resTokens.length - 1).join('_');
                 // check if parent resource exists
-                if (resData['components']['x-stackQL-resources'].hasOwnProperty(parentResource)){
+                if (Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], parentResource)){
                     debug ? logger.debug(`reassigning all methods from ${resource} to ${parentResource}...`) : null;
                     // reassign all methods to parent resource
                     const methods = resData['components']['x-stackQL-resources'][resource]['methods'];

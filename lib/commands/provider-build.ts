@@ -1,6 +1,7 @@
+// deno-lint-ignore-file no-explicit-any
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import * as yaml from 'https://deno.land/x/js_yaml_port/js-yaml.js';
-import { existsSync } from 'https://deno.land/std/fs/mod.ts';
+import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
 import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
 import { createDestDir } from "../util/fs.ts";
@@ -16,7 +17,7 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
     const servers = buildArgs.servers;
     const outputDir = buildArgs.outputDir;
     const overwrite = buildArgs.overwrite;
-    const debug = buildArgs.verbose;
+    const _debug = buildArgs.verbose;
     
     const inputDir = `${apiDocDirRoot}/${providerName}/${providerVersion}`;
     const destDir = `${outputDir}/${providerName}/${providerVersion}`;
@@ -26,7 +27,7 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         try {
             serversObj = JSON.parse(servers);
             logger.info(`servers will be replaced with ${JSON.stringify(serversObj)}`);
-        } catch (e) {
+        } catch (_e) {
             logger.error(`invalid servers value: ${servers}, not JSON`);
             return false
         }
@@ -49,12 +50,12 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
     if (!existsSync(`${inputDir}/services`)){
         logger.error(`${inputDir}/services does not exist`);
         return false
-    };
+    }
 
     // write out provider.yaml to target
     try {
         logger.info(`writing out ${inputDir}/provider.yaml`);
-        const data = Deno.readTextFileSync(`${inputDir}/provider.yaml`, { encoding: 'utf8' });
+        const data = Deno.readTextFileSync(`${inputDir}/provider.yaml`);
         Deno.writeTextFileSync(`${destDir}/provider.yaml`, data);
     } catch (e) {
         logger.error(`failed to write ${destDir}/provider.yaml`);
@@ -64,34 +65,33 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
     
     // iterate through services dir
     const svcDir = `${inputDir}/services`;
-    const serviceDirs: Deno.DirEntry[] = await Deno.readDir(svcDir);
-    for await (const dirEntry of serviceDirs) {
+    for await (const dirEntry of Deno.readDir(svcDir)) {
         if (!dirEntry.isDirectory) {
             continue;
         }
         const service = dirEntry.name;
         logger.info(`processing ${service}...`);
 
-        let outputData = {};
+        const outputData: Record<string, any> = {};
 
         // get openapi doc
-        let openapiDocFile = `${inputDir}/services/${service}/${service}.yaml`;
+        const openapiDocFile = `${inputDir}/services/${service}/${service}.yaml`;
         if (!existsSync(openapiDocFile)){
             logger.error(`${openapiDocFile} does not exist`);            
             return false
-        };
+        }
 
         // parse openapi doc
-        const api = readSync(openapiDocFile);
+        const api: Record<string, any> = readSync(openapiDocFile);
         if (!api){
             logger.error(`failed to parse ${openapiDocFile}`);
             return false;
         }        
-
-        // add openapi data from service doc to outputData
+        
         Object.keys(api).forEach(openapiKey => {
             outputData[openapiKey] = api[openapiKey];
         });
+        
 
         // fix AllOf issue
         outputData['components']['schemas'] = fixAllOffIssue(outputData['components']['schemas']);
@@ -103,10 +103,10 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 
         // get stackql resource definitions
         logger.info(`processing resource definitions for ${service}...`);
-        let resourceDefs = yaml.load(Deno.readTextFileSync(`${inputDir}/services/${service}/${service}-resources.yaml`, 'utf8'));
+        const resourceDefs = yaml.load(Deno.readTextFileSync(`${inputDir}/services/${service}/${service}-resources.yaml`));
 
         // iterate through resources remove dev keys
-        let xStackQLResources = resourceDefs['components']['x-stackQL-resources'];
+        const xStackQLResources = resourceDefs['components']['x-stackQL-resources'];
         try {
             Object.keys(xStackQLResources).forEach(xStackQLResKey => {
                 // delete resTokens
@@ -114,31 +114,36 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 
                 // clean up pointers
                 Object.keys(xStackQLResources[xStackQLResKey]['methods']).forEach(methodName => {
-                    let newOp = xStackQLResources[xStackQLResKey]['methods'][methodName]['operation']['$ref'].split('#/').pop();
+                    const newOp = xStackQLResources[xStackQLResKey]['methods'][methodName]['operation']['$ref'].split('#/').pop();
                     xStackQLResources[xStackQLResKey]['methods'][methodName]['operation'] =
                     {
                         '$ref': `#/${newOp}`
                     };
                 });
-                let newSqlVerbs = {};
-                Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach(sqlVerb => {
-                    let newSqlVerb = [];
-                    let tokens = [];
-                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach(sqlVerbObj => {
-                        if (sqlVerbObj['enabled'] === true){
-                            tokens.push(sqlVerbObj['tokens']);
-                            var thisRef = {};
-                            thisRef['$ref'] = sqlVerbObj['$ref'];
-                            newSqlVerb.push(thisRef);
-                        };
+                
+                const newSqlVerbs: types.NewSqlVerbs = {}; 
+                  
+                Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
+                    const newSqlVerb: { $ref: string }[] = [];
+                    const tokens: string[] = [];
+                    
+                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
+                        if (sqlVerbObj.enabled) {
+                        tokens.push(sqlVerbObj.token);
+                        const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
+                        newSqlVerb.push(thisRef);
+                        }
                     });
+                    
                     // check if tokens are unique
-                    if (tokens.length !== new Set(tokens).size){
+                    if (tokens.length !== new Set(tokens).size) {
                         logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
                         throw 'Break';
-                    };
+                    }
+                    
                     newSqlVerbs[sqlVerb] = newSqlVerb;
                 });
+                  
                 xStackQLResources[xStackQLResKey]['sqlVerbs'] = newSqlVerbs;
             });
             

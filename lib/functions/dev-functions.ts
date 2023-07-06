@@ -1,4 +1,5 @@
-import { search } from "https://deno.land/x/jmespath/index.ts";
+// deno-lint-ignore-file no-explicit-any
+import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 import {
   getMeaningfulPathTokens,
   snakeToTitleCase,
@@ -13,9 +14,11 @@ import {
   getSqlVerbforProvider,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
+import * as types from "../types/types.ts";
+// import { TypeConstructorOptions } from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml";
 
 export function initProviderData(providerName: string, providerVersion: string, providerConfig: any) {
-    let providerData: {
+    const providerData: {
       id: string;
       name: string;
       version: string;
@@ -32,10 +35,10 @@ export function initProviderData(providerName: string, providerVersion: string, 
 }
 
 export function initResData(): Record<string, any> {
-    let resData: Record<string, any> = {};
-    resData['components'] = {};
-    resData['components']['x-stackQL-resources'] = {};
-    return resData;
+  const resData: Record<string, any> = {};
+  resData['components'] = {};
+  resData['components']['x-stackQL-resources'] = {};
+  return resData;
 }
 
 export function getResourceName(
@@ -47,7 +50,7 @@ export function getResourceName(
   debug: boolean, 
   logger: any): 
   [string, string[]] {
-    let resTokens: string[] = [];
+    const resTokens: string[] = [];
     if (operation['x-stackQL-resource']) {
       return [operation['x-stackQL-resource'], resTokens];
     }
@@ -62,13 +65,18 @@ export function getResourceName(
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
         });
     } else {
-      let resValue
+      let resValue;
       try { 
-        resValue = search(operation, resDiscriminator)[0];
-      } catch (error) {
-        resValue = service;
+          const searchResult = search(operation, resDiscriminator);
+          if (Array.isArray(searchResult) && searchResult.length > 0) {
+              resValue = searchResult[0];
+          } else {
+              throw new Error('Search result is not an array or is empty.');
+          }
+      } catch (_error) {
+          resValue = service;
       }
-      resourceName = resValue ? camelToSnake(resValue) : service;
+      resourceName = typeof resValue === 'string' ? camelToSnake(resValue) : service;
     }
     resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
     return [resourceName, resTokens];
@@ -92,7 +100,7 @@ export function addResource(resData: any, providerName: string, service: string,
 }
 
 export function getOperationId(
-    apiPaths: Record<string, Record<string, Record<string, string>>>,
+    apiPaths: any,
     pathKey: string,
     verbKey: string,
     existingOpIds: string[],
@@ -134,9 +142,9 @@ export function getOperationId(
           operationId = `delete_${operationId.substring(0, operationId.length - 7)}`;
         }
         // get path params
-        let pathParams = (pathKey.match(/\{[\w]*\}/g) || ['by_noparams']);
-        let opSuffixes: string[] = [];
-        for (let ix in pathParams) {
+        const pathParams = (pathKey.match(/\{[\w]*\}/g) || ['by_noparams']);
+        const opSuffixes: string[] = [];
+        for (const ix in pathParams) {
           opSuffixes.push(`by_${pathParams[ix].replace(/\{|\}/g, '')}`);
         }
         operationId = `${operationId}_${opSuffixes.join('_')}`;
@@ -165,7 +173,7 @@ export function addOperation(
     resource: string,
     operationId: string,
     apiPaths: any,
-    componentsSchemas: any,
+    _componentsSchemas: any,
     pathKey: string,
     verbKey: string,
     providerName: string,
@@ -199,22 +207,24 @@ export function addOperation(
 }
 
 export function updateProviderData(
-    providerData, 
-    providerName,
-    providerVersion,
-    service, 
-    serviceTitle, 
-    serviceDescription){
-        providerData.providerServices[service] = {};
-        serviceDescription ? providerData.providerServices[service].description = convertLowerCaseToTitleCase(snakeToTitleCase(serviceDescription)) : null;
-        providerData.providerServices[service].id = `${service}:${providerVersion}`;
-        providerData.providerServices[service].name = service;
-        providerData.providerServices[service].preferred = true;
-        providerData.providerServices[service].service = {};
-        providerData.providerServices[service].service['$ref'] = `${providerName}/${providerVersion}/services/${service}.yaml`;
-        providerData.providerServices[service].title = convertLowerCaseToTitleCase(snakeToTitleCase(serviceTitle));
-        providerData.providerServices[service].version = providerVersion;
-        return providerData;
+  providerData: types.ProviderData, 
+  providerName: string,
+  providerVersion: string,
+  service: string, 
+  serviceTitle: string, 
+  serviceDescription: string
+): types.ProviderData {
+    providerData.providerServices[service] = {
+        id: `${service}:${providerVersion}`,
+        name: service,
+        preferred: true,
+        service: { '$ref': `${providerName}/${providerVersion}/services/${service}.yaml` },
+        title: convertLowerCaseToTitleCase(snakeToTitleCase(serviceTitle)),
+        version: providerVersion,
+        description: serviceDescription ? convertLowerCaseToTitleCase(snakeToTitleCase(serviceDescription)) : undefined
+    };
+
+    return providerData;
 }
 
 export function addSqlVerb(
@@ -265,7 +275,7 @@ export function addSqlVerb(
         break;
       default:
         break;
-    };
+    }
     return resData;
 }
 
@@ -290,7 +300,7 @@ function getOperationRef(service: string, pathKey: string, verbKey: string): str
 }
   
 function getRespSchemaName(op: any, service: string): any[] {
-    for (let respCode in op.responses) {
+    for (const respCode in op.responses) {
       if (respCode.startsWith('2')) {
         return getAllValuesForKey(service, op.responses[respCode], "$ref", ['examples', 'description', 'headers']);
       }
@@ -326,7 +336,7 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
     } else if (op['x-stackQL-verb']) {
         return op['x-stackQL-verb'];
     } else {
-        let verb: string = 'exec';
+        let verb = 'exec';
         switch (verbKey) {
           case 'get':
             if (includes(operationId, ['get', 'list'])){

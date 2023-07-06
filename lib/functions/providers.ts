@@ -1,16 +1,30 @@
+// deno-lint-ignore-file no-explicit-any
 import * as providers from '../providers/index.ts';
 
-export function updateServiceName(providerName: string, inServiceName: string, debug: boolean, logger: any): string {
+interface Provider {
+    servicesMap: Record<string, string>;
+    resourcesMap: Record<string, any>;
+    objectKeysAndSqlVerbs: Record<string, any>;
+}
+
+const typedProviders = providers as unknown as Record<string, Provider>;
+
+export function updateServiceName(
+    providerName: string, 
+    inServiceName: string, 
+    debug: boolean, 
+    logger: any
+): string {
     debug ? logger.debug(`checking for service name updates for [${inServiceName}] in [${providerName}]...`) : null;
     let outServiceName = inServiceName;
-    if (providerName in providers) {
+    if (providerName in typedProviders) {
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
-        outServiceName = providers[providerName].servicesMap[inServiceName] || inServiceName;
+        outServiceName = typedProviders[providerName].servicesMap[inServiceName] || inServiceName;
         debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     }
     return outServiceName;
 }
- 
+
 function getResourceNameFromOperationId(data: any, operationId: string, debug: boolean, logger: any): string | false {
     debug ? logger.debug(`running getResourceNameFromOperationId for ${operationId}...`) : null;
     if ('opIdMap' in data) {
@@ -36,15 +50,15 @@ function getNewResourceNameFromExisting(data: any, resourceName: string, debug: 
 export function updateResourceName(providerName: string, service: string, inResourceName: string, operation: any, debug: boolean, logger: any): string {
     debug ? logger.debug(`checking for resource name updates for [${inResourceName}] in [${providerName}.${service}]...`) : null;
     let outResourceName = inResourceName;
-    if (providerName in providers) {
+    if (providerName in typedProviders) {
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
-        if (service in providers[providerName].resourcesMap) {
+        if (service in typedProviders[providerName].resourcesMap) {
             debug ? logger.debug(`service data found for ${providerName}.${service}`) : null;
             // try to get new name from operationId
-            const nameFromOpIdOrNull = getResourceNameFromOperationId(providers[providerName].resourcesMap[service], operation.operationId, debug, logger); 
+            const nameFromOpIdOrNull = getResourceNameFromOperationId(typedProviders[providerName].resourcesMap[service], operation.operationId, debug, logger); 
             if (!nameFromOpIdOrNull) {
                 // try to get new name from existing name
-                const nameFromExistingOrNull = getNewResourceNameFromExisting(providers[providerName].resourcesMap[service], inResourceName, debug, logger);
+                const nameFromExistingOrNull = getNewResourceNameFromExisting(typedProviders[providerName].resourcesMap[service], inResourceName, debug, logger);
                 if (nameFromExistingOrNull) {
                     outResourceName = nameFromExistingOrNull;
                     debug ? logger.debug(`resource name changed from ${inResourceName} to ${outResourceName} via name mapping`) : null;
@@ -59,10 +73,9 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-export function getObjectKeyforProvider(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
-
-    if (providerName in providers) {
-        const providerObjectKeysAndSqlVerbs = providers[providerName].objectKeysAndSqlVerbs;
+export function getObjectKeyforProvider(providerName: string, service: string, resource: string, operationId: string, _debug: boolean) : string | false {
+    if (providerName in typedProviders) {
+        const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
         
         let objectKey = '_defaultObjectKey';
 
@@ -84,19 +97,18 @@ export function getObjectKeyforProvider(providerName: string, service: string, r
             return false;
         } else {
             return objectKey;
-        }
-        
+        } 
     }
     return false;
 }
 
-export function getSqlVerbforProvider(operationId: string, verbKey: string, providerName: string, service: string, resource: string): string | false {
-    if (providerName in providers) {
-        if (service in providers[providerName].objectKeysAndSqlVerbs) {
-            if (resource in providers[providerName].objectKeysAndSqlVerbs[service]) {
-                if (operationId in providers[providerName].objectKeysAndSqlVerbs[service][resource]) {
-                    if ('sqlVerb' in providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]){
-                        return providers[providerName].objectKeysAndSqlVerbs[service][resource][operationId]['sqlVerb'];
+export function getSqlVerbforProvider(operationId: string, _verbKey: string, providerName: string, service: string, resource: string): string | false {
+    if (providerName in typedProviders) {
+        if (service in typedProviders[providerName].objectKeysAndSqlVerbs) {
+            if (resource in typedProviders[providerName].objectKeysAndSqlVerbs[service]) {
+                if (operationId in typedProviders[providerName].objectKeysAndSqlVerbs[service][resource]) {
+                    if ('sqlVerb' in typedProviders[providerName].objectKeysAndSqlVerbs[service][resource][operationId]){
+                        return typedProviders[providerName].objectKeysAndSqlVerbs[service][resource][operationId]['sqlVerb'];
                     }
                 }
             }
@@ -104,4 +116,3 @@ export function getSqlVerbforProvider(operationId: string, verbKey: string, prov
     }
     return false;
 }
-

@@ -1,7 +1,9 @@
-import { search } from "https://deno.land/x/jmespath/index.ts";
+// deno-lint-ignore-file no-explicit-any
+import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 import {
     componentsChildren,
 } from "../types/constants.ts";
+import * as types from "../types/types.ts";
 import {
     getMeaningfulPathTokens,
     camelToSnake,
@@ -23,36 +25,45 @@ export function isOperationExcluded(exOption: any, operation: any, discriminator
   }
 } 
 
-export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, tags: any[], debug: boolean, logger: any): [string, string] {
+export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, _tags: any[], debug: boolean, logger: any): [string, string] {
     
-    if (discriminator.startsWith('svcName:')) {
-      return [discriminator.split(':')[1], discriminator.split(':')[1]];
+  if (discriminator.startsWith('svcName:')) {
+    return [discriminator.split(':')[1], discriminator.split(':')[1]];
+  } else {
+    let thisSvc = 'svc';
+    if (discriminator == 'path_tokens') {
+      thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
     } else {
-      let thisSvc = 'svc';
-      if (discriminator == 'path_tokens') {
-        thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
+      const searchResult = search(operation, discriminator);
+      if (Array.isArray(searchResult)) {
+          if (searchResult.length > 0 && typeof searchResult[0] === 'string') {
+              thisSvc = searchResult[0].replace(/-/g, '_').replace(/\//g, '_');
+          } else {
+              thisSvc = getMeaningfulPathTokens(pathKey)[0];
+          }
       } else {
-        thisSvc = search(operation, discriminator)[0] ? search(operation, discriminator)[0].replace(/-/g, '_').replace(/\//g, '_') : getMeaningfulPathTokens(pathKey)[0];
+          thisSvc = getMeaningfulPathTokens(pathKey)[0];
       }
-      const serviceDesc = thisSvc;
-      const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
-      return [serviceName, serviceDesc];
     }
+    const serviceDesc = thisSvc;
+    const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
+    return [serviceName, serviceDesc];
+  }
 }
 
 export function initService(
-    services: Record<string, any>,
+    services: types.Service,
     componentsChildren: string[],
     service: string,
     serviceDesc: string,
     api: Record<string, any>
-  ): Record<string, any> {
+  ): types.Service {
     services[service] = {};
     services[service]['openapi'] = api.openapi || '3.0.0';
     services[service]['servers'] = api.servers;
     services[service]['info'] = {};
-    for (let infoKey in api.info) {
-      if (infoKey !== 'title' || infoKey !== 'description') {
+    for (const infoKey in api.info) {
+      if (infoKey !== 'title' && infoKey !== 'description') {
         services[service]['info'][infoKey] = api.info[infoKey];
       }
     }
@@ -62,7 +73,7 @@ export function initService(
     api.tags ? services[service]['tags'] = api.tags : null;
     api.externalDocs ? services[service]['externalDocs'] = api.externalDocs : null;
     services[service]['components'] = {};
-    for (let compChild in componentsChildren) {
+    for (const compChild in componentsChildren) {
       if(componentsChildren[compChild] == 'schemas'){
         services[service]['components']['schemas'] = {};
       } else if(componentsChildren[compChild] == 'responses') {
@@ -78,7 +89,7 @@ export function initService(
 }
 
 export function getAllRefs(obj: any, refs: string[] = []): string[] {
-    for (let k in obj) {
+    for (const k in obj) {
       if (typeof obj[k] === "object") {
         getAllRefs(obj[k], refs);
       } else {
@@ -90,56 +101,25 @@ export function getAllRefs(obj: any, refs: string[] = []): string[] {
     return refs;
 }
 
-export function addRefsToComponents(refs: string[], service: any, apiComp: any, debug: boolean = false): void {
-    for (let ref of refs) {
-        debug ? logger.debug(`processing ${ref}`) : null;
-        let refTokens = ref.split('/');
-        if (refTokens[1] === 'components') {
-            let thisSection = refTokens[2];
-            let thisKey = refTokens[3];
-            if (componentsChildren.includes(thisSection)) {
-              if(!service['components'][thisSection][thisKey]){
-                debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;
-                apiComp[thisSection][thisKey] ? service['components'][thisSection][thisKey] = apiComp[thisSection][thisKey] : null;
-              }
-            }
+export function addRefsToComponents(refs: string[], service: any, apiComp: any, debug = false): void {
+  for (const ref of refs) {
+      debug ? logger.debug(`processing ${ref}`) : null;
+      const refTokens = ref.split('/');
+      if (refTokens[1] === 'components') {
+        const thisSection = refTokens[2];
+        const thisKey = refTokens[3];
+        if (componentsChildren.includes(thisSection)) {
+          if(!service['components'][thisSection][thisKey]){
+            debug ? logger.debug(`adding [${thisKey}] to [components/${thisSection}]`) : null;
+            apiComp[thisSection][thisKey] ? service['components'][thisSection][thisKey] = apiComp[thisSection][thisKey] : null;
+          }
         }
-    }
+      }
+  }
 }
 
-interface OpenAPIPaths {
-  [path: string]: OpenAPIPathItem;
-}
-
-interface OpenAPIPathItem {
-  [httpMethod: string]: OpenAPIOperation;
-}
-
-interface OpenAPIOperation {
-  responses: {
-    [statusCode: string]: OpenAPIResponse;
-  };
-}
-
-interface OpenAPIResponse {
-  content?: {
-    [mediaType: string]: OpenAPIContent;
-  };
-}
-
-interface OpenAPIContent {
-  schema?: OpenAPISchema;
-}
-
-interface OpenAPISchema {
-  type?: string;
-  properties?: {
-    [propertyName: string]: OpenAPISchema;
-  };
-}
-
-export function addMissingObjectTypes(paths: OpenAPIPaths): OpenAPIPaths {
-  const newPaths: OpenAPIPaths = JSON.parse(JSON.stringify(paths));
+export function addMissingObjectTypes(paths: types.OpenAPIPaths): types.OpenAPIPaths {
+  const newPaths: types.OpenAPIPaths = JSON.parse(JSON.stringify(paths));
 
   Object.values(newPaths).forEach((pathItem) => {
     Object.values(pathItem).forEach((operation) => {
@@ -151,7 +131,7 @@ export function addMissingObjectTypes(paths: OpenAPIPaths): OpenAPIPaths {
 
   return newPaths;
 
-  function recursivelyAddObjectType(schema?: OpenAPISchema): void {
+  function recursivelyAddObjectType(schema?: types.OpenAPISchema): void {
     if (!schema) {
       return;
     }

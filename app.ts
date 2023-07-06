@@ -1,10 +1,9 @@
-import { parse } from "https://deno.land/std/flags/mod.ts";
+import { parse } from "https://deno.land/std@0.190.0/flags/mod.ts";
 import { usage } from "./lib/program/usage.ts";
 import { splitApiDoc } from "./lib/commands/split.ts";
 import { generateDevDocs } from "./lib/commands/provider-dev.ts";
 import { buildDocs } from "./lib/commands/provider-build.ts";
 import { formatApiSpec } from "./lib/commands/format-spec.ts";
-
 import { 
   parseSplitArgs,
   parseDevArgs,

@@ -1,17 +1,16 @@
-import { 
-    existsSync, 
-    mkdirSync 
-} from "https://deno.land/std@0.170.0/fs/mod.ts";
 import { logger } from "./logging.ts";
 
 export function createDestDir(dir: string, overwrite: boolean): boolean {
-    logger.info(`checking if dest dir (${dir}) exists...`);
-    if (existsSync(dir) && !overwrite) {
-        logger.error(`destination Dir: ${dir} already exists`);
-        return false;
-    } else {
+    try {
         logger.info(`creating destination dir: ${dir}`);
         Deno.mkdir(dir, { recursive: true });
         return true;
+    } catch (error) {
+        if (error instanceof Deno.errors.AlreadyExists && overwrite) {
+            logger.info(`destination dir: ${dir} already exists, but overwrite is enabled`);
+            return true;
+        }
+        logger.error(`Error creating destination dir: ${dir}`);
+        return false;
     }
 }

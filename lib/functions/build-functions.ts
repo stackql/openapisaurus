@@ -1,12 +1,11 @@
-
-
+// deno-lint-ignore-file no-explicit-any
 
 export function fixAllOffIssue(inputSchemas: Record<string, any>): Record<string, any> {
-    let outputSchemas: Record<string, any> = {};
+    const outputSchemas: Record<string, any> = {};
   
     Object.keys(inputSchemas).forEach(schema => {
       if(inputSchemas[schema].allOf){
-        let newSchema = {...inputSchemas[schema]};
+        const newSchema = {...inputSchemas[schema]};
         if(inputSchemas[schema].type){
           delete newSchema.type;
         }

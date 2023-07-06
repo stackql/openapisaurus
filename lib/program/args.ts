@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { red } from "https://deno.land/std@0.178.0/fmt/colors.ts";
 import { usage } from "./usage.ts";
 import * as types from "../types/types.ts";
@@ -67,10 +68,10 @@ export function parseSplitArgs(args: any): types.splitArgs | false {
     }
   
     // optional named args
-    let outputDir: string = args.outputDir || Deno.cwd();
-    let exclude: string | false = args.exclude || false;
-    let verbose: boolean = args.verbose || false;
-    let overwrite: boolean = args.overwrite || false;
+    const outputDir: string = args.outputDir || Deno.cwd();
+    const exclude: string | false = args.exclude || false;
+    const verbose: boolean = args.verbose || false;
+    const overwrite: boolean = args.overwrite || false;
   
     const splitArgs: types.splitArgs = {
       apiDoc: apiDoc,
@@ -120,11 +121,11 @@ export function parseDevArgs(args: any): types.devArgs | false {
     }
   
     // optional named args
-    let resDiscriminator: string = args.resDiscriminator || 'path_tokens';
-    let providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
-    let methodKey: string = args.methodKey || 'operationId';
-    let verbose: boolean = args.verbose || false;
-    let overwrite: boolean = args.overwrite || false;
+    const resDiscriminator: string = args.resDiscriminator || 'path_tokens';
+    const providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
+    const methodKey: string = args.methodKey || 'operationId';
+    const verbose: boolean = args.verbose || false;
+    const overwrite: boolean = args.overwrite || false;
   
     const devArgs: types.devArgs = {
       apiDocDir: apiDocDir,
@@ -186,9 +187,9 @@ export function parseBuildArgs(args: any): any | false {
   }  
 
   // optional named args
-  let servers: string | false = args.servers || false;
-  let verbose: boolean = args.verbose || false;
-  let overwrite: boolean = args.overwrite || false;
+  const servers: string | false = args.servers || false;
+  const verbose: boolean = args.verbose || false;
+  const overwrite: boolean = args.overwrite || false;
 
   const buildArgs: types.buildArgs = {
     apiDocDir: apiDocDir,
