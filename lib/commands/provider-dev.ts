@@ -121,7 +121,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                 
                                 debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
         
-                                const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, service, resource);
+                                const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, providerName, service, resource);
                               
                                 debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
         

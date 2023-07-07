@@ -12,6 +12,7 @@ import {
   updateResourceName,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
+  updateOperationIdforProvider,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 import * as types from "../types/types.ts";
@@ -99,6 +100,7 @@ export function getOperationId(
     verbKey: string,
     existingOpIds: string[],
     methodKey: string,
+    providerName: string,
     service: string,
     resource: string
   ): string {
@@ -143,6 +145,8 @@ export function getOperationId(
         }
         operationId = `${operationId}_${opSuffixes.join('_')}`;
       }
+      // update opid based upon provider
+      operationId = updateOperationIdforProvider(providerName, service, resource, operationId);
       return operationId;
     } else {
       logger.warning(`no method key found for ${pathKey}/${verbKey}, using path tokens and verb`);

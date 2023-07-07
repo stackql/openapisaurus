@@ -5,6 +5,7 @@ interface Provider {
     servicesMap: Record<string, string>;
     resourcesMap: Record<string, any>;
     objectKeysAndSqlVerbs: Record<string, any>;
+    methodNameMap: Record<string, any>;
 }
 
 const typedProviders = providers as unknown as Record<string, Provider>;
@@ -115,4 +116,17 @@ export function getSqlVerbforProvider(operationId: string, _verbKey: string, pro
         }
     }
     return false;
+}
+
+export function updateOperationIdforProvider(providerName: string, service: string, resource: string, operationId: string): string {
+    if (providerName in typedProviders) {
+        if (service in typedProviders[providerName].methodNameMap) {
+            if (resource in typedProviders[providerName].methodNameMap[service]) {
+                if (operationId in typedProviders[providerName].methodNameMap[service][resource]) {
+                        return typedProviders[providerName].methodNameMap[service][resource][operationId];
+                }
+            }
+        }
+    }
+    return operationId;
 }

@@ -43,10 +43,10 @@ for (const service of servicesJson) {
     const describeOutput = execSync(describeCommand).toString();
     console.log(describeOutput);
     // SHOW METHODS
-    // const showMethodsStatement = `SHOW EXTENDED METHODS IN ${resourceId}`;
-    // console.log(`/* ${showMethodsStatement} */`);
-    // const showMethodsCommand = `./stackql exec --registry='${regStr}' '${showMethodsStatement}'`;
-    // const showMethodsOutput = execSync(showMethodsCommand).toString();
-    // console.log(showMethodsOutput);
+    const showMethodsStatement = `SHOW EXTENDED METHODS IN ${resourceId}`;
+    console.log(`/* ${showMethodsStatement} */`);
+    const showMethodsCommand = `./stackql exec --registry='${regStr}' '${showMethodsStatement}'`;
+    const showMethodsOutput = execSync(showMethodsCommand).toString();
+    console.log(showMethodsOutput);
   }
 }
