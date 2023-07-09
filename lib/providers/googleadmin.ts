@@ -108,6 +108,11 @@ export const objectKeysAndSqlVerbs = {
                 objectKey: '$.buildings',
             },
         },
+        chromeosdevices: {
+            list: {
+                objectKey: '$.chromeosdevices',
+            },
+        },
         domain_aliases: {
             list: {
                 objectKey: '$.domainAliases',
@@ -116,6 +121,21 @@ export const objectKeysAndSqlVerbs = {
         domains: {
             list: {
                 objectKey: '$.domains',
+            },
+        },
+        features: {
+            list: {
+                objectKey: '$.features',
+            },
+        },
+        groups: {
+            list: {
+                objectKey: '$.groups',
+            },
+        },
+        members: {
+            list: {
+                objectKey: '$.members',
             },
         },
         mobiledevices: {
@@ -128,6 +148,11 @@ export const objectKeysAndSqlVerbs = {
                 objectKey: '$.organizationUnits',
             },
         },
+        printers: {
+            list: {
+                objectKey: '$.printers',
+            },
+        },
         print_servers: {
             list: {
                 objectKey: '$.printServers',
@@ -138,7 +163,15 @@ export const objectKeysAndSqlVerbs = {
                 objectKey: '$.printerModels',
             },
         },
+        schemas: {
+            list: {
+                objectKey: '$.schemas',
+            },
+        },
+        users: {
+            list: {
+                objectKey: '$.users',
+            },
+        },
     }
 }
-
-

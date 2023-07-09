@@ -46,12 +46,14 @@ export function getResourceName(
   logger: any): 
   [string, string[]] {
     const resTokens: string[] = [];
-    if (operation['x-stackQL-resource']) {
-      return [operation['x-stackQL-resource'], resTokens];
-    }
     let resourceName = service;
-    if(resDiscriminator == 'path_tokens'){
-        let pathTokens: string[] = [];
+    if (operation['x-stackQL-resource']) {
+      // x-stackQL-resource tag exists
+      debug ? logger.debug(`x-stackQL-resource found, using ${operation['x-stackQL-resource']}`) : null;
+      resourceName = operation['x-stackQL-resource'];
+    } else if(resDiscriminator == 'path_tokens'){
+      // path_tokens or default resource naming mechanism
+      let pathTokens: string[] = [];
         pathTokens = getMeaningfulPathTokens(pathKey);
         pathTokens.forEach(token => {
           if (token != service && token.length > 0){
@@ -59,7 +61,9 @@ export function getResourceName(
           }       
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
         });
+        debug ? logger.debug(`path_tokens used for resource name: ${resourceName}`) : null;
     } else {
+      // resource discriminator provided
       let resValue;
       try { 
           const searchResult = search(operation, resDiscriminator);
@@ -72,6 +76,7 @@ export function getResourceName(
           resValue = service;
       }
       resourceName = typeof resValue === 'string' ? camelToSnake(resValue) : service;
+      debug ? logger.debug(`resource discriminator used for resource name: ${resourceName}`) : null;
     }
     resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
     return [resourceName, resTokens];

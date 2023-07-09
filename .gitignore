@@ -5,3 +5,4 @@ stackql
 stackql-zip
 *.log
 *.env
+/creds
