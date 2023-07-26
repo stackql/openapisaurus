@@ -87,4 +87,4 @@ Each `resource` consists of multiple `methods` and `sqlVerbs`.
 
 By linking SQL verbs to specific methods of a resource, StackQL allows a more intuitive and SQL-like interaction with the OpenAPI described services. 
 
-For more information, please refer to our [OpenAPI spec documentation](link-to-documentation).
+For more information and examples, please refer to the [StackQL Provider Registry](https://github.com/stackql/stackql-provider-registry).
