@@ -1,4 +1,4 @@
-# StackQL Resources README
+# StackQL Resources Documentation
 
 StackQL utilizes a concept of `resources` that are defined within the `x-stackQL-resources` component. Each `resource` represents a specific `service` endpoint provided by the provider's service as described by their OpenAPI spec.
 
