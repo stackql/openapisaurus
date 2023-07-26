@@ -84,7 +84,7 @@ export function getResourceName(
 
 export function addResource(resData: any, providerName: string, service: string, resource: string, resTokens: string[]): any {
     resData.components['x-stackQL-resources'][resource] = {
-      id: `${providerName}.${service}.${resource}`,
+      id: providerName == 'googleapis.com' ? `google.${service}.${resource}`: `${providerName}.${service}.${resource}`,
       name: resource,
       title: snakeToTitleCase(resource),
       resTokens: resTokens,
@@ -238,7 +238,9 @@ export function addSqlVerb(
     resource: string,
     pathKey: string,
     verbKey: string,
-    providerName: string
+    providerName: string,
+    methodKeyVal: string,
+    _debug: boolean,
   ): any {
     const pattern = /\{(\+)?[\w]*\}/g;
     switch (getSqlVerb(op, operationId, verbKey, providerName, service, resource)) {
@@ -250,6 +252,7 @@ export function addSqlVerb(
             'numTokens': (pathKey.match(pattern) || []).length,
             'tokens': (pathKey.match(pattern) || []).join(','),
             'enabled': true,
+            'methodKey': methodKeyVal ? methodKeyVal : 'not found',
             'respSchema': getRespSchemaName(op, service),
           }
         );
@@ -261,7 +264,8 @@ export function addSqlVerb(
             'path': pathKey,
             'numTokens': (pathKey.match(pattern) || []).length,
             'tokens': (pathKey.match(pattern) || []).join(','),
-            'enabled': true
+            'enabled': true,
+            'methodKey': methodKeyVal ? methodKeyVal : 'not found',            
           }
         );
         break;
@@ -272,7 +276,8 @@ export function addSqlVerb(
             'path': pathKey,
             'numTokens': (pathKey.match(pattern) || []).length,
             'tokens': (pathKey.match(pattern) || []).join(','),
-            'enabled': true
+            'enabled': true,
+            'methodKey': methodKeyVal ? methodKeyVal : 'not found',
           }
         );
         break;

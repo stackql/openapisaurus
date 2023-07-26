@@ -1,0 +1,36 @@
+@startuml
+
+class XStackQLResources {
+    +Dictionary<String, Resource>: resources
+}
+
+class Resource {
+    +String: id
+    +String: name
+    +String: title
+    +Dictionary<String, Method>: methods
+    +Dictionary<String, List<OperationReference>>: sqlVerbs
+}
+
+class Method {
+    +OperationReference: operation
+    +Response: response
+}
+
+class OperationReference {
+    +String: $ref
+}
+
+class Response {
+    +String: mediaType
+    +String: openAPIDocKey
+    +String: objectKey
+}
+
+XStackQLResources "1" -- "*" Resource: resources
+Resource "1" -- "*" Method: methods
+Method "1" -- "1" OperationReference: operation
+Method "1" -- "1" Response: response
+Resource "1" -- "*" OperationReference: sqlVerbs
+
+@enduml

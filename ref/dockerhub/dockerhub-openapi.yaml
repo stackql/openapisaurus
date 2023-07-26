@@ -1,0 +1,1328 @@
+openapi: 3.0.0
+info:
+  title: Docker HUB API
+  description: >
+    Docker Hub is a service provided by Docker for finding and sharing container
+    images with your team.
+
+    It is the world's largest library and community for container images.
+
+    In addition to the [Docker Hub UI](https://docs.docker.com/docker-hub/) and
+    [Docker Hub CLI tool](https://github.com/docker/hub-tool#readme) (currently
+    experimental),
+
+    Docker provides an API that allows you to interact with Docker Hub.
+
+    Browse through the Docker Hub API documentation to explore the supported
+    endpoints.
+  version: 1.0.0
+servers:
+  - url: http://{{baseurl}}
+tags:
+  - name: v2
+  - name: v2 > access-tokens
+  - name: v2 > access-tokens > {uuid}
+  - name: v2 > namespaces/{namespace}
+  - name: v2 > namespaces/{namespace} > repositories/{repository}
+  - name: v2 > namespaces/{namespace} > repositories/{repository} > images
+  - name: v2 > auditlogs/{account}
+  - name: v2 > orgs/{name}/settings
+paths:
+  /v2/access-tokens/{uuid}:
+    patch:
+      tags:
+        - v2 > access-tokens > {uuid}
+      summary: Update a personal access token
+      description: |
+        Updates a personal access token partially. You can either update the
+        token's label or enable/disable it.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n    \"token_label\": \"My read only token\",\n   
+                \"is_active\": false\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: uuid
+          in: path
+          schema:
+            type: string
+          required: true
+          description: '(Required) '
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                uuid: b30bbf97-506c-4ecd-aabc-842f3cb484fb
+                client_id: HUB
+                creator_ip: 127.0.0.1
+                creator_ua: some user agent
+                created_at: laboris quis
+                last_used: null
+                generated_by: manual
+                is_active: true
+                token: a7a5ef25-8889-43a0-8cc7-f2a94268e861
+                token_label: My read only token
+                scopes:
+                  - repo:read
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                fields: {}
+                text: deserunt ipsum
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+    get:
+      tags:
+        - v2 > access-tokens > {uuid}
+      summary: Get a personal access token
+      description: Returns a personal access token by UUID.
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                uuid: b30bbf97-506c-4ecd-aabc-842f3cb484fb
+                client_id: HUB
+                creator_ip: 127.0.0.1
+                creator_ua: some user agent
+                created_at: laboris quis
+                last_used: null
+                generated_by: manual
+                is_active: true
+                token: a7a5ef25-8889-43a0-8cc7-f2a94268e861
+                token_label: My read only token
+                scopes:
+                  - repo:read
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+    delete:
+      tags:
+        - v2 > access-tokens > {uuid}
+      summary: Delete a personal access token
+      description: |
+        Deletes a personal access token permanently. This cannot be undone.
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+            type: string
+          required: true
+          description: '(Required) '
+          example: tempor in sit in
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: text/plain
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: ''
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+  /v2/access-tokens:
+    post:
+      tags:
+        - v2 > access-tokens
+      summary: Create a personal access token
+      description: Creates and returns a personal access token.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n    \"token_label\": \"My read only token\",\n   
+                \"scopes\": [\n        \"repo:read\"\n    ]\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                uuid: b30bbf97-506c-4ecd-aabc-842f3cb484fb
+                client_id: HUB
+                creator_ip: 127.0.0.1
+                creator_ua: some user agent
+                created_at: aliqua ullamco id
+                last_used: null
+                generated_by: manual
+                is_active: true
+                token: a7a5ef25-8889-43a0-8cc7-f2a94268e861
+                token_label: My read only token
+                scopes:
+                  - repo:read
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                fields: {}
+                text: deserunt ipsum
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+    get:
+      tags:
+        - v2 > access-tokens
+      summary: Get a list of personal access tokens
+      description: Returns a paginated list of personal access tokens.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                count: 1
+                next: laborum nisi laboris aute
+                previous: dolor culpa id ipsum
+                active_count: 1
+                results:
+                  - uuid: b30bbf97-506c-4ecd-aabc-842f3cb484fb
+                    client_id: HUB
+                    creator_ip: 127.0.0.1
+                    creator_ua: some user agent
+                    created_at: Duis minim
+                    last_used: null
+                    generated_by: manual
+                    is_active: true
+                    token: a7a5ef25-8889-43a0-8cc7-f2a94268e861
+                    token_label: My read only token
+                    scopes:
+                      - repo:read
+                  - uuid: b30bbf97-506c-4ecd-aabc-842f3cb484fb
+                    client_id: HUB
+                    creator_ip: 127.0.0.1
+                    creator_ua: some user agent
+                    created_at: aute cupidatat sed non consectetur
+                    last_used: null
+                    generated_by: manual
+                    is_active: true
+                    token: a7a5ef25-8889-43a0-8cc7-f2a94268e861
+                    token_label: My read only token
+                    scopes:
+                      - repo:read
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                fields: {}
+                text: deserunt ipsum
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+  /v2/namespaces/{namespace}/repositories/{repository}/images:
+    get:
+      tags:
+        - v2 > namespaces/{namespace} > repositories/{repository} > images
+      summary: Get details of repository's images
+      description: Gets details on the images in a repository.
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Filters to only show images of this status.
+          example: active
+        - name: currently_tagged
+          in: query
+          schema:
+            type: boolean
+          description: |
+            Filters to only show images with:
+            * `true`: at least 1 current tag.
+            * `false`: no current tags.
+          example: 'false'
+        - name: ordering
+          in: query
+          schema:
+            type: string
+          description: |
+            Orders the results by this property.
+
+            Prefixing with `-` sorts by descending order.
+          example: '-digest'
+        - name: active_from
+          in: query
+          schema:
+            type: string
+          description: >
+            Sets the time from which an image must have been pushed or pulled to
+            be counted as active.
+
+
+            Defaults to 1 month before the current time.
+          example: tempor in sit in
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to get. Defaults to 1.
+          example: '97793012'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          description: Number of images to get per page. Defaults to 10. Max of 100.
+          example: '97793012'
+        - name: namespace
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace of the repository.
+          example: tempor in sit in
+        - name: repository
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Name of the repository.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                count: 100
+                next: >-
+                  https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images?&page=4&page_size=20
+                previous: >-
+                  https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images?&page=2&page_size=20
+                results:
+                  - namespace: mynamespace
+                    repository: myrepo
+                    digest: >-
+                      sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                    tags:
+                      - tag: latest
+                        is_current: true
+                      - tag: latest
+                        is_current: true
+                    last_pushed: '2021-02-24T22:05:27.526308Z'
+                    last_pulled: '2021-02-24T23:16:10.200008Z'
+                    status: active
+                  - namespace: mynamespace
+                    repository: myrepo
+                    digest: >-
+                      sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                    tags:
+                      - tag: latest
+                        is_current: true
+                      - tag: latest
+                        is_current: true
+                    last_pushed: '2021-02-24T22:05:27.526308Z'
+                    last_pulled: '2021-02-24T23:16:10.200008Z'
+                    status: active
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+  /v2/namespaces/{namespace}/repositories/{repository}/images/{digest}/tags:
+    get:
+      tags:
+        - v2 > namespaces/{namespace} > repositories/{repository} > images
+      summary: Get image's tags
+      description: Gets current and historical tags for an image.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number to get. Defaults to 1.
+          example: '97793012'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          description: Number of images to get per page. Defaults to 10. Max of 100.
+          example: '97793012'
+        - name: namespace
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace of the repository.
+          example: tempor in sit in
+        - name: repository
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Name of the repository.
+          example: tempor in sit in
+        - name: digest
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Digest of the image.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                count: 100
+                next: >-
+                  https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images/sha256:mydigest/tags?&page=4&page_size=20
+                previous: >-
+                  https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images/sha256:mydigest/tags?&page=2&page_size=20
+                results:
+                  - tag: latest
+                    is_current: true
+                  - tag: latest
+                    is_current: true
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+  /v2/namespaces/{namespace}/repositories/{repository}/images-summary:
+    get:
+      tags:
+        - v2 > namespaces/{namespace} > repositories/{repository}
+      summary: Get summary of repository's images
+      description: >
+        Gets the number of images in a repository and the number of images
+        counted as active and inactive.
+      parameters:
+        - name: active_from
+          in: query
+          schema:
+            type: string
+          description: >
+            Sets the time from which an image must have been pushed or pulled to
+            be counted as active.
+
+
+            Defaults to 1 month before the current time.
+          example: tempor in sit in
+        - name: namespace
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace of the repository.
+          example: tempor in sit in
+        - name: repository
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Name of the repository.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                active_from: '2021-01-25T14:25:37.076343059Z'
+                statistics:
+                  total: 3
+                  active: 2
+                  inactive: 1
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+  /v2/namespaces/{namespace}/delete-images:
+    post:
+      tags:
+        - v2 > namespaces/{namespace}
+      summary: Delete images
+      description: >
+        Deletes one or more images within a namespace. This is currently limited
+        to a single repostiory.
+
+
+        If you attempt to delete images that are marked as active or are
+        currently tagged, the deletion does not happen and it displays the
+        warnings.
+
+        To continue with the deletion, you must ignore these warnings by putting
+        them in the `ignore_warnings` property.
+
+
+        Deleting a currently tagged image deletes the tag from the repository.
+
+
+        You cannot ignore errors. It is not possible to directly delete children
+        of multi-arch images.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n    \"dry_run\": false,\n    \"active_from\":
+                \"2020-12-01T12:00:00Z\",\n    \"manifests\": [\n       
+                {\n            \"repository\": \"myrepo\",\n           
+                \"digest\":
+                \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n       
+                },\n        {\n            \"repository\":
+                \"myrepo\",\n            \"digest\":
+                \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n       
+                }\n    ],\n    \"ignore_warnings\": [\n        {\n           
+                \"repository\": \"myrepo\",\n            \"digest\":
+                \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n           
+                \"warning\": \"current_tag\",\n            \"tags\":
+                [\n                \"latest\",\n               
+                \"latest\"\n            ]\n        },\n        {\n           
+                \"repository\": \"myrepo\",\n            \"digest\":
+                \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n           
+                \"warning\": \"current_tag\",\n            \"tags\":
+                [\n                \"latest\",\n               
+                \"latest\"\n            ]\n        }\n    ]\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: namespace
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace of the repository.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                dry_run: false
+                metrics:
+                  manifest_deletes: 3
+                  manifest_errors: 0
+                  tag_deletes: 1
+                  tag_errors: 0
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: proident cupidatat
+                message: pariatur Lorem cupidatat laborum
+                errinfo:
+                  api_call_docker_id: aute aliquip incididunt
+                  api_call_name: magna irure quis id cillum
+                  api_call_start: fugiat est aute deserunt dolore
+                  api_call_txnid: non fugiat in anim
+                  type: validation
+                  details:
+                    errors:
+                      - repository: myrepo
+                        digest: >-
+                          sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                        error: not_found
+                      - repository: myrepo
+                        digest: >-
+                          sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                        error: not_found
+                    warnings:
+                      - repository: myrepo
+                        digest: >-
+                          sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                        warning: current_tag
+                        tags:
+                          - latest
+                          - latest
+                      - repository: myrepo
+                        digest: >-
+                          sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr
+                        warning: current_tag
+                        tags:
+                          - latest
+                          - latest
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                txnid: pariatur aliquip
+                message: mollit aliquip
+                errinfo:
+                  api_call_docker_id: Excepteur aliqua ut ea Ut
+                  api_call_name: dolore mollit Duis consequat laborum
+                  api_call_start: labore Excepteur adipisicing commodo
+                  api_call_txnid: sit in cillum
+  /v2/auditlogs/{account}:
+    get:
+      tags:
+        - v2 > auditlogs/{account}
+      summary: Returns list of audit log  events.
+      description: Get audit log events for a given namespace.
+      parameters:
+        - name: action
+          in: query
+          schema:
+            type: string
+          description: >-
+            action name one of ["repo.tag.push", ...]. Optional parameter to
+            filter specific audit log actions.
+          example: tempor in sit in
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: >-
+            name. Optional parameter to filter audit log events to a specific
+            name. For repository events, this is the name of the repository. For
+            organization events, this is the name of the organization. For team
+            member events, this is the username of the team member.
+          example: tempor in sit in
+        - name: actor
+          in: query
+          schema:
+            type: string
+          description: >-
+            actor name. Optional parameter to filter audit log events to the
+            specific user who triggered the event.
+          example: tempor in sit in
+        - name: from
+          in: query
+          schema:
+            type: string
+          description: Start of the time window you wish to query audit events for.
+          example: '1965-07-27T06:51:19.907Z'
+        - name: to
+          in: query
+          schema:
+            type: string
+          description: End of the time window you wish to query audit events for.
+          example: '1965-07-27T06:51:19.907Z'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: page - specify page number. Page number to get.
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          description: page_size - specify page size. Number of events to return per page.
+          example: '25'
+        - name: account
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace to query audit logs for.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                logs:
+                  - account: docker
+                    action: repo.tag.push
+                    name: docker/example
+                    actor: docker
+                    data:
+                      digest: >-
+                        sha256:c1ae9c435032a276f80220c7d9b40f76266bbe79243d34f9cda30b76fe114dfa
+                      tag: latest
+                    timestamp: '2021-02-19T01:34:35Z'
+                    action_description: >-
+                      pushed the tag latest with the digest sha256:c1ae9c435032a
+                      to the repository docker/example
+        '429':
+          description: Too Many Requests
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: Rate limit exceeded
+                error: false
+        '500':
+          description: Internal Server Error
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Untitled Example
+                  value: {}
+                example-1:
+                  summary: An unexpected error response.
+                  value:
+                    code: -37352657
+                    message: enim aliqua
+                    details:
+                      - type_url: aliqua quis sunt nostrud
+                        value: ad magna ut Duis
+                      - type_url: in magna ea tempor cillum
+                        value: Lorem
+  /v2/auditlogs/{account}/actions:
+    get:
+      tags:
+        - v2 > auditlogs/{account}
+      summary: Returns list of audit log actions.
+      description: >-
+        Get audit log actions for a namespace to be used as a filter for
+        querying audit events.
+      parameters:
+        - name: account
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Namespace to query audit log actions for.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                actions:
+                  org:
+                    actions:
+                      - name: team.create
+                        description: contains team create events
+                        label: Team Created
+                      - name: team.delete
+                        description: contains team delete events
+                        label: Team Deleted
+                      - name: team.member.add
+                        description: contains team member add events
+                        label: Team Member Added
+                      - name: team.member.remove
+                        description: contains team member remove events
+                        label: Team Member Removed
+                      - name: team.member.invite
+                        description: contains team member invite events
+                        label: Team Member Invited
+                      - name: member.removed
+                        description: contains org member remove events
+                        label: Organization Member Removed
+                      - name: create
+                        description: contains organization create events
+                        label: Organization Created
+                    label: Organization
+                  repo:
+                    actions:
+                      - name: create
+                        description: contains repository create events
+                        label: Repository Created
+                      - name: delete
+                        description: contains repository delete events
+                        label: Repository Deleted
+                      - name: change_privacy
+                        description: contains repository privacy change events
+                        label: Privacy Changed
+                      - name: tag.push
+                        description: contains image tag push events
+                        label: Tag Pushed
+                      - name: tag.delete
+                        description: contains image tag delete events
+                        label: Tag Deleted
+                    label: Repository
+        '429':
+          description: Too Many Requests
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: Rate limit exceeded
+                error: false
+        '500':
+          description: Internal Server Error
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Untitled Example
+                  value: {}
+                example-1:
+                  summary: An unexpected error response.
+                  value:
+                    code: 43996722
+                    message: magna exercitation
+                    details:
+                      - type_url: enim Duis voluptate quis dolor
+                        value: cillum laborum quis id
+                      - type_url: ea Duis cillum mollit
+                        value: eiusmod do esse nisi
+  /v2/orgs/{name}/settings:
+    get:
+      tags:
+        - v2 > orgs/{name}/settings
+      summary: Get organization settings
+      description: |
+        Returns organization settings by name.
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Name of the organization.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                restricted_images:
+                  enabled: true
+                  allow_official_images: true
+                  allow_verified_publishers: true
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+    put:
+      tags:
+        - v2 > orgs/{name}/settings
+      summary: Update organization settings
+      description: >
+        Updates an organization's settings. Some settings are only used when the
+        organization is on a business plan.
+
+
+        ***Only users in the "owners" group of the organization can use this
+        endpoint.***
+
+
+        The following settings are only used on a business plan:
+
+        - `restricted_images`
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n    \"restricted_images\": {\n        \"enabled\":
+                true,\n        \"allow_official_images\": true,\n       
+                \"allow_verified_publishers\": true\n    }\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: name
+          in: path
+          schema:
+            type: string
+          required: true
+          description: (Required) Name of the organization.
+          example: tempor in sit in
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                restricted_images:
+                  enabled: true
+                  allow_official_images: true
+                  allow_verified_publishers: true
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                detail: quis ipsum
+                message: ex culpa aliquip enim
+  /v2/users/login:
+    post:
+      tags:
+        - v2
+      summary: Create an authentication token
+      description: >
+        Creates and returns a bearer token in JWT format that you can use to
+        authenticate with Docker Hub APIs.
+
+
+        The returned token is used in the HTTP Authorization header like
+        `Authorization: Bearer {TOKEN}`.
+
+
+        Most Docker Hub APIs require this token either to consume or to get
+        detailed information. For example, to list images in a private
+        repository.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n    \"username\": \"myusername\",\n    \"password\":
+                \"hunter2\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                token: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        '401':
+          description: Unauthorized
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                details: Incorrect authentication credentials
+
+
+# curl https://registry.hub.docker.com/v2/repositories/library/ubuntu/tags

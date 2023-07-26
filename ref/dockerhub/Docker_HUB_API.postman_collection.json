@@ -1,0 +1,2466 @@
+{
+	"info": {
+		"_postman_id": "9574e087-2a50-4ecf-88b3-55f12a29d99e",
+		"name": "Docker HUB API",
+		"description": "Docker Hub is a service provided by Docker for finding and sharing container images with your team.\nIt is the world's largest library and community for container images.\nIn addition to the [Docker Hub UI](https://docs.docker.com/docker-hub/) and [Docker Hub CLI tool](https://github.com/docker/hub-tool#readme) (currently experimental),\nDocker provides an API that allows you to interact with Docker Hub.\nBrowse through the Docker Hub API documentation to explore the supported endpoints.\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6550175",
+		"_collection_link": "https://www.postman.com/dockerdev/workspace/docker-hub/collection/17990590-9574e087-2a50-4ecf-88b3-55f12a29d99e?action=share&creator=6550175&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "v2",
+			"item": [
+				{
+					"name": "access-tokens",
+					"item": [
+						{
+							"name": "{uuid}",
+							"item": [
+								{
+									"name": "Update a personal access token",
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"token_label\": \"My read only token\",\n    \"is_active\": false\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid",
+													"value": "tempor in sit in",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Updates a personal access token partially. You can either update the\ntoken's label or enable/disable it.\n"
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"token_label\": \"My read only token\",\n    \"is_active\": false\n}"
+												},
+												"url": {
+													"raw": "https://hub.docker.com//v2/access-tokens/:uuid",
+													"protocol": "https",
+													"host": [
+														"hub",
+														"docker",
+														"com"
+													],
+													"path": [
+														"",
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"uuid\": \"b30bbf97-506c-4ecd-aabc-842f3cb484fb\",\n \"client_id\": \"HUB\",\n \"creator_ip\": \"127.0.0.1\",\n \"creator_ua\": \"some user agent\",\n \"created_at\": \"laboris quis\",\n \"last_used\": null,\n \"generated_by\": \"manual\",\n \"is_active\": true,\n \"token\": \"a7a5ef25-8889-43a0-8cc7-f2a94268e861\",\n \"token_label\": \"My read only token\",\n \"scopes\": [\n  \"repo:read\"\n ]\n}"
+										},
+										{
+											"name": "Bad Request",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"token_label\": \"My read only token\",\n    \"is_active\": false\n}"
+												},
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"fields\": {},\n \"text\": \"deserunt ipsum\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"token_label\": \"My read only token\",\n    \"is_active\": false\n}"
+												},
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Get a personal access token",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid"
+												}
+											]
+										},
+										"description": "Returns a personal access token by UUID."
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"uuid\": \"b30bbf97-506c-4ecd-aabc-842f3cb484fb\",\n \"client_id\": \"HUB\",\n \"creator_ip\": \"127.0.0.1\",\n \"creator_ua\": \"some user agent\",\n \"created_at\": \"laboris quis\",\n \"last_used\": null,\n \"generated_by\": \"manual\",\n \"is_active\": true,\n \"token\": \"a7a5ef25-8889-43a0-8cc7-f2a94268e861\",\n \"token_label\": \"My read only token\",\n \"scopes\": [\n  \"repo:read\"\n ]\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Delete a personal access token",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens",
+												":uuid"
+											],
+											"variable": [
+												{
+													"key": "uuid",
+													"value": "tempor in sit in",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Deletes a personal access token permanently. This cannot be undone.\n"
+									},
+									"response": [
+										{
+											"name": "A successful response.",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "No Content",
+											"code": 204,
+											"_postman_previewlanguage": "text",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "text/plain"
+												}
+											],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/access-tokens/:uuid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"access-tokens",
+														":uuid"
+													],
+													"variable": [
+														{
+															"key": "uuid"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Create a personal access token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"token_label\": \"My read only token\",\n    \"scopes\": [\n        \"repo:read\"\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2/access-tokens",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"access-tokens"
+									]
+								},
+								"description": "Creates and returns a personal access token."
+							},
+							"response": [
+								{
+									"name": "Created",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"token_label\": \"My read only token\",\n    \"scopes\": [\n        \"repo:read\"\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"uuid\": \"b30bbf97-506c-4ecd-aabc-842f3cb484fb\",\n \"client_id\": \"HUB\",\n \"creator_ip\": \"127.0.0.1\",\n \"creator_ua\": \"some user agent\",\n \"created_at\": \"aliqua ullamco id\",\n \"last_used\": null,\n \"generated_by\": \"manual\",\n \"is_active\": true,\n \"token\": \"a7a5ef25-8889-43a0-8cc7-f2a94268e861\",\n \"token_label\": \"My read only token\",\n \"scopes\": [\n  \"repo:read\"\n ]\n}"
+								},
+								{
+									"name": "Bad Request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"token_label\": \"My read only token\",\n    \"scopes\": [\n        \"repo:read\"\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"fields\": {},\n \"text\": \"deserunt ipsum\"\n}"
+								},
+								{
+									"name": "Unauthorized",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"token_label\": \"My read only token\",\n    \"scopes\": [\n        \"repo:read\"\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get a list of personal access tokens",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v2/access-tokens?page=1&page_size=10",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"access-tokens"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "page_size",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Returns a paginated list of personal access tokens."
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens?page=1&page_size=10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"count\": 1,\n \"next\": \"laborum nisi laboris aute\",\n \"previous\": \"dolor culpa id ipsum\",\n \"active_count\": 1,\n \"results\": [\n  {\n   \"uuid\": \"b30bbf97-506c-4ecd-aabc-842f3cb484fb\",\n   \"client_id\": \"HUB\",\n   \"creator_ip\": \"127.0.0.1\",\n   \"creator_ua\": \"some user agent\",\n   \"created_at\": \"Duis minim\",\n   \"last_used\": null,\n   \"generated_by\": \"manual\",\n   \"is_active\": true,\n   \"token\": \"a7a5ef25-8889-43a0-8cc7-f2a94268e861\",\n   \"token_label\": \"My read only token\",\n   \"scopes\": [\n    \"repo:read\"\n   ]\n  },\n  {\n   \"uuid\": \"b30bbf97-506c-4ecd-aabc-842f3cb484fb\",\n   \"client_id\": \"HUB\",\n   \"creator_ip\": \"127.0.0.1\",\n   \"creator_ua\": \"some user agent\",\n   \"created_at\": \"aute cupidatat sed non consectetur\",\n   \"last_used\": null,\n   \"generated_by\": \"manual\",\n   \"is_active\": true,\n   \"token\": \"a7a5ef25-8889-43a0-8cc7-f2a94268e861\",\n   \"token_label\": \"My read only token\",\n   \"scopes\": [\n    \"repo:read\"\n   ]\n  }\n ]\n}"
+								},
+								{
+									"name": "Bad Request",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens?page=1&page_size=10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"fields\": {},\n \"text\": \"deserunt ipsum\"\n}"
+								},
+								{
+									"name": "Unauthorized",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/access-tokens?page=1&page_size=10",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"access-tokens"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "10"
+												}
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "namespaces/{namespace}",
+					"item": [
+						{
+							"name": "repositories/{repository}",
+							"item": [
+								{
+									"name": "images",
+									"item": [
+										{
+											"name": "Get details of repository's images",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images?status=active&currently_tagged=false&ordering=-digest&active_from=tempor in sit in&page=97793012&page_size=97793012",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"namespaces",
+														":namespace",
+														"repositories",
+														":repository",
+														"images"
+													],
+													"query": [
+														{
+															"key": "status",
+															"value": "active",
+															"description": "Filters to only show images of this status."
+														},
+														{
+															"key": "currently_tagged",
+															"value": "false",
+															"description": "Filters to only show images with:\n* `true`: at least 1 current tag.\n* `false`: no current tags.\n"
+														},
+														{
+															"key": "ordering",
+															"value": "-digest",
+															"description": "Orders the results by this property.\n\nPrefixing with `-` sorts by descending order.\n"
+														},
+														{
+															"key": "active_from",
+															"value": "tempor in sit in",
+															"description": "Sets the time from which an image must have been pushed or pulled to be counted as active.\n\nDefaults to 1 month before the current time.\n"
+														},
+														{
+															"key": "page",
+															"value": "97793012",
+															"description": "Page number to get. Defaults to 1."
+														},
+														{
+															"key": "page_size",
+															"value": "97793012",
+															"description": "Number of images to get per page. Defaults to 10. Max of 100."
+														}
+													],
+													"variable": [
+														{
+															"key": "namespace",
+															"value": "tempor in sit in",
+															"description": "(Required) Namespace of the repository."
+														},
+														{
+															"key": "repository",
+															"value": "tempor in sit in",
+															"description": "(Required) Name of the repository."
+														}
+													]
+												},
+												"description": "Gets details on the images in a repository."
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images?status=active&currently_tagged=false&ordering=-digest&active_from=tempor in sit in&page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images"
+															],
+															"query": [
+																{
+																	"key": "status",
+																	"value": "active"
+																},
+																{
+																	"key": "currently_tagged",
+																	"value": "false"
+																},
+																{
+																	"key": "ordering",
+																	"value": "-digest"
+																},
+																{
+																	"key": "active_from",
+																	"value": "tempor in sit in"
+																},
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"count\": 100,\n \"next\": \"https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images?&page=4&page_size=20\",\n \"previous\": \"https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images?&page=2&page_size=20\",\n \"results\": [\n  {\n   \"namespace\": \"mynamespace\",\n   \"repository\": \"myrepo\",\n   \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n   \"tags\": [\n    {\n     \"tag\": \"latest\",\n     \"is_current\": true\n    },\n    {\n     \"tag\": \"latest\",\n     \"is_current\": true\n    }\n   ],\n   \"last_pushed\": \"2021-02-24T22:05:27.526308Z\",\n   \"last_pulled\": \"2021-02-24T23:16:10.200008Z\",\n   \"status\": \"active\"\n  },\n  {\n   \"namespace\": \"mynamespace\",\n   \"repository\": \"myrepo\",\n   \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n   \"tags\": [\n    {\n     \"tag\": \"latest\",\n     \"is_current\": true\n    },\n    {\n     \"tag\": \"latest\",\n     \"is_current\": true\n    }\n   ],\n   \"last_pushed\": \"2021-02-24T22:05:27.526308Z\",\n   \"last_pulled\": \"2021-02-24T23:16:10.200008Z\",\n   \"status\": \"active\"\n  }\n ]\n}"
+												},
+												{
+													"name": "Unauthorized - user does not have read access to the namespace.",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images?status=active&currently_tagged=true&ordering=-digest&active_from=tempor in sit in&page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images"
+															],
+															"query": [
+																{
+																	"key": "status",
+																	"value": "active"
+																},
+																{
+																	"key": "currently_tagged",
+																	"value": "true"
+																},
+																{
+																	"key": "ordering",
+																	"value": "-digest"
+																},
+																{
+																	"key": "active_from",
+																	"value": "tempor in sit in"
+																},
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																}
+															]
+														}
+													},
+													"status": "Unauthorized",
+													"code": 401,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+												},
+												{
+													"name": "Forbidden - this API is only available to users on Pro or Team plans.",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images?status=active&currently_tagged=true&ordering=-digest&active_from=tempor in sit in&page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images"
+															],
+															"query": [
+																{
+																	"key": "status",
+																	"value": "active"
+																},
+																{
+																	"key": "currently_tagged",
+																	"value": "true"
+																},
+																{
+																	"key": "ordering",
+																	"value": "-digest"
+																},
+																{
+																	"key": "active_from",
+																	"value": "tempor in sit in"
+																},
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																}
+															]
+														}
+													},
+													"status": "Forbidden",
+													"code": 403,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+												}
+											]
+										},
+										{
+											"name": "Get image's tags",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images/:digest/tags?page=97793012&page_size=97793012",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"namespaces",
+														":namespace",
+														"repositories",
+														":repository",
+														"images",
+														":digest",
+														"tags"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "97793012",
+															"description": "Page number to get. Defaults to 1."
+														},
+														{
+															"key": "page_size",
+															"value": "97793012",
+															"description": "Number of images to get per page. Defaults to 10. Max of 100."
+														}
+													],
+													"variable": [
+														{
+															"key": "namespace",
+															"value": "tempor in sit in",
+															"description": "(Required) Namespace of the repository."
+														},
+														{
+															"key": "repository",
+															"value": "tempor in sit in",
+															"description": "(Required) Name of the repository."
+														},
+														{
+															"key": "digest",
+															"value": "tempor in sit in",
+															"description": "(Required) Digest of the image."
+														}
+													]
+												},
+												"description": "Gets current and historical tags for an image."
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images/:digest/tags?page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images",
+																":digest",
+																"tags"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																},
+																{
+																	"key": "digest"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"count\": 100,\n \"next\": \"https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images/sha256:mydigest/tags?&page=4&page_size=20\",\n \"previous\": \"https://hub.docker.com/v2/namespaces/mynamespace/repositories/myrepo/images/sha256:mydigest/tags?&page=2&page_size=20\",\n \"results\": [\n  {\n   \"tag\": \"latest\",\n   \"is_current\": true\n  },\n  {\n   \"tag\": \"latest\",\n   \"is_current\": true\n  }\n ]\n}"
+												},
+												{
+													"name": "Unauthorized - user does not have read access to the namespace",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images/:digest/tags?page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images",
+																":digest",
+																"tags"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																},
+																{
+																	"key": "digest"
+																}
+															]
+														}
+													},
+													"status": "Unauthorized",
+													"code": 401,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+												},
+												{
+													"name": "Forbidden - this API is only available to users on Pro or Team plans",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images/:digest/tags?page=97793012&page_size=97793012",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"v2",
+																"namespaces",
+																":namespace",
+																"repositories",
+																":repository",
+																"images",
+																":digest",
+																"tags"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "97793012"
+																},
+																{
+																	"key": "page_size",
+																	"value": "97793012"
+																}
+															],
+															"variable": [
+																{
+																	"key": "namespace"
+																},
+																{
+																	"key": "repository"
+																},
+																{
+																	"key": "digest"
+																}
+															]
+														}
+													},
+													"status": "Forbidden",
+													"code": 403,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Get summary of repository's images",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images-summary?active_from=tempor in sit in",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"namespaces",
+												":namespace",
+												"repositories",
+												":repository",
+												"images-summary"
+											],
+											"query": [
+												{
+													"key": "active_from",
+													"value": "tempor in sit in",
+													"description": "Sets the time from which an image must have been pushed or pulled to be counted as active.\n\nDefaults to 1 month before the current time.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "namespace",
+													"value": "tempor in sit in",
+													"description": "(Required) Namespace of the repository."
+												},
+												{
+													"key": "repository",
+													"value": "tempor in sit in",
+													"description": "(Required) Name of the repository."
+												}
+											]
+										},
+										"description": "Gets the number of images in a repository and the number of images counted as active and inactive.\n"
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images-summary?active_from=tempor in sit in",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"namespaces",
+														":namespace",
+														"repositories",
+														":repository",
+														"images-summary"
+													],
+													"query": [
+														{
+															"key": "active_from",
+															"value": "tempor in sit in"
+														}
+													],
+													"variable": [
+														{
+															"key": "namespace"
+														},
+														{
+															"key": "repository"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"active_from\": \"2021-01-25T14:25:37.076343059Z\",\n \"statistics\": {\n  \"total\": 3,\n  \"active\": 2,\n  \"inactive\": 1\n }\n}"
+										},
+										{
+											"name": "Unauthorized - user does not have read access to the namespace",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/v2/namespaces/:namespace/repositories/:repository/images-summary?active_from=tempor in sit in",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"v2",
+														"namespaces",
+														":namespace",
+														"repositories",
+														":repository",
+														"images-summary"
+													],
+													"query": [
+														{
+															"key": "active_from",
+															"value": "tempor in sit in"
+														}
+													],
+													"variable": [
+														{
+															"key": "namespace"
+														},
+														{
+															"key": "repository"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Delete images",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"dry_run\": false,\n    \"active_from\": \"2020-12-01T12:00:00Z\",\n    \"manifests\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        }\n    ],\n    \"ignore_warnings\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2/namespaces/:namespace/delete-images",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"namespaces",
+										":namespace",
+										"delete-images"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "tempor in sit in",
+											"description": "(Required) Namespace of the repository."
+										}
+									]
+								},
+								"description": "Deletes one or more images within a namespace. This is currently limited to a single repostiory.\n\nIf you attempt to delete images that are marked as active or are currently tagged, the deletion does not happen and it displays the warnings.\nTo continue with the deletion, you must ignore these warnings by putting them in the `ignore_warnings` property.\n\nDeleting a currently tagged image deletes the tag from the repository.\n\nYou cannot ignore errors. It is not possible to directly delete children of multi-arch images.\n"
+							},
+							"response": [
+								{
+									"name": "Deletion completed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"dry_run\": false,\n    \"active_from\": \"2020-12-01T12:00:00Z\",\n    \"manifests\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        }\n    ],\n    \"ignore_warnings\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/namespaces/:namespace/delete-images",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"namespaces",
+												":namespace",
+												"delete-images"
+											],
+											"variable": [
+												{
+													"key": "namespace"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"dry_run\": false,\n \"metrics\": {\n  \"manifest_deletes\": 3,\n  \"manifest_errors\": 0,\n  \"tag_deletes\": 1,\n  \"tag_errors\": 0\n }\n}"
+								},
+								{
+									"name": "Deletion not possible",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"dry_run\": false,\n    \"active_from\": \"2020-12-01T12:00:00Z\",\n    \"manifests\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        }\n    ],\n    \"ignore_warnings\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/namespaces/:namespace/delete-images",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"namespaces",
+												":namespace",
+												"delete-images"
+											],
+											"variable": [
+												{
+													"key": "namespace"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"txnid\": \"proident cupidatat\",\n \"message\": \"pariatur Lorem cupidatat laborum\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"aute aliquip incididunt\",\n  \"api_call_name\": \"magna irure quis id cillum\",\n  \"api_call_start\": \"fugiat est aute deserunt dolore\",\n  \"api_call_txnid\": \"non fugiat in anim\",\n  \"type\": \"validation\",\n  \"details\": {\n   \"errors\": [\n    {\n     \"repository\": \"myrepo\",\n     \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n     \"error\": \"not_found\"\n    },\n    {\n     \"repository\": \"myrepo\",\n     \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n     \"error\": \"not_found\"\n    }\n   ],\n   \"warnings\": [\n    {\n     \"repository\": \"myrepo\",\n     \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n     \"warning\": \"current_tag\",\n     \"tags\": [\n      \"latest\",\n      \"latest\"\n     ]\n    },\n    {\n     \"repository\": \"myrepo\",\n     \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n     \"warning\": \"current_tag\",\n     \"tags\": [\n      \"latest\",\n      \"latest\"\n     ]\n    }\n   ]\n  }\n }\n}"
+								},
+								{
+									"name": "Forbidden - this API is only available to users on Pro or Team plans",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"dry_run\": false,\n    \"active_from\": \"2020-12-01T12:00:00Z\",\n    \"manifests\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\"\n        }\n    ],\n    \"ignore_warnings\": [\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        },\n        {\n            \"repository\": \"myrepo\",\n            \"digest\": \"sha256:1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr\",\n            \"warning\": \"current_tag\",\n            \"tags\": [\n                \"latest\",\n                \"latest\"\n            ]\n        }\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/namespaces/:namespace/delete-images",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"namespaces",
+												":namespace",
+												"delete-images"
+											],
+											"variable": [
+												{
+													"key": "namespace"
+												}
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"txnid\": \"pariatur aliquip\",\n \"message\": \"mollit aliquip\",\n \"errinfo\": {\n  \"api_call_docker_id\": \"Excepteur aliqua ut ea Ut\",\n  \"api_call_name\": \"dolore mollit Duis consequat laborum\",\n  \"api_call_start\": \"labore Excepteur adipisicing commodo\",\n  \"api_call_txnid\": \"sit in cillum\"\n }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "auditlogs/{account}",
+					"item": [
+						{
+							"name": "Returns list of audit log  events.",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v2/auditlogs/:account?action=tempor in sit in&name=tempor in sit in&actor=tempor in sit in&from=1965-07-27T06:51:19.907Z&to=1965-07-27T06:51:19.907Z&page=1&page_size=25",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"auditlogs",
+										":account"
+									],
+									"query": [
+										{
+											"key": "action",
+											"value": "tempor in sit in",
+											"description": "action name one of [\"repo.tag.push\", ...]. Optional parameter to filter specific audit log actions."
+										},
+										{
+											"key": "name",
+											"value": "tempor in sit in",
+											"description": "name. Optional parameter to filter audit log events to a specific name. For repository events, this is the name of the repository. For organization events, this is the name of the organization. For team member events, this is the username of the team member."
+										},
+										{
+											"key": "actor",
+											"value": "tempor in sit in",
+											"description": "actor name. Optional parameter to filter audit log events to the specific user who triggered the event."
+										},
+										{
+											"key": "from",
+											"value": "1965-07-27T06:51:19.907Z",
+											"description": "Start of the time window you wish to query audit events for."
+										},
+										{
+											"key": "to",
+											"value": "1965-07-27T06:51:19.907Z",
+											"description": "End of the time window you wish to query audit events for."
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "page - specify page number. Page number to get."
+										},
+										{
+											"key": "page_size",
+											"value": "25",
+											"description": "page_size - specify page size. Number of events to return per page."
+										}
+									],
+									"variable": [
+										{
+											"key": "account",
+											"value": "tempor in sit in",
+											"description": "(Required) Namespace to query audit logs for."
+										}
+									]
+								},
+								"description": "Get audit log events for a given namespace."
+							},
+							"response": [
+								{
+									"name": "A successful response.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account?action=tempor in sit in&name=tempor in sit in&actor=tempor in sit in&from=1965-07-27T06:51:19.907Z&to=1965-07-27T06:51:19.907Z&page=1&page_size=25",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account"
+											],
+											"query": [
+												{
+													"key": "action",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "name",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "actor",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "from",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "to",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "25"
+												}
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"logs\": [\n  {\n   \"account\": \"docker\",\n   \"action\": \"repo.tag.push\",\n   \"name\": \"docker/example\",\n   \"actor\": \"docker\",\n   \"data\": {\n    \"digest\": \"sha256:c1ae9c435032a276f80220c7d9b40f76266bbe79243d34f9cda30b76fe114dfa\",\n    \"tag\": \"latest\"\n   },\n   \"timestamp\": \"2021-02-19T01:34:35Z\",\n   \"action_description\": \"pushed the tag latest with the digest sha256:c1ae9c435032a to the repository docker/example\"\n  }\n ]\n}"
+								},
+								{
+									"name": "Untitled Example",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account?action=tempor in sit in&name=tempor in sit in&actor=tempor in sit in&from=1965-07-27T06:51:19.907Z&to=1965-07-27T06:51:19.907Z&page=1&page_size=25",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account"
+											],
+											"query": [
+												{
+													"key": "action",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "name",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "actor",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "from",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "to",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "25"
+												}
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Too Many Requests",
+									"code": 429,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"Rate limit exceeded\",\n \"error\": false\n}"
+								},
+								{
+									"name": "Untitled Example",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account?action=tempor in sit in&name=tempor in sit in&actor=tempor in sit in&from=1965-07-27T06:51:19.907Z&to=1965-07-27T06:51:19.907Z&page=1&page_size=25",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account"
+											],
+											"query": [
+												{
+													"key": "action",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "name",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "actor",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "from",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "to",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "25"
+												}
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{}"
+								},
+								{
+									"name": "An unexpected error response.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account?action=tempor in sit in&name=tempor in sit in&actor=tempor in sit in&from=1965-07-27T06:51:19.907Z&to=1965-07-27T06:51:19.907Z&page=1&page_size=25",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account"
+											],
+											"query": [
+												{
+													"key": "action",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "name",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "actor",
+													"value": "tempor in sit in"
+												},
+												{
+													"key": "from",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "to",
+													"value": "1965-07-27T06:51:19.907Z"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "page_size",
+													"value": "25"
+												}
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"code\": -37352657,\n \"message\": \"enim aliqua\",\n \"details\": [\n  {\n   \"type_url\": \"aliqua quis sunt nostrud\",\n   \"value\": \"ad magna ut Duis\"\n  },\n  {\n   \"type_url\": \"in magna ea tempor cillum\",\n   \"value\": \"Lorem\"\n  }\n ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Returns list of audit log actions.",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v2/auditlogs/:account/actions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"auditlogs",
+										":account",
+										"actions"
+									],
+									"variable": [
+										{
+											"key": "account",
+											"value": "tempor in sit in",
+											"description": "(Required) Namespace to query audit log actions for."
+										}
+									]
+								},
+								"description": "Get audit log actions for a namespace to be used as a filter for querying audit events."
+							},
+							"response": [
+								{
+									"name": "A successful response.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account/actions",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account",
+												"actions"
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"actions\": {\n  \"org\": {\n   \"actions\": [\n    {\n     \"name\": \"team.create\",\n     \"description\": \"contains team create events\",\n     \"label\": \"Team Created\"\n    },\n    {\n     \"name\": \"team.delete\",\n     \"description\": \"contains team delete events\",\n     \"label\": \"Team Deleted\"\n    },\n    {\n     \"name\": \"team.member.add\",\n     \"description\": \"contains team member add events\",\n     \"label\": \"Team Member Added\"\n    },\n    {\n     \"name\": \"team.member.remove\",\n     \"description\": \"contains team member remove events\",\n     \"label\": \"Team Member Removed\"\n    },\n    {\n     \"name\": \"team.member.invite\",\n     \"description\": \"contains team member invite events\",\n     \"label\": \"Team Member Invited\"\n    },\n    {\n     \"name\": \"member.removed\",\n     \"description\": \"contains org member remove events\",\n     \"label\": \"Organization Member Removed\"\n    },\n    {\n     \"name\": \"create\",\n     \"description\": \"contains organization create events\",\n     \"label\": \"Organization Created\"\n    }\n   ],\n   \"label\": \"Organization\"\n  },\n  \"repo\": {\n   \"actions\": [\n    {\n     \"name\": \"create\",\n     \"description\": \"contains repository create events\",\n     \"label\": \"Repository Created\"\n    },\n    {\n     \"name\": \"delete\",\n     \"description\": \"contains repository delete events\",\n     \"label\": \"Repository Deleted\"\n    },\n    {\n     \"name\": \"change_privacy\",\n     \"description\": \"contains repository privacy change events\",\n     \"label\": \"Privacy Changed\"\n    },\n    {\n     \"name\": \"tag.push\",\n     \"description\": \"contains image tag push events\",\n     \"label\": \"Tag Pushed\"\n    },\n    {\n     \"name\": \"tag.delete\",\n     \"description\": \"contains image tag delete events\",\n     \"label\": \"Tag Deleted\"\n    }\n   ],\n   \"label\": \"Repository\"\n  }\n }\n}"
+								},
+								{
+									"name": "Untitled Example",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account/actions",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account",
+												"actions"
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Too Many Requests",
+									"code": 429,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"Rate limit exceeded\",\n \"error\": false\n}"
+								},
+								{
+									"name": "Untitled Example",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account/actions",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account",
+												"actions"
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{}"
+								},
+								{
+									"name": "An unexpected error response.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/auditlogs/:account/actions",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"auditlogs",
+												":account",
+												"actions"
+											],
+											"variable": [
+												{
+													"key": "account"
+												}
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"code\": 43996722,\n \"message\": \"magna exercitation\",\n \"details\": [\n  {\n   \"type_url\": \"enim Duis voluptate quis dolor\",\n   \"value\": \"cillum laborum quis id\"\n  },\n  {\n   \"type_url\": \"ea Duis cillum mollit\",\n   \"value\": \"eiusmod do esse nisi\"\n  }\n ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "orgs/{name}/settings",
+					"item": [
+						{
+							"name": "Get organization settings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"orgs",
+										":name",
+										"settings"
+									],
+									"variable": [
+										{
+											"key": "name",
+											"value": "tempor in sit in",
+											"description": "(Required) Name of the organization."
+										}
+									]
+								},
+								"description": "Returns organization settings by name.\n"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"restricted_images\": {\n  \"enabled\": true,\n  \"allow_official_images\": true,\n  \"allow_verified_publishers\": true\n }\n}"
+								},
+								{
+									"name": "Unauthorized",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								},
+								{
+									"name": "Forbidden",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								},
+								{
+									"name": "Not Found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Update organization settings",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"restricted_images\": {\n        \"enabled\": true,\n        \"allow_official_images\": true,\n        \"allow_verified_publishers\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"orgs",
+										":name",
+										"settings"
+									],
+									"variable": [
+										{
+											"key": "name",
+											"value": "tempor in sit in",
+											"description": "(Required) Name of the organization."
+										}
+									]
+								},
+								"description": "Updates an organization's settings. Some settings are only used when the organization is on a business plan.\n\n***Only users in the \"owners\" group of the organization can use this endpoint.***\n\nThe following settings are only used on a business plan:\n- `restricted_images`\n"
+							},
+							"response": [
+								{
+									"name": "OK",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"restricted_images\": {\n        \"enabled\": true,\n        \"allow_official_images\": true,\n        \"allow_verified_publishers\": true\n    }\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"restricted_images\": {\n  \"enabled\": true,\n  \"allow_official_images\": true,\n  \"allow_verified_publishers\": true\n }\n}"
+								},
+								{
+									"name": "Unauthorized",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"restricted_images\": {\n        \"enabled\": true,\n        \"allow_official_images\": true,\n        \"allow_verified_publishers\": true\n    }\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								},
+								{
+									"name": "Forbidden",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"restricted_images\": {\n        \"enabled\": true,\n        \"allow_official_images\": true,\n        \"allow_verified_publishers\": true\n    }\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Forbidden",
+									"code": 403,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								},
+								{
+									"name": "Not Found",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"restricted_images\": {\n        \"enabled\": true,\n        \"allow_official_images\": true,\n        \"allow_verified_publishers\": true\n    }\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v2/orgs/:name/settings",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v2",
+												"orgs",
+												":name",
+												"settings"
+											],
+											"variable": [
+												{
+													"key": "name"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"detail\": \"quis ipsum\",\n \"message\": \"ex culpa aliquip enim\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Create an authentication token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"myusername\",\n    \"password\": \"hunter2\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v2/users/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v2",
+								"users",
+								"login"
+							]
+						},
+						"description": "Creates and returns a bearer token in JWT format that you can use to authenticate with Docker Hub APIs.\n\nThe returned token is used in the HTTP Authorization header like `Authorization: Bearer {TOKEN}`.\n\nMost Docker Hub APIs require this token either to consume or to get detailed information. For example, to list images in a private repository.\n"
+					},
+					"response": [
+						{
+							"name": "Authentication successful",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"myusername\",\n    \"password\": \"hunter2\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2/users/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"\n}"
+						},
+						{
+							"name": "Authentication failed",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"myusername\",\n    \"password\": \"hunter2\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v2/users/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v2",
+										"users",
+										"login"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n \"details\": \"Incorrect authentication credentials\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://hub.docker.com/",
+			"type": "string"
+		}
+	]
+}

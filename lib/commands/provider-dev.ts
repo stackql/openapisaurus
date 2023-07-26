@@ -129,7 +129,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                 resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
             
                                 // map sqlVerbs for operation
-                                resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName);
+                                resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName, methodKeyVal, debug);
             
                             } catch (e) {
                                 if (e !== 'Break') throw e

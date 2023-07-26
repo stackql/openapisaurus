@@ -84,6 +84,6 @@ add the email to the service account created and click Assign Role
 5. Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of the JSON key file downloaded in step 1.
 
 ```
-export GOOGLE_APPLICATION_CREDENTIALS=creds/stackql-security-reviewer.json
+export GOOGLE_CREDENTIALS=$(cat creds/stackql-security-reviewer.json)
 ./stackql shell
 ```

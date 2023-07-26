@@ -1,0 +1,43 @@
+@startuml
+class "x-stackQL-resources" as A {
+  +resources
+}
+
+class resource {
+  +methods
+  +sqlVerbs
+}
+
+class method {
+  +operation
+  +response
+}
+
+class operation {
+  -- OpenAPI Document --
+  +path
+  +verb
+}
+
+class response {
+  +mediaType
+  +openAPIDocKey
+  +objectKey
+}
+
+class sqlVerb {
+  +select
+  +insert
+  +update
+  +delete
+  +exec
+}
+
+A --> resource : contains
+resource --> method : has
+resource --> sqlVerb : has
+method --> operation : references
+method --> response : informs about
+sqlVerb --> method : maps to
+sqlVerb --> "exec (method)" : accessed by
+@enduml
