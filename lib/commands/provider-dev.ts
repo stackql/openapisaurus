@@ -101,36 +101,39 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                             try {
                                 // get resource name
                                 const [resource, resTokens] = getResourceName(providerName, opItem, service, resDiscriminator, pathKey, debug, logger);
+
+                                if (resource === 'skip_this_resource') {
+                                    logger.info(`skipping resource: ${resource}`);
+                                } else {
+                                    logger.info(`processing resource: ${resource}`);
         
-                                logger.info(`processing resource: ${resource}`);
-        
-                                if (!Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], resource)){
-                                    // first occurrence of the resource, init resource
-                                    resData = addResource(resData, providerName, service, resource, resTokens);
-                                }
-                                                        
-                                const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
-        
-                                // get unique operation id 
-                                let methodKeyVal = (opItem as any)[methodKey];
-                                
-                                if (!methodKeyVal){
-                                    logger.warning(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
-                                    methodKeyVal = verbKey;
-                                }
-                                
-                                debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
-        
-                                const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, providerName, service, resource);
-                              
-                                debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
-        
-                                // add operation to resource
-                                resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
+                                    if (!Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], resource)){
+                                        // first occurrence of the resource, init resource
+                                        resData = addResource(resData, providerName, service, resource, resTokens);
+                                    }
+                                                            
+                                    const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
             
-                                // map sqlVerbs for operation
-                                resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName, methodKeyVal, debug);
+                                    // get unique operation id 
+                                    let methodKeyVal = (opItem as any)[methodKey];
+                                    
+                                    if (!methodKeyVal){
+                                        logger.warning(`methodKey (${methodKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
+                                        methodKeyVal = verbKey;
+                                    }
+                                    
+                                    debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
             
+                                    const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, providerName, service, resource);
+                                  
+                                    debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
+            
+                                    // add operation to resource
+                                    resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
+                
+                                    // map sqlVerbs for operation
+                                    resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName, methodKeyVal, debug);
+                                }
                             } catch (e) {
                                 if (e !== 'Break') throw e
                             }

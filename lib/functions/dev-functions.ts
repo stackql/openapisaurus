@@ -20,8 +20,8 @@ import * as types from "../types/types.ts";
 
 export function initProviderData(providerName: string, providerVersion: string, providerConfig: any): types.ProviderData {
   const providerData: types.ProviderData = {
-    id: providerName,
-    name: providerName,
+    id: providerName === 'googleapis.com' ? 'google' : providerName,
+    name: providerName === 'googleapis.com' ? 'google' : providerName,
     version: providerVersion,
     providerServices: {},
     config: providerConfig,
@@ -47,11 +47,15 @@ export function getResourceName(
   [string, string[]] {
     const resTokens: string[] = [];
     let resourceName = service;
+    
     if (operation['x-stackQL-resource']) {
       // x-stackQL-resource tag exists
       debug ? logger.debug(`x-stackQL-resource found, using ${operation['x-stackQL-resource']}`) : null;
       resourceName = operation['x-stackQL-resource'];
-    } else if(resDiscriminator == 'path_tokens'){
+      return [resourceName, resTokens];
+    }
+    
+    if(resDiscriminator == 'path_tokens'){
       // path_tokens or default resource naming mechanism
       let pathTokens: string[] = [];
         pathTokens = getMeaningfulPathTokens(pathKey);
@@ -109,6 +113,11 @@ export function getOperationId(
     service: string,
     resource: string
   ): string {
+    
+    if (apiPaths[pathKey][verbKey]['x-stackQL-method']) {
+      return apiPaths[pathKey][verbKey]['x-stackQL-method'];
+    }
+
     let operationId = apiPaths[pathKey][verbKey][methodKey];
     if (operationId) {
       operationId = operationId

@@ -37,7 +37,20 @@ true
 ### Inspect
 
 ```
+export GOOGLE_CREDENTIALS=`cat creds/stackql-security-reviewer.json`
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
+SELECT id, name, status FROM google.compute.instances WHERE project = 'stackql-demo' AND zone = 'australia-southeast1-a';
 ```
+
+# poopulate creds var
+$env:GOOGLE_CREDENTIALS = Get-Content -Path ".\creds\stackql-security-reviewer.json" -Raw
+Write-Output $env:GOOGLE_CREDENTIALS
+
+# specify local registry from cwd
+$PROVIDER_REGISTRY_ROOT_DIR = (Get-Location).Path -replace '\\', '/'
+Write-Output $PROVIDER_REGISTRY_ROOT_DIR
+$REG_STR = '{"url": "file://'+ $PROVIDER_REGISTRY_ROOT_DIR +'", "localDocRoot": "'+ $PROVIDER_REGISTRY_ROOT_DIR +'", "verifyConfig": {"nopVerify": true}}'
+Write-Output $REG_STR
+stackql.exe shell --registry=$REG_STR
