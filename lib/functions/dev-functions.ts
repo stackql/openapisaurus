@@ -201,9 +201,18 @@ export function addOperation(
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = opRef;
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
+    
     // get objectKey if exists (get only)
     if (verbKey == 'get'){
-      const objectKey = getObjectKey(providerName, service, resource, operationId, debug);
+
+      let objectKey: string | boolean = false;
+
+      if(apiPaths[pathKey][verbKey]['x-stackQL-objectKey']){
+        objectKey = apiPaths[pathKey][verbKey]['x-stackQL-objectKey'];
+      } else {
+        objectKey = getObjectKey(providerName, service, resource, operationId, debug);
+      }
+
       if (objectKey) {
         resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = objectKey;
         // add hidden method for unaltered response

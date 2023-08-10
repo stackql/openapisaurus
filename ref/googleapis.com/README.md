@@ -31,18 +31,22 @@ sh test-provider.sh \
 google \
 false \
 /mnt/c/LocalGitRepos/stackql/openapisaurus \
-true
+true > ../openapisaurus/google-test-results.txt
 ```
 
 ### Inspect
 
 ```
-export GOOGLE_CREDENTIALS=`cat creds/stackql-security-reviewer.json`
+export GOOGLE_CREDENTIALS=$(cat creds/stackql-security-reviewer.json)
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
 SELECT id, name, status FROM google.compute.instances WHERE project = 'stackql-demo' AND zone = 'australia-southeast1-a';
 ```
+
+export DEV_REG='{"url": "https://registry-dev.stackql.app/providers"}'
+./stackql --registry="${DEV_REG}" shell
+
 
 # poopulate creds var
 $env:GOOGLE_CREDENTIALS = Get-Content -Path ".\creds\stackql-security-reviewer.json" -Raw
