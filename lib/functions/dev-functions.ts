@@ -66,6 +66,17 @@ export function getResourceName(
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
         });
         debug ? logger.debug(`path_tokens used for resource name: ${resourceName}`) : null;
+    } else if(resDiscriminator == 'last_path_token') {
+      let pathTokens: string[] = [];
+        pathTokens = getMeaningfulPathTokens(pathKey);
+        pathTokens.forEach(token => {
+          if (token != service && token.length > 0){
+            resTokens.push(token);
+          }       
+          // set resource name to last token in resTokens
+          resourceName = resTokens.length > 0 ? resTokens[resTokens.length - 1] : service;
+        });
+        debug ? logger.debug(`last_path_token used for resource name: ${resourceName}`) : null;
     } else {
       // resource discriminator provided
       let resValue;
@@ -203,7 +214,7 @@ export function addOperation(
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
     
     // get objectKey if exists (get only)
-    if (verbKey == 'get'){
+    if (verbKey == 'get' || operationId == 'get_iam_policy'){
 
       let objectKey: string | boolean = false;
 

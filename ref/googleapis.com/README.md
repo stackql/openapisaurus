@@ -58,3 +58,9 @@ Write-Output $PROVIDER_REGISTRY_ROOT_DIR
 $REG_STR = '{"url": "file://'+ $PROVIDER_REGISTRY_ROOT_DIR +'", "localDocRoot": "'+ $PROVIDER_REGISTRY_ROOT_DIR +'", "verifyConfig": {"nopVerify": true}}'
 Write-Output $REG_STR
 stackql.exe shell --registry=$REG_STR
+
+gcloud auth activate-service-account --key-file=creds/stackql-security-reviewer.json
+gcloud config set account javen@stackql.io
+gcloud auth revoke stackql-security-reviewer@stackql.iam.gserviceaccount.com
+
+select * from google.cloudresourcemanager.projects where parent = 'organizations/141318256085'
