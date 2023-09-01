@@ -38,6 +38,7 @@ true > ../openapisaurus/google-test-results.txt
 
 ```
 export GOOGLE_CREDENTIALS=$(cat creds/stackql-security-reviewer.json)
+export GOOGLE_CREDENTIALS=$(cat creds/p-security-reviewer.json)
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"

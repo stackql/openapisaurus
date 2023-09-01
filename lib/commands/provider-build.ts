@@ -123,32 +123,61 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 
                 const newSqlVerbs: types.NewSqlVerbs = {}; 
                   
+                // Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
+
+                //     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
+
+                //     const newSqlVerb: { $ref: string }[] = [];
+                //     const tokens: string[] = [];
+                    
+                //     xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
+                //         if (sqlVerbObj.enabled) {
+                //             tokens.push(sqlVerbObj.tokens);
+                //             const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
+                //             newSqlVerb.push(thisRef);
+                //         }
+                //     });
+                    
+                //     // check if tokens are unique
+                //     if (tokens.length !== new Set(tokens).size) {
+                //         logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
+                //         logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
+                //         logger.error(`tokens: ${JSON.stringify(tokens)}`);    
+                //         throw 'Break';
+                //     }
+                    
+                //     newSqlVerbs[sqlVerb] = newSqlVerb;
+                // });
+
                 Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
 
                     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
-
+                  
                     const newSqlVerb: { $ref: string }[] = [];
                     const tokens: string[] = [];
-                    
+                  
+                    // Sort by numTokens in descending order
+                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].sort((a: types.SqlVerbObj, b: types.SqlVerbObj) => b.numTokens - a.numTokens);
+                  
                     xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
-                        if (sqlVerbObj.enabled) {
-                            tokens.push(sqlVerbObj.tokens);
-                            const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
-                            newSqlVerb.push(thisRef);
-                        }
+                      if (sqlVerbObj.enabled) {
+                        tokens.push(sqlVerbObj.tokens);
+                        const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
+                        newSqlVerb.push(thisRef);
+                      }
                     });
-                    
+                  
                     // check if tokens are unique
                     if (tokens.length !== new Set(tokens).size) {
-                        logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
-                        logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
-                        logger.error(`tokens: ${JSON.stringify(tokens)}`);    
-                        throw 'Break';
+                      logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
+                      logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
+                      logger.error(`tokens: ${JSON.stringify(tokens)}`);    
+                      throw 'Break';
                     }
-                    
-                    newSqlVerbs[sqlVerb] = newSqlVerb;
-                });
                   
+                    newSqlVerbs[sqlVerb] = newSqlVerb;
+                  });                
+
                 xStackQLResources[xStackQLResKey]['sqlVerbs'] = newSqlVerbs;
             });
             
