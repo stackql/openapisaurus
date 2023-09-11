@@ -69,6 +69,11 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                     if (operations.includes(verbKey) && !isOperationExcluded(exclude, opItem, svcDiscriminator)){
                         // determine service using discriminator
                         const [service, serviceDesc] = retServiceNameAndDesc(providerName, opItem, pathKey, svcDiscriminator, apiDoc.tags || [], debug, logger);
+                        // if service is 'skip' bypass
+                        if (service == 'skip') {
+                            logger.warning(`skipping  service : ${service}`);
+                            return;
+                        }
                         logger.info(`service name : ${service}`);
                         debug ? logger.debug(`service desc : ${serviceDesc}`) : null;
         

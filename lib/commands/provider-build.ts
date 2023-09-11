@@ -6,7 +6,7 @@ import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
 import { createDestDir } from "../util/fs.ts";
 import { providerVersion } from "../types/constants.ts";
-import { fixAllOffIssue } from "../functions/build-functions.ts";
+import { fixSchemaIssues, fixPathIssues } from "../functions/build-functions.ts";
 
 export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 
@@ -72,6 +72,9 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         const service = dirEntry.name;
         logger.info(`processing ${service}...`);
 
+        // check provider data if we should skip this service
+        
+
         const outputData: Record<string, any> = {};
 
         // get openapi doc
@@ -94,7 +97,10 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         
 
         // fix AllOf issue
-        outputData['components']['schemas'] = fixAllOffIssue(outputData['components']['schemas']);
+        outputData['components']['schemas'] = fixSchemaIssues(outputData['components']['schemas']);
+
+        // fix path request body issue
+        outputData['paths'] = fixPathIssues(outputData['paths']);
 
         // replace servers?
         if (servers){
@@ -123,32 +129,6 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 
                 const newSqlVerbs: types.NewSqlVerbs = {}; 
                   
-                // Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
-
-                //     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
-
-                //     const newSqlVerb: { $ref: string }[] = [];
-                //     const tokens: string[] = [];
-                    
-                //     xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
-                //         if (sqlVerbObj.enabled) {
-                //             tokens.push(sqlVerbObj.tokens);
-                //             const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
-                //             newSqlVerb.push(thisRef);
-                //         }
-                //     });
-                    
-                //     // check if tokens are unique
-                //     if (tokens.length !== new Set(tokens).size) {
-                //         logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
-                //         logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
-                //         logger.error(`tokens: ${JSON.stringify(tokens)}`);    
-                //         throw 'Break';
-                //     }
-                    
-                //     newSqlVerbs[sqlVerb] = newSqlVerb;
-                // });
-
                 Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
 
                     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;

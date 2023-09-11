@@ -6,3 +6,4 @@ export * as linode from './linode.ts';
 export * as purestorage from './purestorage.ts';
 export * as googleadmin from './googleadmin.ts';
 export * as okta from './okta.ts';
+export * as github from './github.ts';

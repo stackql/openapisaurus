@@ -395,6 +395,10 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
             ])) {
               verb = 'select';
             }
+            // if response code is 204 then exec
+            if (op.responses['204']) {
+              verb = 'exec';
+            }
             break;  
           case 'post':
             if (includes(operationId, ['create', 'insert']) && !includes(operationId, ['recreate'])){

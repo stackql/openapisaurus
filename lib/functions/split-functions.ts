@@ -13,6 +13,14 @@ import {
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 
+function findDescription(thisSvc: string, tags: types.Tag[]): string {
+  // Search for a tag with the matching name
+  const foundTag = tags.find(tag => tag.name === thisSvc);
+
+  // If found, return the description; otherwise, return thisSvc
+  return foundTag ? foundTag.description : thisSvc;
+}
+
 export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
   if (exOption) {
     if (search(operation, discriminator) == exOption) {
@@ -34,7 +42,9 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
     if (discriminator == 'path_tokens') {
       thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
     } else {
+      
       const searchResult = search(operation, discriminator);
+
       if (Array.isArray(searchResult)) {
           if (searchResult.length > 0 && typeof searchResult[0] === 'string') {
               thisSvc = searchResult[0].replace(/-/g, '_').replace(/\//g, '_');
@@ -45,7 +55,8 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
           thisSvc = getMeaningfulPathTokens(pathKey)[0];
       }
     }
-    const serviceDesc = thisSvc;
+  
+    const serviceDesc = findDescription(thisSvc, _tags);
     const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
     return [serviceName, serviceDesc];
   }
