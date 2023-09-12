@@ -6,7 +6,7 @@ import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
 import { createDestDir } from "../util/fs.ts";
 import { providerVersion } from "../types/constants.ts";
-import { fixSchemaIssues, fixPathIssues } from "../functions/build-functions.ts";
+import { fixSchemaIssues, fixPathIssues, fixComponentIssues } from "../functions/build-functions.ts";
 
 export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 
@@ -97,10 +97,13 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         
 
         // fix AllOf issue
-        outputData['components']['schemas'] = fixSchemaIssues(outputData['components']['schemas']);
+        // outputData['components']['schemas'] = fixSchemaIssues(outputData['components']['schemas']);
 
         // fix path request body issue
         outputData['paths'] = fixPathIssues(outputData['paths']);
+
+        // fix component issue
+        outputData['components'] = fixComponentIssues(outputData['components']);
 
         // replace servers?
         if (servers){

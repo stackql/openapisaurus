@@ -26,15 +26,15 @@ function fixTypeFields(schema: any): any {
   return schema;
 }
 
-export function fixSchemaIssues(inputSchemas: Record<string, any>): Record<string, any> {
-  const outputSchemas: Record<string, any> = {};
+// export function fixSchemaIssues(inputSchemas: Record<string, any>): Record<string, any> {
+//   const outputSchemas: Record<string, any> = {};
 
-  Object.keys(inputSchemas).forEach((schemaKey) => {
-    outputSchemas[schemaKey] = fixTypeFields({ ...inputSchemas[schemaKey] });
-  });
+//   Object.keys(inputSchemas).forEach((schemaKey) => {
+//     outputSchemas[schemaKey] = fixTypeFields({ ...inputSchemas[schemaKey] });
+//   });
 
-  return outputSchemas;
-}
+//   return outputSchemas;
+// }
 
 export function fixPathIssues(paths: Record<string, any>): Record<string, any> {
   const outputPaths: Record<string, any> = JSON.parse(JSON.stringify(paths)); // Deep clone
@@ -65,4 +65,22 @@ export function fixPathIssues(paths: Record<string, any>): Record<string, any> {
   });
 
   return outputPaths;
+}
+
+export function fixComponentIssues(components: Record<string, any>): Record<string, any> {
+  const outputComponents: Record<string, any> = JSON.parse(JSON.stringify(components)); // Deep clone
+
+  if (outputComponents.schemas) {
+    Object.keys(outputComponents.schemas).forEach((schemaKey) => {
+      outputComponents.schemas[schemaKey] = fixTypeFields(outputComponents.schemas[schemaKey]);
+    });
+  }
+
+  if (outputComponents.responses) {
+    Object.keys(outputComponents.responses).forEach((responseKey) => {
+      outputComponents.responses[responseKey] = fixTypeFields(outputComponents.responses[responseKey]);
+    });
+  }
+
+  return outputComponents;
 }

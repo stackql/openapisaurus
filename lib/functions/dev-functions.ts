@@ -320,13 +320,15 @@ function getResponseCode(responses: any): string {
     let respcode = '200';
     if (responses) {
       Object.keys(responses).forEach(respKey => {
-        // find the first response code that starts with 2 and return it
-        if (respKey.startsWith('2')) {
+        // find the lowest response code that starts with 2 and return it
+        if (respKey.startsWith('2') && respKey < respcode) {
           respcode = respKey;
-          // if (responses[respKey]?.content?.['application/json']?.schema) {
-          //   respcode = respKey;
-          // }
         }
+
+        // find the first response code that starts with 2 and return it
+        // if (respKey.startsWith('2')) {
+        //   respcode = respKey;
+        // }
       });
     }
     return respcode;
@@ -397,6 +399,10 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
             }
             // if response code is 204 then exec
             if (op.responses['204']) {
+              verb = 'exec';
+            }
+            // if there are no 2xx response codes then exec
+            if (!Object.keys(op.responses).find(respCode => respCode.startsWith('2'))) {
               verb = 'exec';
             }
             break;  

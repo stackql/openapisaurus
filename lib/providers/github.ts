@@ -1,5 +1,6 @@
 export const servicesMap = {
     emojis: 'skip',
+    meta: 'skip',
 }
 
 export const resourcesMap = {
@@ -20,5 +21,17 @@ export const objectKeysAndSqlVerbs = {
                 sqlVerb: 'exec',
             },
         },
-    }
+    },
+    repos: {
+        languages: {
+            list_languages: {
+                sqlVerb: 'exec',
+            },
+        },
+        rules_branches: {
+            get_branch_rules: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
 }
