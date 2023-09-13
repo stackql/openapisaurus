@@ -129,7 +129,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                     debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
             
                                     // add operation to resource
-                                    resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, debug);
+                                    resData = addOperation(resData, service, resource, operationId, apiPaths, componentsSchemas, pathKey, verbKey, providerName, methodKeyVal, debug);
                 
                                     // map sqlVerbs for operation
                                     resData = addSqlVerb(opItem, resData, operationId, service, resource, pathKey, verbKey, providerName, methodKeyVal, debug);

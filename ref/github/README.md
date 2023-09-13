@@ -54,13 +54,17 @@ true
 ### Test Locally
 
 ```
-export DIGITALOCEAN_TOKEN=xxx
+export STACKQL_GITHUB_USERNAME=xxx 
+export STACKQL_GITHUB_PASSWORD=xxx
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
 ```
 
 ```
-SELECT id, name, status, size_slug, created_at, memory, disk
-FROM digitalocean.droplets.droplets;
+SELECT 
+published_at,
+target_commitish,
+tag_name
+FROM github.repos.releases WHERE owner = 'stackql' AND repo = 'stackql';
 ```

@@ -18,6 +18,9 @@ import {
     addRefsToComponents,
     addMissingObjectTypes
 } from "../functions/split-functions.ts";
+import {
+    camelToSnake,
+} from "../functions/shared.ts";
 
 export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> {
     
@@ -93,7 +96,19 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                         } else if (!Object.prototype.hasOwnProperty.call(services[service]['paths'][pathKey], verbKey)) {
                             services[service]['paths'][pathKey][verbKey] = opItem;
                         }
-        
+
+                        // TEMPHACK add custom tagging function here for GitHub
+                        if (
+                            providerName === 'github' && 
+                            'x-github' in opItem && 
+                            'subcategory' in opItem['x-github'] &&
+                            services[service]?.['paths']?.[pathKey]?.[verbKey]
+                            ) {
+                            services[service]['paths'][pathKey][verbKey]['x-stackQL-resource'] = camelToSnake(opItem['x-github']['subcategory']);
+                        } else {
+                            console.error("Some condition was not met");
+                        }
+
                         // get all refs for operation
                         const opRefs = getAllRefs(opItem);
                         debug ? logger.debug(`found ${opRefs.length} refs for ${service}`) : null;

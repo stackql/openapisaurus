@@ -52,6 +52,8 @@ export function getResourceName(
       // x-stackQL-resource tag exists
       debug ? logger.debug(`x-stackQL-resource found, using ${operation['x-stackQL-resource']}`) : null;
       resourceName = operation['x-stackQL-resource'];
+      // override?
+      resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
       return [resourceName, resTokens];
     }
     
@@ -88,6 +90,7 @@ export function getResourceName(
               throw new Error('Search result is not an array or is empty.');
           }
       } catch (_error) {
+          logger.error(`Error searching for discriminator: ${resDiscriminator}, ${_error}`);
           resValue = service;
       }
       resourceName = typeof resValue === 'string' ? camelToSnake(resValue) : service;
@@ -200,6 +203,7 @@ export function addOperation(
     pathKey: string,
     verbKey: string,
     providerName: string,
+    methodKeyVal: string,
     debug: boolean,
   ): any {
 
@@ -210,6 +214,7 @@ export function addOperation(
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = opRef;
+    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['opId'] = methodKeyVal;
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
     resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
     
