@@ -124,27 +124,46 @@ export const resourcesMap = {
     },
     billing: {
         opIdMap: {
-        
+            'billing/get-github-actions-billing-org': 'actions_billing_usage',
+            'billing/get-github-actions-billing-user': 'actions_billing_usage',
+            'billing/get-github-packages-billing-org': 'packages_billing_usage',
+            'billing/get-github-packages-billing-user': 'packages_billing_usage',
+            'billing/get-shared-storage-billing-org': 'combined_billing_usage',
+            'billing/get-shared-storage-billing-user': 'combined_billing_usage',
         },
     },
     checks: {
         opIdMap: {
-        
+            'checks/list-annotations': 'annotations',
+            'checks/create-suite': 'suites',
+            'checks/set-suites-preferences': 'suites',
+            'checks/get-suite': 'suites',
+            'checks/rerequest-suite': 'suites',
+            'checks/list-suites-for-ref': 'suites',        
         },
     },
     code_scanning: {
         opIdMap: {
-        
         },
     },
-    codes_of_conduct: {
-        opIdMap: {
-        
-        },
-    },
+    // codes_of_conduct: {
+    //     opIdMap: {
+    //     },
+    // },
     codespaces: {
         opIdMap: {
-        
+            'codespaces/list-selected-repos-for-org-secret': 'org_secrets_repos',
+            'codespaces/set-selected-repos-for-org-secret': 'org_secrets_repos',
+            'codespaces/add-selected-repo-to-org-secret': 'org_secrets_repos',
+            'codespaces/remove-selected-repo-from-org-secret': 'org_secrets_repos',
+            'codespaces/get-org-public-key': 'public_keys',
+            'codespaces/get-repo-public-key': 'public_keys',
+            'codespaces/get-public-key-for-authenticated-user': 'user_public_keys',
+            'codespaces/list-repositories-for-secret-for-authenticated-user': 'user_secrets',
+            'codespaces/set-repositories-for-secret-for-authenticated-user': 'user_secrets',
+            'codespaces/add-repository-for-secret-for-authenticated-user': 'user_secrets',
+            'codespaces/remove-repository-for-secret-for-authenticated-user': 'user_secrets',
+            'codespaces/get-export-details-for-authenticated-user': 'codespace_export_details',        
         },
     },
     copilot: {
@@ -299,6 +318,24 @@ export const objectKeysAndSqlVerbs = {
             delete_token: {
                 sqlVerb: 'exec',
             },
+        },
+    },
+    codespaces: {
+        organizations: {
+			delete_codespaces_access_users: {
+				sqlVerb: 'exec',	
+			},
+        },
+        codespaces: {
+			create_with_repo_for_authenticated_user: {
+				sqlVerb: 'exec',	
+			},
+			list_devcontainers_in_repository_for_authenticated_user: {
+				sqlVerb: 'exec',	
+			},
+			create_with_pr_for_authenticated_user: {
+				sqlVerb: 'exec',	
+			},			
         },
     },
     teams: {
