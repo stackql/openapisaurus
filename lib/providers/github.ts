@@ -144,12 +144,22 @@ export const resourcesMap = {
     },
     code_scanning: {
         opIdMap: {
+            'code-scanning/upload-sarif': 'sarifs',
+            'code-scanning/get-sarif': 'sarifs',
+            'code-scanning/get-default-setup': 'default_setup',
+            'code-scanning/update-default-setup': 'default_setup',
+            'code-scanning/list-codeql-databases': 'codeql_databases',
+            'code-scanning/get-codeql-database': 'codeql_databases',
+            'code-scanning/list-recent-analyses': 'analysis',
+            'code-scanning/get-analysis': 'analysis',
+            'code-scanning/delete-analysis': 'analysis',
+            'code-scanning/get-alert': 'alerts',
+            'code-scanning/update-alert': 'alerts',
+            'code-scanning/list-alerts-for-org': 'org_alert_items',
+            'code-scanning/list-alert-instances': 'alert_instances',
+            'code-scanning/list-alerts-for-repo': 'repo_alert_items',
         },
     },
-    // codes_of_conduct: {
-    //     opIdMap: {
-    //     },
-    // },
     codespaces: {
         opIdMap: {
             'codespaces/list-selected-repos-for-org-secret': 'org_secrets_repos',
@@ -168,77 +178,134 @@ export const resourcesMap = {
     },
     copilot: {
         opIdMap: {
-        
+            'copilot/get-copilot-organization-details': 'org_details',
+            'copilot/get-copilot-seat-assignment-details-for-user': 'user_seats',
+            'copilot/cancel-copilot-seat-assignment-for-users': 'user_seats',
+            'copilot/add-copilot-for-business-seats-for-users': 'user_seats',
+            'copilot/list-copilot-seats': 'org_seats',
+            'copilot/add-copilot-for-business-seats-for-teams': 'org_seats',
+            'copilot/cancel-copilot-seat-assignment-for-teams': 'org_seats',        
         },
     },
     dependabot: {
         opIdMap: {
-        
-        },
-    },
-    dependency_graph: {
-        opIdMap: {
-        
+            'dependabot/list-alerts-for-enterprise': 'enterprise_alerts',
+            'dependabot/list-alerts-for-org': 'org_alerts',
+            'dependabot/list-org-secrets': 'org_secrets',
+            'dependabot/get-org-secret': 'org_secrets',
+            'dependabot/create-or-update-org-secret': 'org_secrets',
+            'dependabot/delete-org-secret': 'org_secrets',
+            'dependabot/get-org-public-key': 'public_keys',
+            'dependabot/get-repo-public-key': 'public_keys',
+            'dependabot/list-selected-repos-for-org-secret': 'repos_for_secret',
+            'dependabot/set-selected-repos-for-org-secret': 'repos_for_secret',
+            'dependabot/add-selected-repo-to-org-secret': 'repos_for_secret',
+            'dependabot/remove-selected-repo-from-org-secret': 'repos_for_secret',        
         },
     },
     gists: {
         opIdMap: {
-        
+            'gists/list-public': 'public_gists',
+            'gists/list-starred': 'starred_gists',
+            'gists/list-commits': 'commits',
+            'gists/list-forks': 'forks',
+            'gists/get-revision': 'revisions',
+            'gists/get': 'gist',        
         },
     },    
     git: {
         opIdMap: {
-        
+            'git/get-ref': 'ref',        
         },
     },
-    gitignore: {
-        opIdMap: {
-        
-        },
-    },
-    interactions: {
-        opIdMap: {
-        
-        },
-    },	
     issues: {
         opIdMap: {
-        
-        },
-    },
-    licenses: {
-        opIdMap: {
-        
-        },
-    },
-    markdown: {
-        opIdMap: {
-        
+            'issues/list-for-authenticated-user': 'user_issues',        
         },
     },
     migrations: {
         opIdMap: {
-        
-        },
-    },
-    oidc: {
-        opIdMap: {
-        
+            'migrations/list-for-org': 'migrations',
+            'migrations/start-for-org': 'migrations',
+            'migrations/get-status-for-org': 'migrations',
+            'migrations/list-for-authenticated-user': 'migrations',
+            'migrations/start-for-authenticated-user': 'migrations',
+            'migrations/get-status-for-authenticated-user': 'migrations',
+            'migrations/download-archive-for-org': 'archives',
+            'migrations/delete-archive-for-org': 'archives',
+            'migrations/get-archive-for-authenticated-user': 'archives',
+            'migrations/delete-archive-for-authenticated-user': 'archives',
+            'migrations/list-repos-for-org': 'repos',
+            'migrations/unlock-repo-for-org': 'repos',
+            'migrations/unlock-repo-for-authenticated-user': 'repos',
+            'migrations/list-repos-for-authenticated-user': 'repos',
+            'migrations/get-commit-authors': 'commit_authors',
+            'migrations/map-commit-author': 'commit_authors',
+            'migrations/get-large-files': 'lfs',
+            'migrations/set-lfs-preference': 'lfs',        
         },
     },
     orgs: {
         opIdMap: {
-        
+            'orgs/list-app-installations': 'app_installations',
+            'orgs/get': 'org',
+            'orgs/list-for-authenticated-user': 'orgs_for_user',
+            'orgs/list-failed-invitations': 'failed_invitations',
+            'orgs/list-pending-invitations': 'pending_invitations',
+            'orgs/create-invitation': 'invitations',
+            'orgs/cancel-invitation': 'invitations',
+            'orgs/list-invitation-teams': 'invitation_teams',
+            'orgs/check-membership-for-user': 'membership',
+            'orgs/get-membership-for-user': 'membership',
+            'orgs/set-membership-for-user': 'membership',
+            'orgs/remove-membership-for-user': 'membership',
+            'orgs/check-public-membership-for-user': 'public_membership',
+            'orgs/set-public-membership-for-authenticated-user': 'public_membership',
+            'orgs/remove-public-membership-for-authenticated-user': 'public_membership',
+            'orgs/list-public-members': 'public_members',
+            'orgs/list-memberships-for-authenticated-user': 'memberships_for_user',
+            'orgs/get-membership-for-authenticated-user': 'memberships_for_user',
+            'orgs/update-membership-for-authenticated-user': 'memberships_for_user',
+            'orgs/list-pat-grant-requests': 'pat_grant_requests',
+            'orgs/list-pat-grants': 'pat_grants',
+            'orgs/list-pat-grant-repositories': 'pat_grant_repos',
+            'orgs/list-pat-grant-request-repositories': 'pat_grant_request_repos',
+            'orgs/list-webhook-deliveries': 'webhook_deliveries',
+            'orgs/get-webhook-delivery': 'webhook_delivery',
+            'orgs/redeliver-webhook-delivery': 'webhook_delivery',
+            'orgs/get-webhook-config-for-org': 'webhook_config',
+            'orgs/update-webhook-config-for-org': 'webhook_config',
         },
     },
     packages: {
         opIdMap: {
-        
-        },
-    },
-    projects: {
-        opIdMap: {
-        
+            'packages/list-packages-for-organization': 'org_packages',
+            'packages/get-package-for-organization': 'org_packages',
+            'packages/delete-package-for-org': 'org_packages',
+            'packages/restore-package-for-org': 'org_packages',
+            'packages/get-all-package-versions-for-package-owned-by-org': 'org_versions',
+            'packages/get-package-version-for-organization': 'org_versions',
+            'packages/delete-package-version-for-org': 'org_versions',
+            'packages/restore-package-version-for-org': 'org_versions',
+            'packages/list-docker-migration-conflicting-packages-for-user': 'docker_migration_packages',
+            'packages/list-docker-migration-conflicting-packages-for-organization': 'docker_migration_packages',
+            'packages/list-docker-migration-conflicting-packages-for-authenticated-user': 'docker_migration_packages',
+            'packages/get-all-package-versions-for-package-owned-by-authenticated-user': 'auth_user_versions',
+            'packages/get-package-version-for-authenticated-user': 'auth_user_versions',
+            'packages/delete-package-version-for-authenticated-user': 'auth_user_versions',
+            'packages/restore-package-version-for-authenticated-user': 'auth_user_versions',
+            'packages/get-all-package-versions-for-package-owned-by-user': 'user_versions',
+            'packages/get-package-version-for-user': 'user_versions',
+            'packages/delete-package-version-for-user': 'user_versions',
+            'packages/restore-package-version-for-user': 'user_versions',
+            'packages/list-packages-for-user': 'user_packages',
+            'packages/get-package-for-user': 'user_packages',
+            'packages/delete-package-for-user': 'user_packages',
+            'packages/restore-package-for-user': 'user_packages',
+            'packages/delete-package-for-authenticated-user': 'auth_user_packages',
+            'packages/restore-package-for-authenticated-user': 'auth_user_packages',
+            'packages/list-packages-for-authenticated-user': 'auth_user_packages',
+            'packages/get-package-for-authenticated-user': 'auth_user_packages',        
         },
     },
     pulls: {
