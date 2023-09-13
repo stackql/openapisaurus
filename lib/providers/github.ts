@@ -80,10 +80,194 @@ export const resourcesMap = {
     //     nameMap: {
     //     }
     },
+    activity: {
+        opIdMap: {
+            'activity/get-thread-subscription-for-authenticated-user': 'notifications_thread_subscriptions',	
+            'activity/set-thread-subscription': 'notifications_thread_subscriptions',	
+            'activity/delete-thread-subscription': 'notifications_thread_subscriptions',	
+            'activity/list-stargazers-for-repo': 'repo_stargazers',
+            'activity/list-watchers-for-repo': 'repo_watchers',
+            'activity/get-repo-subscription': 'repo_subscriptions',
+            'activity/set-repo-subscription': 'repo_subscriptions',
+            'activity/delete-repo-subscription': 'repo_subscriptions',
+            'activity/list-public-events': 'public_events',
+            'activity/list-public-events-for-repo-network': 'public_events',
+            'activity/list-public-org-events': 'public_events',
+            'activity/list-public-events-for-user': 'public_events',
+            'activity/list-received-events-for-user': 'received_events',
+            'activity/list-received-public-events-for-user': 'received_public_events',        
+        },
+    },
+    apps: {
+        opIdMap: {
+            'apps/get-webhook-config-for-app': 'webhook_config',
+            'apps/update-webhook-config-for-app': 'webhook_config',
+            'apps/list-webhook-deliveries':	'webhook_deliveries',
+            'apps/get-webhook-delivery': 'webhook_delivery',
+            'apps/redeliver-webhook-delivery': 'webhook_delivery',
+            'apps/list-repos-accessible-to-installation': 'installation_repos',
+            'apps/list-installation-repos-for-authenticated-user': 'installation_repos',
+            'apps/add-repo-to-installation-for-authenticated-user': 'installation_repos',
+            'apps/remove-repo-from-installation-for-authenticated-user': 'installation_repos',
+            'apps/get-subscription-plan-for-account': 'marketplace_subs',
+            'apps/list-accounts-for-plan': 'marketplace_subs',
+            'apps/get-subscription-plan-for-account-stubbed': 'marketplace_subs_stubbed',
+            'apps/list-accounts-for-plan-stubbed': 'marketplace_subs_stubbed',
+            'apps/list-plans': 'marketplace_listings',
+            'apps/list-plans-stubbed': 'marketplace_listings_stubbed',
+            'apps/list-subscriptions-for-authenticated-user': 'marketplace_users_subs',
+            'apps/list-subscriptions-for-authenticated-user-stubbed': 'marketplace_users_subs_stubbed',
+            'apps/get-authenticated': 'integrations',
+            'apps/get-by-slug':	'integrations',
+            'apps/list-installation-requests-for-authenticated-app': 'integration_installation_requests',
+        },
+    },
+    billing: {
+        opIdMap: {
+        
+        },
+    },
+    checks: {
+        opIdMap: {
+        
+        },
+    },
+    code_scanning: {
+        opIdMap: {
+        
+        },
+    },
+    codes_of_conduct: {
+        opIdMap: {
+        
+        },
+    },
+    codespaces: {
+        opIdMap: {
+        
+        },
+    },
+    copilot: {
+        opIdMap: {
+        
+        },
+    },
+    dependabot: {
+        opIdMap: {
+        
+        },
+    },
+    dependency_graph: {
+        opIdMap: {
+        
+        },
+    },
+    gists: {
+        opIdMap: {
+        
+        },
+    },    
+    git: {
+        opIdMap: {
+        
+        },
+    },
+    gitignore: {
+        opIdMap: {
+        
+        },
+    },
+    interactions: {
+        opIdMap: {
+        
+        },
+    },	
+    issues: {
+        opIdMap: {
+        
+        },
+    },
+    licenses: {
+        opIdMap: {
+        
+        },
+    },
+    markdown: {
+        opIdMap: {
+        
+        },
+    },
+    migrations: {
+        opIdMap: {
+        
+        },
+    },
+    oidc: {
+        opIdMap: {
+        
+        },
+    },
+    orgs: {
+        opIdMap: {
+        
+        },
+    },
+    packages: {
+        opIdMap: {
+        
+        },
+    },
+    projects: {
+        opIdMap: {
+        
+        },
+    },
+    pulls: {
+        opIdMap: {
+        
+        },
+    },
+    rate_limit: {
+        opIdMap: {
+        
+        },
+    },
+    reactions: {
+        opIdMap: {
+        
+        },
+    },	
+    repos: {
+        opIdMap: {
+        
+        },
+    },
+    search: {
+        opIdMap: {
+        
+        },
+    },
+    secret_scanning: {
+        opIdMap: {
+        
+        },
+    },
+    security_advisories: {
+        opIdMap: {
+        
+        },
+    },
+    teams: {
+        opIdMap: {
+        
+        },
+    },
+    users: {
+        opIdMap: {
+        
+        },
+    },    
 }
-
-
-
 
 export const methodNameMap = {
 }
@@ -101,6 +285,18 @@ export const objectKeysAndSqlVerbs = {
                 sqlVerb: 'exec',
             },
             create_remove_token_for_repo: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
+    apps: {
+        apps: {
+            create_installation_access_token: {
+                sqlVerb: 'exec',
+            },
+        },
+        oauth_applications: {
+            delete_token: {
                 sqlVerb: 'exec',
             },
         },
