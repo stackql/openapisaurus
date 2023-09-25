@@ -1,6 +1,7 @@
 export const servicesMap = {
     emojis: 'skip',
     meta: 'skip',
+    markdown: 'skip',
 }
 
 export const resourcesMap = {
@@ -67,18 +68,7 @@ export const resourcesMap = {
             'actions/review-pending-deployments-for-run': 'pending_deployments_for_run',
             'actions/get-workflow-run-usage': 'workflow_run_usage',            
             'actions/get-workflow-usage': 'workflow_usage',
-            
-
-    
         },
-
-        
-        
-
-
-
-    //     nameMap: {
-    //     }
     },
     activity: {
         opIdMap: {
@@ -231,10 +221,6 @@ export const resourcesMap = {
             'migrations/list-for-authenticated-user': 'migrations',
             'migrations/start-for-authenticated-user': 'migrations',
             'migrations/get-status-for-authenticated-user': 'migrations',
-            'migrations/download-archive-for-org': 'archives',
-            'migrations/delete-archive-for-org': 'archives',
-            'migrations/get-archive-for-authenticated-user': 'archives',
-            'migrations/delete-archive-for-authenticated-user': 'archives',
             'migrations/list-repos-for-org': 'repos',
             'migrations/unlock-repo-for-org': 'repos',
             'migrations/unlock-repo-for-authenticated-user': 'repos',
@@ -251,30 +237,36 @@ export const resourcesMap = {
             'orgs/get': 'org',
             'orgs/list-for-authenticated-user': 'orgs_for_user',
             'orgs/list-failed-invitations': 'failed_invitations',
-            'orgs/list-pending-invitations': 'pending_invitations',
+            'orgs/list-pending-invitations': 'invitations',
             'orgs/create-invitation': 'invitations',
             'orgs/cancel-invitation': 'invitations',
             'orgs/list-invitation-teams': 'invitation_teams',
-            'orgs/check-membership-for-user': 'membership',
-            'orgs/get-membership-for-user': 'membership',
-            'orgs/set-membership-for-user': 'membership',
-            'orgs/remove-membership-for-user': 'membership',
-            'orgs/check-public-membership-for-user': 'public_membership',
-            'orgs/set-public-membership-for-authenticated-user': 'public_membership',
-            'orgs/remove-public-membership-for-authenticated-user': 'public_membership',
-            'orgs/list-public-members': 'public_members',
-            'orgs/list-memberships-for-authenticated-user': 'memberships_for_user',
-            'orgs/get-membership-for-authenticated-user': 'memberships_for_user',
-            'orgs/update-membership-for-authenticated-user': 'memberships_for_user',
             'orgs/list-pat-grant-requests': 'pat_grant_requests',
+            'orgs/review-pat-grant-requests-in-bulk': 'pat_grant_requests',
+            'orgs/review-pat-grant-request': 'pat_grant_requests',
+            'orgs/update-pat-accesses': 'pat_grants',
+            'orgs/update-pat-access': 'pat_grants',
             'orgs/list-pat-grants': 'pat_grants',
-            'orgs/list-pat-grant-repositories': 'pat_grant_repos',
-            'orgs/list-pat-grant-request-repositories': 'pat_grant_request_repos',
+            'orgs/list-pat-grant-repositories': 'repos_for_pat_grants',
+            'orgs/list-pat-grant-request-repositories': 'repos_for_pat_grant_requests',
             'orgs/list-webhook-deliveries': 'webhook_deliveries',
             'orgs/get-webhook-delivery': 'webhook_delivery',
             'orgs/redeliver-webhook-delivery': 'webhook_delivery',
             'orgs/get-webhook-config-for-org': 'webhook_config',
             'orgs/update-webhook-config-for-org': 'webhook_config',
+            'orgs/list-memberships-for-authenticated-user': 'memberships',	
+            'orgs/get-membership-for-authenticated-user': 'memberships',
+            'orgs/update-membership-for-authenticated-user': 'memberships',	
+            'orgs/check-membership-for-user': 'memberships',	
+            'orgs/get-membership-for-user': 'memberships',	
+            'orgs/set-membership-for-user': 'memberships',	
+            'orgs/remove-membership-for-user': 'memberships',	
+            'orgs/list-members': 'members',	
+            'orgs/remove-member': 'members',	
+            'orgs/check-public-membership-for-user': 'memberships',
+            'orgs/set-public-membership-for-authenticated-user': 'memberships',
+            'orgs/remove-public-membership-for-authenticated-user': 'memberships', // EXEC
+            'orgs/list-public-members': 'members', //EXEC
         },
     },
     packages: {
@@ -310,47 +302,216 @@ export const resourcesMap = {
     },
     pulls: {
         opIdMap: {
-        
-        },
-    },
-    rate_limit: {
-        opIdMap: {
-        
+            'pulls/list': 'pull_requests',
+            'pulls/create': 'pull_request',
+            'pulls/update': 'pull_request',
+            'pulls/get': 'pull_request',
+            'pulls/check-if-merged': 'pull_request',
+            'pulls/merge': 'pull_request',
+            'pulls/update-branch': 'pull_request',
+            'pulls/list-commits': 'commits',
+            'pulls/list-files': 'files',
+            // 'pulls/create-reply-for-review-comment': 'replies',
+            'pulls/list-comments-for-review': 'comments_for_review',        
         },
     },
     reactions: {
         opIdMap: {
-        
+            'reactions/list-for-team-discussion-comment-in-org': 'team_discussions',
+            'reactions/create-for-team-discussion-comment-in-org': 'team_discussions',
+            'reactions/delete-for-team-discussion-comment': 'team_discussions',
+            'reactions/list-for-team-discussion-in-org': 'team_discussions',
+            'reactions/create-for-team-discussion-in-org': 'team_discussions',
+            'reactions/delete-for-team-discussion': 'team_discussions',
+            'reactions/list-for-team-discussion-comment-legacy': 'team_discussions',
+            'reactions/create-for-team-discussion-comment-legacy': 'team_discussions',
+            'reactions/list-for-team-discussion-legacy': 'team_discussions',
+            'reactions/create-for-team-discussion-legacy': 'team_discussions',
+            'reactions/list-for-commit-comment': 'commit_comments',
+            'reactions/create-for-commit-comment': 'commit_comments',
+            'reactions/delete-for-commit-comment': 'commit_comments',
+            'reactions/list-for-issue-comment': 'issue_comments',
+            'reactions/create-for-issue-comment': 'issue_comments',
+            'reactions/delete-for-issue-comment': 'issue_comments',
+            'reactions/list-for-issue': 'issue_comments',
+            'reactions/create-for-issue': 'issue_comments',
+            'reactions/delete-for-issue': 'issue_comments',
+            'reactions/list-for-pull-request-review-comment': 'pr_comments',
+            'reactions/create-for-pull-request-review-comment': 'pr_comments',
+            'reactions/delete-for-pull-request-comment': 'pr_comments',
+            'reactions/list-for-release': 'release_comments',
+            'reactions/create-for-release': 'release_comments',
+            'reactions/delete-for-release': 'release_comments',        
         },
     },	
     repos: {
         opIdMap: {
-        
+            'repos/get-clones': 'clone_traffic',
+            'repos/get-top-paths': 'content_traffic',
+            'repos/get-top-referrers': 'referrer_traffic',
+            'repos/get-views': 'view_traffic',
+            'repos/list-tag-protection': 'tag_protection',
+            'repos/create-tag-protection': 'tag_protection',
+            'repos/delete-tag-protection': 'tag_protection',
+            'repos/get-code-frequency-stats': 'stats_code_frequency',
+            'repos/get-commit-activity-stats': 'stats_commit_activity',
+            'repos/get-contributors-stats': 'stats_contributors',
+            'repos/get-participation-stats': 'stats_participation',
+            'repos/get-punch-card-stats': 'stats_punch_cards',
+            'repos/get-latest-release': 'releases_latest',
+            'repos/get-webhook-config-for-repo': 'webhook_config',
+            'repos/update-webhook-config-for-repo': 'webhook_config',
+            'repos/list-webhook-deliveries': 'webhook_deliveries',
+            'repos/get-webhook-delivery': 'webhook_delivery',
+            'repos/redeliver-webhook-delivery': 'webhook_delivery',
+            'repos/get-content': 'content_tree',
+            'repos/get-collaborator-permission-level': 'collaborator_permissions',
+            'repos/list-pages-builds': 'page_builds',
+            'repos/request-pages-build': 'page_builds',
+            'repos/get-pages-build': 'page_builds',
+            'repos/get-latest-pages-build': 'page_build_latest',
+            'repos/create-pages-deployment': 'page_builds',            
+            'repos/get-pages-health-check': 'pages_health_check',
+            'repos/list-custom-deployment-rule-integrations': 'deployment_rule_integrations',
+            'repos/list-commit-statuses-for-ref': 'status_commits',
+            'repos/create-commit-status': 'status_commits',
+            'repos/list-deployment-statuses': 'status_deployments',
+            'repos/create-deployment-status': 'status_deployments',
+            'repos/get-deployment-status': 'status_deployments',
+            'repos/get-combined-status-for-ref': 'status_combined',
+            'repos/list-branches-for-head-commit': 'head_commit_branches',
+            'repos/list-pull-requests-associated-with-commit': 'commit_pr_branches',
+            'repos/get-branch': 'branch',
+            'repos/rename-branch': 'branch',
+            'repos/merge-upstream': 'branch',
+            'repos/merge': 'branch',
+            'repos/get-org-rulesets': 'org_rules',
+            'repos/create-org-ruleset': 'org_rules',
+            'repos/get-org-ruleset': 'org_rules',
+            'repos/update-org-ruleset': 'org_rules',
+            'repos/delete-org-ruleset': 'org_rules',
+            'repos/get-branch-rules': 'rules',
+            'repos/get': 'details',
+            'repos/list-activities': 'activities',
+            'repos/check-automated-security-fixes': 'security_fixes',
+            'repos/enable-automated-security-fixes': 'security_fixes',
+            'repos/disable-automated-security-fixes': 'security_fixes',
+            'repos/list-languages': 'repos',
+            'repos/list-tags': 'tags',
+            'repos/list-teams': 'teams',
+            'repos/get-all-topics': 'topics',
+            'repos/replace-all-topics': 'topics',
+            'repos/list-contributors': 'contributors',
+            'repos/list-webhooks': 'webhooks',
+            'repos/create-webhook': 'webhooks',
+            'repos/get-webhook': 'webhooks',
+            'repos/update-webhook': 'webhooks',
+            'repos/delete-webhook': 'webhooks',
+            'repos/ping-webhook': 'webhooks',
+            'repos/test-push-webhook': 'webhooks',
+            'repos/list-for-authenticated-user': 'repos_for_auth_user',
+            'repos/create-for-authenticated-user': 'repos_for_auth_user',
+            'repos/get-admin-branch-protection': 'admin_branch_protection',
+            'repos/set-admin-branch-protection': 'admin_branch_protection',
+            'repos/delete-admin-branch-protection': 'admin_branch_protection',
+            'repos/get-pull-request-review-protection': 'pr_review_protection',
+            'repos/update-pull-request-review-protection': 'pr_review_protection',
+            'repos/delete-pull-request-review-protection': 'pr_review_protection',
+            'repos/get-commit-signature-protection': 'commit_signature_protection',
+            'repos/create-commit-signature-protection': 'commit_signature_protection',
+            'repos/delete-commit-signature-protection': 'commit_signature_protection',
+            'repos/get-status-checks-protection': 'status_check_protection',
+            'repos/update-status-check-protection': 'status_check_protection',
+            'repos/remove-status-check-protection': 'status_check_protection',
+            'repos/get-all-status-check-contexts': 'status_check_contexts',
+            'repos/add-status-check-contexts': 'status_check_contexts',
+            'repos/set-status-check-contexts': 'status_check_contexts',
+            'repos/remove-status-check-contexts': 'status_check_contexts',
+            'repos/get-access-restrictions': 'branch_restrictions',
+            'repos/delete-access-restrictions': 'branch_restrictions',
+            'repos/get-apps-with-access-to-protected-branch': 'app_access_restrictions',
+            'repos/add-app-access-restrictions': 'app_access_restrictions',
+            'repos/set-app-access-restrictions': 'app_access_restrictions',
+            'repos/remove-app-access-restrictions': 'app_access_restrictions',
+            'repos/get-teams-with-access-to-protected-branch': 'team_access_restrictions',
+            'repos/add-team-access-restrictions': 'team_access_restrictions',
+            'repos/set-team-access-restrictions': 'team_access_restrictions',
+            'repos/remove-team-access-restrictions': 'team_access_restrictions',
+            'repos/get-users-with-access-to-protected-branch': 'user_access_restrictions',
+            'repos/add-user-access-restrictions': 'user_access_restrictions',
+            'repos/set-user-access-restrictions': 'user_access_restrictions',
+            'repos/remove-user-access-restrictions': 'user_access_restrictions',
         },
     },
     search: {
         opIdMap: {
-        
+            'search/code': 'code',
+            'search/commits': 'commits',
+            'search/issues-and-pull-requests': 'issues_and_pull_requests',
+            'search/labels': 'labels',
+            'search/repos': 'repos',
+            'search/topics': 'topics',
+            'search/users': 'users',
         },
     },
     secret_scanning: {
         opIdMap: {
-        
+            'secret-scanning/list-alerts-for-enterprise': 'alerts',
+            'secret-scanning/list-alerts-for-org': 'alerts',
+            'secret-scanning/list-alerts-for-repo': 'alerts',
+            'secret-scanning/get-alert': 'alerts',
+            'secret-scanning/update-alert': 'alerts',
+            'secret-scanning/list-locations-for-alert': 'locations',
         },
     },
-    security_advisories: {
-        opIdMap: {
-        
-        },
-    },
+    // security_advisories: {
+    //     opIdMap: {
+    //         'security-advisories/create-repository-advisory-cve-request': 'cve_requests',
+    //         'security-advisories/create-private-vulnerability-report': 'vulnerability_reports',
+    //     },
+    // },
     teams: {
         opIdMap: {
-        
+            'teams/get-membership-for-user-legacy': 'membership',
+            'teams/get-membership-for-user-in-org': 'membership',
+            'teams/add-or-update-membership-for-user-in-org': 'membership',
+            'teams/remove-membership-for-user-in-org': 'membership',
+            'teams/add-or-update-membership-for-user-legacy': 'membership',
+            'teams/remove-membership-for-user-legacy': 'membership',
+            'teams/list-pending-invitations-in-org': 'invitations',
+            'teams/list-pending-invitations-legacy': 'invitations',
+            'teams/get-by-name': 'details',
+            'teams/list-for-authenticated-user': 'teams_for_auth_user',
+            'teams/list-projects-in-org': 'projects',
+            'teams/list-projects-legacy': 'projects',
+            'teams/remove-project-in-org': 'projects',
+            'teams/remove-project-legacy': 'projects',
+            'teams/check-permissions-for-project-in-org': 'project_permissions',
+            'teams/check-permissions-for-project-legacy': 'project_permissions',
+            'teams/add-or-update-project-permissions-in-org': 'project_permissions',
+            'teams/add-or-update-project-permissions-legacy': 'project_permissions',
+            'teams/list-repos-in-org': 'repos',
+            'teams/list-repos-legacy': 'repos',
+            'teams/remove-repo-legacy': 'repos',
+            'teams/remove-repo-in-org': 'repos',
+            'teams/check-permissions-for-repo-in-org': 'repo_permissions',
+            'teams/add-or-update-repo-permissions-in-org': 'repo_permissions',
+            'teams/check-permissions-for-repo-legacy': 'repo_permissions',
+            'teams/add-or-update-repo-permissions-legacy': 'repo_permissions',
         },
     },
     users: {
         opIdMap: {
-        
+            'users/list-public-emails-for-authenticated-user': 'public_emails',
+            'users/list-public-keys-for-user': 'keys_for_user',
+            'users/list-followed-by-authenticated-user': 'following',
+            'users/check-person-is-followed-by-authenticated': 'following',
+            'users/follow': 'following',
+            'users/unfollow': 'following',
+            'users/list-following-for-user': 'following',
+            'users/check-following-for-user': 'following',
+            'users/get-context-for-user': 'hovercard',
+            'users/list': 'public_users',
         },
     },    
 }
@@ -376,11 +537,6 @@ export const objectKeysAndSqlVerbs = {
         },
     },
     apps: {
-        apps: {
-            create_installation_access_token: {
-                sqlVerb: 'exec',
-            },
-        },
         oauth_applications: {
             delete_token: {
                 sqlVerb: 'exec',
@@ -388,11 +544,6 @@ export const objectKeysAndSqlVerbs = {
         },
     },
     codespaces: {
-        organizations: {
-			delete_codespaces_access_users: {
-				sqlVerb: 'exec',	
-			},
-        },
         codespaces: {
 			create_with_repo_for_authenticated_user: {
 				sqlVerb: 'exec',	
@@ -402,29 +553,183 @@ export const objectKeysAndSqlVerbs = {
 			},
 			create_with_pr_for_authenticated_user: {
 				sqlVerb: 'exec',	
-			},			
+			},
+        },
+        machines: {	
+            repo_machines_for_authenticated_user: {
+                sqlVerb: 'select',
+            },
+            codespace_machines_for_authenticated_user: {
+                sqlVerb: 'select',
+            },
         },
     },
-    teams: {
-        orgs: {
-            get_by_name: {
+    dependency_graph: {
+        dependency_review: {
+            diff_range: {
+                sqlVerb: 'select',
+            },
+        },
+        sboms: {
+            export_sbom: {
+                sqlVerb: 'select',
+            },
+        },
+    },
+    pulls: {
+        comments: {
+            create_reply_for_review_comment: {
                 sqlVerb: 'exec',
             },
         },
+    },
+    teams: {
+        membership: {
+            add_or_update_membership_for_user_legacy: {
+                sqlVerb: 'exec',
+            },
+            remove_membership_for_user_legacy: {
+                sqlVerb: 'exec',
+            },			
+        },
+        discussion_comments: {
+            create_discussion_comment_legacy: {
+                sqlVerb: 'exec',
+            },
+            delete_discussion_comment_legacy: {
+                sqlVerb: 'exec',
+            },			
+        },
+        discussions: {
+            create_discussion_legacy: {
+                sqlVerb: 'exec',
+            },
+            delete_discussion_legacy: {
+                sqlVerb: 'exec',
+            },			
+        },		
         teams: {
             get_legacy: {
                 sqlVerb: 'exec',
             },
+            delete_legacy: {
+                sqlVerb: 'exec',
+            },			
         },
+        projects: {
+            remove_project_legacy: {
+                sqlVerb: 'exec',
+            },
+        },		
+        project_permissions: {
+            add_or_update_project_permissions_legacy: {
+                sqlVerb: 'exec',
+            },
+        },		
+        repo_permissions: {
+            add_or_update_repo_permissions_legacy: {
+                sqlVerb: 'exec',
+            },
+        },		
+        repos: {
+            remove_repo_legacy: {
+                sqlVerb: 'exec',
+            },
+        },	
     },
     repos: {
-        languages: {
-            list_languages: {
+        rules: {
+            get_branch_rules: {
                 sqlVerb: 'exec',
             },
         },
-        rules_branches: {
-            get_branch_rules: {
+        repos: {
+            list_languages: {
+                sqlVerb: 'exec',
+            },
+            create_dispatch_event: {
+                sqlVerb: 'exec',
+            },
+            create_using_template: {
+                sqlVerb: 'exec',
+            },
+        },
+        page_builds: {
+            create_pages_deployment: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
+    search: {
+        code: {
+            code: {
+                sqlVerb: 'select',
+            },
+        },
+        commits: {
+            commits: {
+                sqlVerb: 'select',
+            },
+        },
+        issues_and_pull_requests: {
+            issues_and_pull_requests: {
+                sqlVerb: 'select',
+            },
+        },
+        labels: {
+            labels: {
+                sqlVerb: 'select',
+            },
+        },
+        repos: {
+            repos: {
+                sqlVerb: 'select',
+            },
+        },
+        topics: {
+            topics: {
+                sqlVerb: 'select',
+            },
+        },
+        users: {
+            users: {
+                sqlVerb: 'select',
+            },
+        },		
+    },
+    security_advisories: {
+        repository_advisories:{
+            create_repository_advisory_cve_request: {
+                sqlVerb: 'exec',
+            },
+            create_private_vulnerability_report: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
+    orgs: {
+        memberships: {
+            remove_public_membership_for_authenticated_user: {
+                sqlVerb: 'exec',
+            },
+        },
+        members: {
+            list_public_members: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
+    migrations: {
+        users: {
+            get_archive_for_authenticated_user: {
+                sqlVerb: 'exec',
+            },
+            delete_archive_for_authenticated_user: {
+                sqlVerb: 'exec',
+            },
+        },
+        orgs: {
+            delete_archive_for_org: {
                 sqlVerb: 'exec',
             },
         },

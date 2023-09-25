@@ -55,6 +55,11 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
           thisSvc = getMeaningfulPathTokens(pathKey)[0];
       }
     }
+
+    // for msgraph
+    if (thisSvc.includes('.')) {
+      thisSvc = thisSvc.split('.')[0];
+    }
   
     const serviceDesc = findDescription(thisSvc, _tags);
     const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);

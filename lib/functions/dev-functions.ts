@@ -94,6 +94,12 @@ export function getResourceName(
           resValue = service;
       }
       resourceName = typeof resValue === 'string' ? camelToSnake(resValue) : service;
+
+      // for msgraph
+      if (resourceName.includes('.')) {
+        resourceName = resourceName.split('.')[1];
+      }
+
       debug ? logger.debug(`resource discriminator used for resource name: ${resourceName}`) : null;
     }
     resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
@@ -326,14 +332,14 @@ function getResponseCode(responses: any): string {
     if (responses) {
       Object.keys(responses).forEach(respKey => {
         // find the lowest response code that starts with 2 and return it
+        if (respKey === 'default'){
+          respcode = respKey;
+        }
+        
         if (respKey.startsWith('2') && respKey < respcode) {
           respcode = respKey;
         }
 
-        // find the first response code that starts with 2 and return it
-        // if (respKey.startsWith('2')) {
-        //   respcode = respKey;
-        // }
       });
     }
     return respcode;
@@ -382,7 +388,7 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
     } else {
         let verb = 'exec';
         switch (verbKey) {
-          case 'get':
+          case 'get': {
             if (includes(operationId, ['get', 'list'])){
               verb = 'select';
             }
@@ -403,14 +409,19 @@ function getSqlVerb(op: any, operationId: string, verbKey: string, providerName:
               verb = 'select';
             }
             // if response code is 204 then exec
-            if (op.responses['204']) {
+            if (op.responses['204'] && !op.responses['200']) {
               verb = 'exec';
             }
             // if there are no 2xx response codes then exec
-            if (!Object.keys(op.responses).find(respCode => respCode.startsWith('2'))) {
-              verb = 'exec';
-            }
-            break;  
+            // if (!Object.keys(op.responses).find(respCode => respCode.startsWith('2'))) {
+            //   verb = 'exec';
+            // }
+            const responseKeys = Object.keys(op.responses);
+            if (!responseKeys.some(respCode => respCode.startsWith('2')) && !responseKeys.includes('default')) {
+                verb = 'exec';
+            }            
+            break;
+          }  
           case 'post':
             if (includes(operationId, ['create', 'insert']) && !includes(operationId, ['recreate'])){
               verb = 'insert';

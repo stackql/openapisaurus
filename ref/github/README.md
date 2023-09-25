@@ -67,4 +67,23 @@ published_at,
 target_commitish,
 tag_name
 FROM github.repos.releases WHERE owner = 'stackql' AND repo = 'stackql';
+
+SELECT 
+name
+FROM github.repos.repos WHERE org = 'stackql';
+
+SELECT 
+JSON_EXTRACT(v.value, '$.count') as count,
+JSON_EXTRACT(v.value, '$.timestamp') as timestamp,
+JSON_EXTRACT(v.value, '$.uniques') as uniques
+FROM github.repos.view_traffic, json_each(views) v
+WHERE owner = 'stackql' AND repo = 'stackql';
+
+SELECT
+title,
+path,
+count,
+uniques
+FROM github.repos.content_traffic
+WHERE owner = 'stackql' AND repo = 'stackql';
 ```

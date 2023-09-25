@@ -3,9 +3,10 @@
 ### `prep`
 
 ```
+rm -rf dev/godaddy
+rm -rf src/godaddy
 servicesdir=dev/godaddy/v00.00.00000/services
 mkdir -p $servicesdir
-
 services=("aftermarket" "certificates" "domains" "shoppers" "abuse" "agreements" "countries" "orders" "subscriptions")
 
 for service in "${services[@]}"
@@ -22,7 +23,7 @@ done
 ./openapisaurus dev \
 dev \
 --providerName=godaddy \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "GODADDY_API_KEY" }}' \
+--providerConfig='{ "auth": { "credentialsenvvar": "GODADDY_API_KEY", "type": "api_key", "valuePrefix": "sso-key "}}' \
 --overwrite \
 --verbose
 ```
@@ -51,6 +52,7 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 from the `stackql-provider-tests` directory:
 
 ```
+cd ../stackql-provider-tests
 sh test-provider.sh \
 godaddy \
 false \

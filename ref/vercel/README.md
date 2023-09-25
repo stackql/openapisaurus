@@ -1,10 +1,12 @@
 ## `vercel` Provider Dev
 
+Obtain doc from [https://openapi.vercel.sh](https://openapi.vercel.sh)
+
 ### `split`
 
 ```
 ./openapisaurus split \
-ref/vercel/vercel-openapi.yaml \
+ref/vercel/vercel-openapi.json \
 --providerName=vercel \
 --svcdiscriminator='["tags"][0]' \
 --outputDir=dev
@@ -43,6 +45,7 @@ node tests/inspectProvider.js vercel 2>&1 | tee vercel.log
 from the `stackql-provider-tests` directory:
 
 ```
+cd ../stackql-provider-tests
 sh test-provider.sh \
 vercel \
 false \
