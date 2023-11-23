@@ -3,29 +3,27 @@
 ### `prep`
 
 ```
-rm -rf dev/godaddy
-rm -rf src/godaddy
-servicesdir=dev/godaddy/v00.00.00000/services
+rm -rf dev/homebrew
+rm -rf src/homebrew
+servicesdir=dev/homebrew/v00.00.00000/services
 mkdir -p $servicesdir
-services=("aftermarket" "certificates" "domains" "shoppers" "abuse" "agreements" "countries" "orders" "subscriptions")
+services=("formula")
 
 for service in "${services[@]}"
 do
   mkdir ${servicesdir}/${service}
-  ./openapisaurus format ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+  ./openapisaurus format ref/homebrew/${service}.yaml ${servicesdir}/${service}/${service}.yaml
+  # cp ref/homebrew/${service}.yaml ${servicesdir}/${service}/${service}.yaml
 done
 ```
-  # cp ref/godaddy/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-
-
 
 ### `dev`
 
 ```
 ./openapisaurus dev \
 dev \
---providerName=godaddy \
---providerConfig='{ "auth": { "credentialsenvvar": "GODADDY_API_KEY", "type": "api_key", "valuePrefix": "sso-key "}}' \
+--providerName=homebrew \
+--providerConfig='{ "auth": { "type": "null_auth" }}' \
 --overwrite \
 --verbose
 ```
@@ -35,7 +33,7 @@ dev \
 ```
 ./openapisaurus build \
 dev \
---providerName=godaddy \
+--providerName=homebrew \
 --outputDir=src \
 --overwrite \
 --verbose

@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  title: Homebrew Formulae API
+  description: API for accessing Homebrew formulae information.
+  version: "1.0.0"
+servers:
+  - url: https://formulae.brew.sh/api/formula
+paths:
+  /{formula_name}.json:
+    get:
+      summary: Get formula details
+      description: Retrieve detailed information about a specific Homebrew formula.
+      operationId: getFormula
+      parameters:
+        - in: path
+          name: formula_name
+          required: true
+          schema:
+            type: string
+          description: The name of the formula.
+      responses:
+        '200':
+          description: A JSON object containing the formula details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Formula'
+components:
+  schemas:
+    Formula:
+      type: object
+      properties:
+        name:
+          type: string
+        full_name:
+          type: string
+        tap:
+          type: string
+        oldname:
+          type: string
+          nullable: true
+        oldnames:
+          type: array
+          items:
+            type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        versioned_formulae:
+          type: array
+          items:
+            type: string
+        desc:
+          type: string
+        license:
+          type: string
+        homepage:
+          type: string
+        versions:
+          type: object
+          properties:
+            stable:
+              type: string
+            head:
+              type: string
+            bottle:
+              type: boolean
+        urls:
+          type: object
+          properties:
+            stable:
+              type: object
+              properties:
+                url:
+                  type: string
+                tag:
+                  type: string
+                  nullable: true
+                revision:
+                  type: string
+                  nullable: true
+                using:
+                  type: string
+                  nullable: true
+                checksum:
+                  type: string
+            head:
+              type: object
+              properties:
+                url:
+                  type: string
+                branch:
+                  type: string
+                  nullable: true
+                using:
+                  type: string
+                  nullable: true
+        revision:
+          type: integer
+        version_scheme:
+          type: integer
+        bottle:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              cellar:
+                type: string
+              url:
+                type: string
+              sha256:
+                type: string
+        keg_only:
+          type: boolean
+        keg_only_reason:
+          type: string
+          nullable: true
+        options:
+          type: array
+          items:
+            type: string
+        build_dependencies:
+          type: array
+          items:
+            type: string
+        dependencies:
+          type: array
+          items:
+            type: string
+        test_dependencies:
+          type: array
+          items:
+            type: string
+        recommended_dependencies:
+          type: array
+          items:
+            type: string
+        optional_dependencies:
+          type: array
+          items:
+            type: string
+        uses_from_macos:
+          type: array
+          items:
+            type: string
+        uses_from_macos_bounds:
+          type: array
+          items:
+            type: string
+        requirements:
+          type: array
+          items:
+            type: string
+        conflicts_with:
+          type: array
+          items:
+            type: string
+        conflicts_with_reasons:
+          type: array
+          items:
+            type: string
+        link_overwrite:
+          type: array
+          items:
+            type: string
+        caveats:
+          type: string
+          nullable: true
+        installed:
+          type: array
+          items:
+            type: object
+            properties:
+              version:
+                type: string
+              used_options:
+                type: array
+                items:
+                  type: string
+              built_as_bottle:
+                type: boolean
+              poured_from_bottle:
+                type: boolean
+              time:
+                type: integer
+              runtime_dependencies:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    full_name:
+                      type: string
+                    version:
+                      type: string
+                    revision:
+                      type: integer
+                    pkg_version:
+                      type: string
+                    declared_directly:
+                      type: boolean
+        linked_keg:
+          type: string
+        pinned:
+          type: boolean
+        outdated:
+          type: boolean
+        deprecated:
+          type: boolean
+        deprecation_date:
+          type: string
+          nullable: true
+        deprecation_reason:
+          type: string
+          nullable: true
+        disabled:
+          type: boolean
+        disable_date:
+          type: string
+          nullable: true
+        disable_reason:
+          type: string
+          nullable: true
+        post_install_defined:
+          type: boolean
+        service:
+          type: object
+          nullable: true
+        tap_git_head:
+          type: string
+        ruby_source_path:
+          type: string
+        ruby_source_checksum:
+          type: object
+          properties:
+            sha256:
+              type: string
+        head_dependencies:
+          type: object
+          properties:
+            build_dependencies:
+              type: array
+              items:
+                type: string
+            dependencies:
+              type: array
+              items:
+                type: string
+            test_dependencies:
+              type: array
+              items:
+                type: string
+            recommended_dependencies:
+              type: array
+              items:
+                type: string
+            optional_dependencies:
+              type: array
+              items:
+                type: string
+            uses_from_macos:
+              type: array
+              items:
+                type: string
+            uses_from_macos_bounds:
+              type: array
+              items:
+                type: string
+        variations:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              dependencies:
+                type: array
+                items:
+                  type: string
+              head_dependencies:
+                type: object
+                properties:
+                  build_dependencies:
+                    type: array
+                    items:
+                      type: string
+                  dependencies:
+                    type: array
+                    items:
+                      type: string
+                  test_dependencies:
+                    type: array
+                    items:
+                      type: string
+                  recommended_dependencies:
+                    type: array
+                    items:
+                      type: string
+                  optional_dependencies:
+                    type: array
+                    items:
+                      type: string
+                  uses_from_macos:
+                    type: array
+                    items:
+                      type: string
+                  uses_from_macos_bounds:
+                    type: array
+                    items:
+                      type: string
+        analytics:
+          type: object
+          properties:
+            install:
+              type: object
+              additionalProperties:
+                type: object
+                additionalProperties:
+                  type: integer
+            install_on_request:
+              type: object
+              additionalProperties:
+                type: object
+                additionalProperties:
+                  type: integer
+            build_error:
+              type: object
+              additionalProperties:
+                type: object
+                additionalProperties:
+                  type: integer
+        generated_date:
+          type: string
+          format: date
