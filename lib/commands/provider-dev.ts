@@ -112,7 +112,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                         resData = addResource(resData, providerName, service, resource, resTokens);
                                     }
                                                             
-                                    const existingOpIds = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
+                                    const existingMethodKeys = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
             
                                     // get unique operation id 
                                     let methodKeyVal = (opItem as any)[methodKey];
@@ -124,7 +124,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                     
                                     debug ? logger.debug(`processing operationId : ${methodKeyVal}...`) : null;
             
-                                    const operationId = getOperationId(apiPaths, pathKey, verbKey, existingOpIds, methodKey, providerName, service, resource);
+                                    const operationId = getOperationId(apiPaths, pathKey, verbKey, existingMethodKeys, methodKey, providerName, service, resource);
                                   
                                     debug ? logger.debug(`updated operationId : ${operationId}...`) : null;
             

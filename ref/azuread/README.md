@@ -15,7 +15,7 @@ rm -rf src/azuread
 ./openapisaurus split \
 ref/azuread/openapi.yaml \
 --providerName=azuread \
---svcdiscriminator='["tags"][0]' \
+--svcDiscriminator='"tags"[0] | (input) => input.split(".")[0]' \
 --outputDir=dev
 ```
 
@@ -26,10 +26,10 @@ ref/azuread/openapi.yaml \
 dev \
 --providerName=azuread \
 --providerConfig='{ "auth": { "type": "azure_default" }}' \
+--resDiscriminator='"tags"[0] | (input) => input.split(".")[1]' \
 --overwrite \
---verbose
+--verbose > aad_dev.log
 ```
-
 
 ### `build`
 

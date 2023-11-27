@@ -2,15 +2,23 @@
 
 export function camelToSnake(inStr: string): string {
 
-    const prepStr = inStr.replace(/([A-Z])([A-Z]+)/g, function(_match: any, first: any, rest: string) {
-      return first + rest.toLowerCase();
-    });
+  // Step 1: Replace hyphens with underscores and special characters with underscores
+  let processedStr = inStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
 
-    const str = prepStr.replace(/\s+/g, '').replace(/-/g, '_');
+  // Step 2: Handle consecutive uppercase letters (e.g., "EC2" becomes "Ec2")
+  processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, (match, p1, p2) => 
+      p1.charAt(0) + p1.slice(1).toLowerCase() + p2
+  );
 
-    return str.replace(/\.?([A-Z])/g, function(_x: string, y: string) {
-        return "_" + y.toLowerCase();
-    }).replace(/^_/, "").replace(/_{2,}/g, "_");
+  // Step 3: Insert underscores before uppercase letters and convert them to lowercase
+  processedStr = processedStr.replace(/([A-Z])/g, (match, letter, offset) => 
+      (offset > 0 ? '_' : '') + letter.toLowerCase()
+  );
+
+  // Step 4: Replace multiple underscores with a single one and trim edges again
+  processedStr = processedStr.replace(/_{2,}/g, '_').replace(/^_+|_+$/g, '');
+
+  return processedStr;
 }
 
 export function isMeaningfulToken(token: string, excludeParams = true): boolean {
@@ -83,3 +91,24 @@ export function getAllPathTokens(pathKey: string): string[] {
   });
   return outTokens;
 }
+
+export function parseDSL(dsl: string): { jmespath: string, transforms: string[] } {
+  const parts = dsl.split(' | ');
+  return { 
+      jmespath: parts[0], 
+      transforms: parts.slice(1) 
+  };
+}
+
+function applyStringManipulation(input: string, manipulationFnString: string): string {
+  const manipulationFn = eval(manipulationFnString);
+  return manipulationFn(input);
+}
+
+export function applyTransformations(input: string, transforms: string[]): string {
+  return transforms.reduce((result, transformString) => {
+      // Apply each transform string as an anonymous function to the result
+      return applyStringManipulation(result, transformString);
+  }, input);
+}
+

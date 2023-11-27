@@ -7,6 +7,8 @@ import {
   convertLowerCaseToTitleCase,
   getAllValuesForKey,
   camelToSnake,
+  parseDSL,
+  applyTransformations,
 } from "./shared.ts";
 import {
   updateResourceName,
@@ -57,52 +59,67 @@ export function getResourceName(
       return [resourceName, resTokens];
     }
     
-    if(resDiscriminator == 'path_tokens'){
-      // path_tokens or default resource naming mechanism
-      let pathTokens: string[] = [];
+    switch (resDiscriminator) {
+      case 'path_tokens':
+      case 'last_path_token':
+        // Use meaningful path tokens to construct the resource name OR use the last path token as the resource name
+        debug ? logger.debug(`path_tokens or last_path_token specified`) : null;
+        let pathTokens: string[] = [];
         pathTokens = getMeaningfulPathTokens(pathKey);
         pathTokens.forEach(token => {
           if (token != service && token.length > 0){
             resTokens.push(token);
           }       
+        });
+        if (resDiscriminator == 'path_tokens') {
           resourceName = resTokens.length > 0 ? resTokens.join('_') : service;
-        });
-        debug ? logger.debug(`path_tokens used for resource name: ${resourceName}`) : null;
-    } else if(resDiscriminator == 'last_path_token') {
-      let pathTokens: string[] = [];
-        pathTokens = getMeaningfulPathTokens(pathKey);
-        pathTokens.forEach(token => {
-          if (token != service && token.length > 0){
-            resTokens.push(token);
-          }       
-          // set resource name to last token in resTokens
+          debug ? logger.debug(`path_tokens specified, initial resource name : ${resourceName}`) : null;          
+        } else {
           resourceName = resTokens.length > 0 ? resTokens[resTokens.length - 1] : service;
-        });
-        debug ? logger.debug(`last_path_token used for resource name: ${resourceName}`) : null;
-    } else {
-      // resource discriminator provided
-      let resValue;
-      try { 
-          const searchResult = search(operation, resDiscriminator);
-          if (Array.isArray(searchResult) && searchResult.length > 0) {
-              resValue = searchResult[0];
-          } else {
-              throw new Error('Search result is not an array or is empty.');
-          }
-      } catch (_error) {
-          logger.error(`Error searching for discriminator: ${resDiscriminator}, ${_error}`);
-          resValue = service;
-      }
-      resourceName = typeof resValue === 'string' ? camelToSnake(resValue) : service;
-
-      // for msgraph
-      if (resourceName.includes('.')) {
-        resourceName = resourceName.split('.')[1];
-      }
-
-      debug ? logger.debug(`resource discriminator used for resource name: ${resourceName}`) : null;
+          debug ? logger.debug(`last_path_token specified, initial resource name : ${resourceName}`) : null;          
+        }
+        break;
+      default:
+        // resource discriminator provided
+        debug ? logger.debug(`resource discriminator provided: ${resDiscriminator}`) : null;
+        let resValue;
+        const { jmespath, transforms } = parseDSL(resDiscriminator); // Parse the DSL
+        const searchResult = search(operation, jmespath);
+        debug ? logger.debug(`searchResult: ${searchResult}`) : null; 
+        // Determine the type of searchResult
+        const resultType = Array.isArray(searchResult) ? 'array' :
+                        (searchResult === null) ? 'null' :
+                        typeof searchResult;
+    
+        let searchResultStr;
+        switch (resultType) {
+          case 'array':
+              // Handle array result
+              debug ? logger.debug(`searchResult is an array`) : null;
+              searchResultStr = searchResult[0];
+              break;
+          case 'string':
+              // Handle string result
+              debug ? logger.debug(`searchResult is a string`) : null;
+              searchResultStr = searchResult;
+              break;
+          default:
+              // Log and throw an error for any other type
+              logger.error(`Unexpected result type: ${resultType}`);
+              throw new Error(`Unhandled result type: ${resultType}`);
+        }
+        debug ? logger.debug(`applying transforms : ${transforms} , to ${searchResultStr}`) : null;     
+        resourceName = applyTransformations(searchResultStr, transforms);
+        debug ? logger.debug(`initial resolved resourcename : ${resourceName}`) : null;
+        break;
     }
-    resourceName = updateResourceName(providerName, service, resourceName, operation, debug, logger);
+
+    const initResourceName = resourceName;
+    resourceName = updateResourceName(providerName, service, camelToSnake(resourceName), operation, debug, logger);
+    if(debug){
+      initResourceName != resourceName ? logger.debug(`resourcename changed to : ${resourceName}`) : null;
+    }
+
     return [resourceName, resTokens];
 }
 
@@ -139,6 +156,7 @@ export function getOperationId(
     }
 
     let operationId = apiPaths[pathKey][verbKey][methodKey];
+    
     if (operationId) {
       operationId = operationId
             .replace(/'-/g, '') // replace '- with '' - cloudflare thing
@@ -179,9 +197,11 @@ export function getOperationId(
         }
         operationId = `${operationId}_${opSuffixes.join('_')}`;
       }
+
       // update opid based upon provider
       operationId = updateOperationIdforProvider(providerName, service, resource, operationId);
       return operationId;
+
     } else {
       logger.warning(`no method key found for ${pathKey}/${verbKey}, using path tokens and verb`);
       return `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;

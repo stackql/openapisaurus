@@ -7,6 +7,8 @@ import * as types from "../types/types.ts";
 import {
     getMeaningfulPathTokens,
     camelToSnake,
+    parseDSL,
+    applyTransformations,
 } from "./shared.ts";
 import {
   updateServiceName,
@@ -35,36 +37,60 @@ export function isOperationExcluded(exOption: any, operation: any, discriminator
 
 export function retServiceNameAndDesc(providerName: string, operation: any, pathKey: string, discriminator: string, _tags: any[], debug: boolean, logger: any): [string, string] {
     
+  let thisSvc;
+
   if (discriminator.startsWith('svcName:')) {
-    return [discriminator.split(':')[1], discriminator.split(':')[1]];
+
+    // service name is specified
+    thisSvc = discriminator.split(':')[1];
+    debug ? logger.debug(`service name explicitly supplied : ${thisSvc}`) : null; 
+    return [thisSvc, thisSvc];
+
+  } else if (discriminator === 'path_tokens'){
+
+    // path tokens requested      
+    thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
+    debug ? logger.debug(`path tokens requested, initial resolved service token : ${thisSvc}`) : null;     
+
   } else {
-    let thisSvc = 'svc';
-    if (discriminator == 'path_tokens') {
-      thisSvc = getMeaningfulPathTokens(pathKey)[0] || thisSvc;
-    } else {
-      
-      const searchResult = search(operation, discriminator);
 
-      if (Array.isArray(searchResult)) {
-          if (searchResult.length > 0 && typeof searchResult[0] === 'string') {
-              thisSvc = searchResult[0].replace(/-/g, '_').replace(/\//g, '_');
-          } else {
-              thisSvc = getMeaningfulPathTokens(pathKey)[0];
-          }
-      } else {
-          thisSvc = getMeaningfulPathTokens(pathKey)[0];
-      }
-    }
+    // svcDiscriminator must have been supplied
+    debug ? logger.debug(`svcDiscriminator supplied : ${discriminator}`) : null; 
+    const { jmespath, transforms } = parseDSL(discriminator);
+    const searchResult = search(operation, jmespath);
+    debug ? logger.debug(`searchResult: ${searchResult}`) : null; 
+    // Determine the type of searchResult
+    const resultType = Array.isArray(searchResult) ? 'array' :
+                    (searchResult === null) ? 'null' :
+                    typeof searchResult;
 
-    // for msgraph
-    if (thisSvc.includes('.')) {
-      thisSvc = thisSvc.split('.')[0];
+    let searchResultStr;
+    switch (resultType) {
+      case 'array':
+          // Handle array result
+          debug ? logger.debug(`searchResult is an array`) : null;
+          searchResultStr = searchResult[0];
+          break;
+      case 'string':
+          // Handle string result
+          debug ? logger.debug(`searchResult is a string`) : null;
+          searchResultStr = searchResult;
+          break;
+      default:
+          // Log and throw an error for any other type
+          logger.error(`Unexpected result type: ${resultType}`);
+          throw new Error(`Unhandled result type: ${resultType}`);
     }
-  
-    const serviceDesc = findDescription(thisSvc, _tags);
-    const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
-    return [serviceName, serviceDesc];
+    debug ? logger.debug(`applying transforms : ${transforms} , to ${searchResultStr}`) : null;     
+    thisSvc = applyTransformations(searchResultStr, transforms);
+    debug ? logger.debug(`initial resolved service token : ${thisSvc}`) : null;     
+
   }
+
+  const serviceDesc = findDescription(thisSvc, _tags);
+  const serviceName = updateServiceName(providerName, camelToSnake(thisSvc), debug, logger);
+  return [serviceName, serviceDesc];
+
 }
 
 export function initService(
