@@ -14,7 +14,8 @@ import {
   updateResourceName,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
-  updateOperationIdforProvider,
+  updateStackQLMethodNameforProvider,
+  performMethodNameTransformsforProvider,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 import * as types from "../types/types.ts";
@@ -140,72 +141,38 @@ export function addResource(resData: any, providerName: string, service: string,
     return resData;
 }
 
-export function getOperationId(
+export function getStackQLMethodName(
     apiPaths: any,
     pathKey: string,
     verbKey: string,
-    existingOpIds: string[],
-    methodKey: string,
+    // existingOpIds: string[],
+    thisOperationId: string,
     providerName: string,
     service: string,
     resource: string
   ): string {
     
+    /*
+    * stackql method names are derived from the operationId
+    * they are used to uniquely identify routes to operations in the providers OpenAPI spec
+    * stackql (sql) verbs are then mapped back to the stackQL method
+    */
+
+    // if the spec is annotated, just use this
     if (apiPaths[pathKey][verbKey]['x-stackQL-method']) {
       return apiPaths[pathKey][verbKey]['x-stackQL-method'];
     }
 
-    let operationId = apiPaths[pathKey][verbKey][methodKey];
+    // check for provider specific transforms on opid
+    let stackQLMethodName = performMethodNameTransformsforProvider(providerName, service, thisOperationId);
     
-    if (operationId) {
-      operationId = operationId
-            .replace(/'-/g, '') // replace '- with '' - cloudflare thing
-            .replace(/'/g, '') // replace ' with ''
-            .replace(/v-([0-9]+)/g, 'v$1') // replace v-<anynumber> with v<anynumber>
-            .replace(/\//g, '_') // replace / with _
-            .replace(/-/g, '_') // replace - with _
-            .replace(/\(/g, '_') // replace ( with _
-            .replace(/\)/g, '_') // replace ) with _
-            .replace(/\./g, '_') // replace . with _
-            ; 
+    // else perform general transforms (to remove invalid characters)
+    stackQLMethodName = camelToSnake(stackQLMethodName);
 
-      // remove service prefix
-      if (operationId.startsWith(`${service}_`)) {
-        operationId = operationId.replace(`${service}_`, '');
-      }
-      // remove resource prefix
-      if (operationId.startsWith(`${resource}_`)) {
-        operationId = operationId.replace(`${resource}_`, '');
-      }
-      // check for uniqueness
-      if (existingOpIds.includes(operationId)) {
-        // preserve op type
-        if (operationId.endsWith('_list')) {
-          operationId = `list_${operationId.substring(0, operationId.length - 5)}`;
-        }
-        if (operationId.endsWith('_create')) {
-          operationId = `create_${operationId.substring(0, operationId.length - 7)}`;
-        }
-        if (operationId.endsWith('_delete')) {
-          operationId = `delete_${operationId.substring(0, operationId.length - 7)}`;
-        }
-        // get path params
-        const pathParams = (pathKey.match(/\{[\w]*\}/g) || ['by_noparams']);
-        const opSuffixes: string[] = [];
-        for (const ix in pathParams) {
-          opSuffixes.push(`by_${pathParams[ix].replace(/\{|\}/g, '')}`);
-        }
-        operationId = `${operationId}_${opSuffixes.join('_')}`;
-      }
+    // final provider name overrides
+    stackQLMethodName = updateStackQLMethodNameforProvider(providerName, service, resource, stackQLMethodName);
 
-      // update opid based upon provider
-      operationId = updateOperationIdforProvider(providerName, service, resource, operationId);
-      return operationId;
-
-    } else {
-      logger.warning(`no method key found for ${pathKey}/${verbKey}, using path tokens and verb`);
-      return `${verbKey}_${getAllPathTokens(pathKey).join('_')}`;
-    }
+    return stackQLMethodName;
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
@@ -223,47 +190,47 @@ export function addOperation(
     resData: any,
     service: string,
     resource: string,
-    operationId: string,
+    stackQLMethodName: string,
     apiPaths: any,
     _componentsSchemas: any,
     pathKey: string,
     verbKey: string,
     providerName: string,
-    methodKeyVal: string,
+    operationId: string,
     debug: boolean,
   ): any {
 
     const respCode = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
     const opRef = getOperationRef(service, pathKey, verbKey);
 
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId] = {};
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation'] = {};
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response'] = {};
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['$ref'] = opRef;
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['operation']['opId'] = methodKeyVal;
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['mediaType'] = 'application/json';
-    resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['openAPIDocKey'] = respCode;
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName] = {};
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['operation'] = {};
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response'] = {};
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['operation']['$ref'] = opRef;
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['operation']['operationId'] = operationId;
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['mediaType'] = 'application/json';
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['openAPIDocKey'] = respCode;
     
     // get objectKey if exists (get only)
-    if (verbKey == 'get' || operationId == 'get_iam_policy'){
+    if (verbKey == 'get' || stackQLMethodName == 'get_iam_policy'){
 
       let objectKey: string | boolean = false;
 
       if(apiPaths[pathKey][verbKey]['x-stackQL-objectKey']){
         objectKey = apiPaths[pathKey][verbKey]['x-stackQL-objectKey'];
       } else {
-        objectKey = getObjectKey(providerName, service, resource, operationId, debug);
+        objectKey = getObjectKey(providerName, service, resource, stackQLMethodName, debug);
       }
 
       if (objectKey) {
-        resData.components['x-stackQL-resources'][resource]['methods'][operationId]['response']['objectKey'] = objectKey;
+        resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['objectKey'] = objectKey;
         // add hidden method for unaltered response
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`] = {};
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation'] = {};
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response'] = {};
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['operation']['$ref'] = opRef;
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['mediaType'] = 'application/json';
-        resData.components['x-stackQL-resources'][resource]['methods'][`_${operationId}`]['response']['openAPIDocKey'] = respCode;
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`]['operation'] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`]['response'] = {};
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`]['operation']['$ref'] = opRef;
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`]['response']['mediaType'] = 'application/json';
+        resData.components['x-stackQL-resources'][resource]['methods'][`_${stackQLMethodName}`]['response']['openAPIDocKey'] = respCode;
       }
     }
     return resData;
@@ -293,26 +260,30 @@ export function updateProviderData(
 export function addSqlVerb(
     op: any,
     resData: any,
-    operationId: string,
+    stackQLMethodName: string,
     service: string,
     resource: string,
     pathKey: string,
     verbKey: string,
     providerName: string,
-    methodKeyVal: string,
+    operationId: string,
     _debug: boolean,
   ): any {
+    
+    
+    
     const pattern = /\{(\+)?[\w]*\}/g;
-    switch (getSqlVerb(op, operationId, verbKey, providerName, service, resource)) {
+    const matches = pathKey.match(pattern) || [];
+    switch (getSqlVerb(op, stackQLMethodName, verbKey, providerName, service, resource)) {
       case 'select':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
           {
-            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${operationId}`,
+            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
             'path': pathKey,
-            'numTokens': (pathKey.match(pattern) || []).length,
-            'tokens': (pathKey.match(pattern) || []).join(','),
+            'numTokens': matches.length, // (pathKey.match(pattern) || []).length,
+            'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
             'enabled': true,
-            'methodKey': methodKeyVal ? methodKeyVal : 'not found',
+            'operationId': operationId ? operationId : 'not found',
             'respSchema': getRespSchemaName(op, service),
           }
         );
@@ -320,24 +291,24 @@ export function addSqlVerb(
       case 'insert':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['insert'].push(
           {
-            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${operationId}`,
+            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
             'path': pathKey,
             'numTokens': (pathKey.match(pattern) || []).length,
             'tokens': (pathKey.match(pattern) || []).join(','),
             'enabled': true,
-            'methodKey': methodKeyVal ? methodKeyVal : 'not found',            
+            'operationId': operationId ? operationId : 'not found',            
           }
         );
         break;
       case 'delete':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['delete'].push(
           {
-            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${operationId}`,
+            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
             'path': pathKey,
             'numTokens': (pathKey.match(pattern) || []).length,
             'tokens': (pathKey.match(pattern) || []).join(','),
             'enabled': true,
-            'methodKey': methodKeyVal ? methodKeyVal : 'not found',
+            'operationId': operationId ? operationId : 'not found',
           }
         );
         break;
@@ -396,71 +367,65 @@ function includes(str: string, arr: string[]): boolean {
     return false;
 }
 
-function getSqlVerb(op: any, operationId: string, verbKey: string, providerName: string, service: string, resource: string): string {
+function getSqlVerb(op: any, stackQLMethodName: string, verbKey: string, providerName: string, service: string, resource: string): string {
     
-    // check if there is a verb in the provider
-    const providerVerb = getSqlVerbforProvider(operationId, verbKey, providerName, service, resource);
+    // if the spec is annotated, just use this
+    if (op['x-stackQL-verb']) {
+      return op['x-stackQL-verb'];
+    }    
 
+    // check if there is a verb in the provider, if so return this
+    const providerVerb = getSqlVerbforProvider(stackQLMethodName, verbKey, providerName, service, resource);
     if (providerVerb) {
         return providerVerb;
-    } else if (op['x-stackQL-verb']) {
-        return op['x-stackQL-verb'];
-    } else {
-        let verb = 'exec';
-        switch (verbKey) {
-          case 'get': {
-            if (includes(operationId, ['get', 'list'])){
-              verb = 'select';
-            }
-            if (startsOrEndsWith(operationId, [
-              'select',
-              'read',
-              'describe',
-              'show',
-              'find',
-              'search',
-              'query',
-              'fetch',
-              'retrieve',
-              'inspect',
-              'check',
-              'details',
-            ])) {
-              verb = 'select';
-            }
-            // if response code is 204 then exec
-            if (op.responses['204'] && !op.responses['200']) {
-              verb = 'exec';
-            }
-            // if there are no 2xx response codes then exec
-            // if (!Object.keys(op.responses).find(respCode => respCode.startsWith('2'))) {
-            //   verb = 'exec';
-            // }
-            const responseKeys = Object.keys(op.responses);
-            if (!responseKeys.some(respCode => respCode.startsWith('2')) && !responseKeys.includes('default')) {
-                verb = 'exec';
-            }            
-            break;
-          }  
-          case 'post':
-            if (includes(operationId, ['create', 'insert']) && !includes(operationId, ['recreate'])){
-              verb = 'insert';
-            }
-            if (startsOrEndsWith(operationId, [
-              'add',
-              // 'post',
-            ])){
-              verb = 'insert';
-            }
-            break;
-          case 'delete':
-            if (includes(operationId, ['delete', 'remove']) && !includes(operationId, ['undelete'])){
-              verb = 'delete';
-            }
-            break;  
-          default:
-            verb = 'exec';
-        }
-        return verb;
     }
+    
+    // apply general rules
+    let verb = 'exec';
+    switch (verbKey) {
+      case 'get': {
+        if (includes(stackQLMethodName, ['get', 'list'])){
+          verb = 'select';
+        }
+        if (startsOrEndsWith(stackQLMethodName, [
+          'select',
+          'read',
+          'describe',
+          'show',
+          'find',
+          'search',
+          'query',
+          'fetch',
+          'retrieve',
+          'inspect',
+          'check',
+          'details',
+        ])) {
+          verb = 'select';
+        }
+        // check response codes and adjust accordingly
+        const responseKeys = Object.keys(op.responses);
+        verb = (!responseKeys.includes('200') && (responseKeys.includes('204') || !responseKeys.some(respCode => respCode.startsWith('2')) && !responseKeys.includes('default'))) ? 'exec' : verb;
+        break;
+      }  
+      case 'post':
+        if (includes(stackQLMethodName, ['create', 'insert']) && !includes(stackQLMethodName, ['recreate'])){
+          verb = 'insert';
+        }
+        if (startsOrEndsWith(stackQLMethodName, [
+          'add',
+          // 'post',
+        ])){
+          verb = 'insert';
+        }
+        break;
+      case 'delete':
+        if (includes(stackQLMethodName, ['delete', 'remove']) && !includes(stackQLMethodName, ['undelete'])){
+          verb = 'delete';
+        }
+        break;  
+      default:
+        verb = 'exec';
+    }
+    return verb;
 }

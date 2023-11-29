@@ -10,12 +10,6 @@ function fixTypeFields(schema: any): any {
     schema.type = schema.type.find((type: any) => type !== 'null') || schema.type[0];
   }
 
-  // Handle the 'anyOf' field
-  if (Array.isArray(schema.anyOf)) {
-    const nonNullSchema = schema.anyOf.find((s: any) => s.type !== 'null') || schema.anyOf[0];
-    return { ...nonNullSchema };
-  }
-
   // Recurse into object properties or array items
   for (const key in schema) {
     if (Object.prototype.hasOwnProperty.call(schema, key)) {

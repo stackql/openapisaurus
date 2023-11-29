@@ -4,82 +4,111 @@ import { logger } from "../util/logging.ts";
 import { read } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
 import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import {
+  camelToSnake,
+} from "../functions/shared.ts";
 
-// nullable type fix
-function nullableTypeFix(obj: any) {
+function nullableTypeFix(obj: any): any {
+  if (obj === null || typeof obj !== 'object') return obj;
+
+  const newObj = Array.isArray(obj) ? [] : {};
   for (const key in obj) {
-    if (typeof obj[key] === 'object' && obj[key] !== null) {
-      nullableTypeFix(obj[key]);
-    }
+    const value = obj[key];
+    newObj[key] = nullableTypeFix(value); // Recursively fix nested objects
 
-    if (key === 'type' && Array.isArray(obj[key])) {
-      // If type is an array and contains 'null', change it to a single type with nullable: true
-      const index = obj[key].indexOf('null');
-      if (index > -1) {
-        // Set 'type' to the first non-'null' value in the array
-        obj[key].splice(index, 1);
-        obj['type'] = obj[key][0];
-        
-        // Add nullable: true
-        obj['nullable'] = true;
-      }
+    if (key === 'type' && Array.isArray(newObj[key])) {
+      const nonNullTypes = newObj[key].filter((type: any) => type !== 'null');
+      newObj[key] = nonNullTypes.length > 0 ? nonNullTypes[0] : newObj[key][0];
+      newObj['nullable'] = newObj[key].includes('null');
     }
   }
+  return newObj;
 }
 
+function formatStringValues(obj: any): any {
+  if (obj === null || typeof obj !== 'object') return obj;
 
-// function to recursively process openapi spec
-function processSpec(spec: any) {
-  for (const key in spec) {
-    if (typeof spec[key] === 'object' && spec[key] !== null) {
-      processSpec(spec[key]);
+  const newObj = Array.isArray(obj) ? [] : {};
+  for (const key in obj) {
+    const value = obj[key];
+    newObj[key] = formatStringValues(value); // Recursively format nested objects
+
+    if ((key === 'description' || key === 'summary') && typeof newObj[key] === 'string') {
+      newObj[key] = newObj[key].replace(/(<([^>]+)>)/ig, '').replace(/^\s*\n/gm, '');
     }
 
-    if (key === 'description' || key === 'summary') {
-        // remove html tags and extra empty lines
-        spec[key] = spec[key].replace(/(<([^>]+)>)/ig, '').replace(/^\s*\n/gm, '');
+    if (key === 'summary' && !newObj['description'] && typeof newObj['summary'] === 'string') {
+      newObj['description'] = newObj['summary'];
+    }
+  }
+  return newObj;
+}
+
+function fixParameterNames(spec: any): any {
+  // Deep clone spec to avoid direct mutation
+  let newSpec = JSON.parse(JSON.stringify(spec));
+
+  // Traverse each path
+  for (const path in newSpec.paths) {
+    // Extract and update path parameters in the path string
+    let newPath = path.replace(/\{([^}]+)\}/g, (match, paramName) => {
+      return `{${camelToSnake(paramName)}}`;
+    });
+
+    // Apply changes to the path if necessary
+    if (newPath !== path) {
+      newSpec.paths[newPath] = newSpec.paths[path];
+      delete newSpec.paths[path];
     }
 
-    if (key === 'summary' && spec['description'] === undefined) {
-        spec['description'] = spec[key];
+    // Update parameter names in each method
+    for (const method in newSpec.paths[newPath]) {
+      const operation = newSpec.paths[newPath][method];
+      if (operation.parameters) {
+        operation.parameters = operation.parameters.map(param => {
+          if (param.in === 'path') {
+            return { ...param, name: camelToSnake(param.name) };
+          }
+          return param;
+        });
       }
-
+    }
   }
 
-  nullableTypeFix(spec);
-  
+  return newSpec;
+}
+
+function processSpec(spec: any): any {
+  let newSpec = formatStringValues(spec);
+  newSpec = nullableTypeFix(newSpec);
+  newSpec= fixParameterNames(newSpec);
+  return newSpec;
 }
 
 export async function formatApiSpec(formatArgs: types.formatArgs): Promise<boolean> {
   try {
-
-    formatArgs.verbose ? logger.debug(`formatArgs: ${JSON.stringify(formatArgs)}`) : null;
-    
     const { apiDoc, outputFileName, overwrite, verbose } = formatArgs;
-
-    // check if file exists
+    if (verbose) logger.debug(`formatArgs: ${JSON.stringify(formatArgs)}`);
+    
     if (!existsSync(apiDoc)) {
       throw new Error(`File ${apiDoc} does not exist.`);
     }
 
-    verbose ? logger.debug(`reading ${apiDoc}...`) : null;
-
+    verbose && logger.debug(`reading ${apiDoc}...`);
     const apiData = await read(apiDoc);
-    if (!apiData){
-        logger.error(`failed to parse ${apiDoc}`);
-        return false;
+    if (!apiData) {
+      logger.error(`failed to parse ${apiDoc}`);
+      return false;
     }
 
-    processSpec(apiData);
+    const processedSpec = processSpec(apiData);
 
-    verbose ? logger.debug(`writing out to ${outputFileName}...`) : null;
-
+    verbose && logger.debug(`writing out to ${outputFileName}...`);
     if (existsSync(outputFileName) && !overwrite) {
       throw new Error(`File ${outputFileName} already exists. Overwrite is set to false.`);
     }
 
-    Deno.writeTextFileSync(outputFileName, yaml.dump(apiData, {lineWidth: -1}));
-
+    Deno.writeTextFileSync(outputFileName, yaml.dump(processedSpec, {lineWidth: -1}));
     return true;
   } catch (error) {
     logger.error(`failed to format spec : ${error}`);

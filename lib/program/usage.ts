@@ -73,7 +73,7 @@ export const usage = {
     --providerName      [REQUIRED] Name of the provider.
     --resDiscriminator  [OPTIONAL] JMESPath expression used to identify stackql resources from a providers OpenAPI spec. (defaults to path_tokens).
     --providerConfig    [OPTIONAL] Stringified JSON object, describing the config for a provider. (defaults to '{ "auth": { "type": "null_auth" }}').
-    --methodKey         [OPTIONAL] JMESPath used to identify resource methods from a providers OpenAPI spec. (defaults to operationId).
+    --operationIdKey    [OPTIONAL] JMESPath used to identify resource methods from a providers OpenAPI spec. (defaults to operationId).
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,

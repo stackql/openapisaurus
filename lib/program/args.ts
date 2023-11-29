@@ -131,7 +131,7 @@ export function parseDevArgs(args: any): types.devArgs | false {
     // optional named args
     const resDiscriminator: string = args.resDiscriminator || 'path_tokens';
     const providerConfig: string = args.providerConfig || '{ "auth": { "type": "null_auth" }}';
-    const methodKey: string = args.methodKey || 'operationId';
+    const operationIdKey: string = args.operationIdKey || 'operationId';
     const verbose: boolean = args.verbose || false;
     const overwrite: boolean = args.overwrite || false;
   
@@ -140,7 +140,7 @@ export function parseDevArgs(args: any): types.devArgs | false {
       providerName: providerName,
       resDiscriminator: resDiscriminator,
       providerConfig: providerConfig,
-      methodKey: methodKey,
+      operationIdKey: operationIdKey,
       overwrite: overwrite,
       verbose: verbose,
     };  

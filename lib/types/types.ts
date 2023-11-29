@@ -14,7 +14,7 @@ export interface devArgs {
     providerName: string;
     resDiscriminator: string;
     providerConfig: string;
-    methodKey: string;
+    operationIdKey: string;
     overwrite: boolean;
     verbose: boolean;
 }

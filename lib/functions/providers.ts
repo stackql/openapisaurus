@@ -6,6 +6,7 @@ interface Provider {
     resourcesMap: Record<string, any>;
     objectKeysAndSqlVerbs: Record<string, any>;
     methodNameMap: Record<string, any>;
+    methodNameTransforms: Record<string, any>;
 }
 
 const typedProviders = providers as unknown as Record<string, Provider>;
@@ -118,15 +119,31 @@ export function getSqlVerbforProvider(operationId: string, _verbKey: string, pro
     return false;
 }
 
-export function updateOperationIdforProvider(providerName: string, service: string, resource: string, operationId: string): string {
+export function updateStackQLMethodNameforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string): string {
     if (providerName in typedProviders) {
         if (service in typedProviders[providerName].methodNameMap) {
             if (resource in typedProviders[providerName].methodNameMap[service]) {
-                if (operationId in typedProviders[providerName].methodNameMap[service][resource]) {
-                        return typedProviders[providerName].methodNameMap[service][resource][operationId];
+                if (stackQLMethodName in typedProviders[providerName].methodNameMap[service][resource]) {
+                        return typedProviders[providerName].methodNameMap[service][resource][stackQLMethodName];
                 }
             }
         }
     }
-    return operationId;
+    return stackQLMethodName;
+}
+
+export function performMethodNameTransformsforProvider(providerName: string, service: string, operationId: string): string {
+    if (providerName in typedProviders) {
+        const providerTransforms = typedProviders[providerName].methodNameTransforms;
+
+        // Check if a specific service transform is defined
+        if (service in providerTransforms) {
+            return providerTransforms[service](operationId);
+        } 
+        // Check if a general transform for all services is defined
+        else if ('allServices' in providerTransforms) {
+            return providerTransforms['allServices'](operationId);
+        }
+    }
+    return operationId; // return operationId if no specific transform is found
 }
