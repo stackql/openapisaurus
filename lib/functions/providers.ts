@@ -75,7 +75,7 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-export function getObjectKeyforProvider(providerName: string, service: string, resource: string, operationId: string, _debug: boolean) : string | false {
+export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean) : string | false {
     if (providerName in typedProviders) {
         const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
         
@@ -87,9 +87,9 @@ export function getObjectKeyforProvider(providerName: string, service: string, r
 
         if (service in providerObjectKeysAndSqlVerbs) {
             if (resource in providerObjectKeysAndSqlVerbs[service]) {
-                if (operationId in providerObjectKeysAndSqlVerbs[service][resource]) {
-                    if ('objectKey' in providerObjectKeysAndSqlVerbs[service][resource][operationId]){
-                        objectKey = providerObjectKeysAndSqlVerbs[service][resource][operationId]['objectKey'];
+                if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
+                    if ('objectKey' in providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]){
+                        objectKey = providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
                     }
                 }
             }

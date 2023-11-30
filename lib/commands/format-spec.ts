@@ -44,7 +44,7 @@ function formatStringValues(obj: any): any {
   return newObj;
 }
 
-function fixParameterNames(spec: any): any {
+function fixParameterNamesInPath(spec: any): any {
   // Deep clone spec to avoid direct mutation
   let newSpec = JSON.parse(JSON.stringify(spec));
 
@@ -60,20 +60,39 @@ function fixParameterNames(spec: any): any {
       newSpec.paths[newPath] = newSpec.paths[path];
       delete newSpec.paths[path];
     }
+  }
+  return newSpec;
+}
 
-    // Update parameter names in each method
-    for (const method in newSpec.paths[newPath]) {
-      const operation = newSpec.paths[newPath][method];
-      if (operation.parameters) {
-        operation.parameters = operation.parameters.map(param => {
-          if (param.in === 'path') {
-            return { ...param, name: camelToSnake(param.name) };
+function fixParameterNamesInOpParams(spec: any) {
+  let newSpec = JSON.parse(JSON.stringify(spec)); // Deep clone spec
+
+  Object.keys(newSpec.paths).forEach((path) => {
+    if (newSpec.paths[path].parameters) {
+      newSpec.paths[path].parameters.forEach((parameter: any, index: number) => {
+      if (parameter.in === 'path') {
+        const newName = camelToSnake(parameter.name);
+        if(parameter.name !== newName) {
+          // console.log(`Fixing parameter name in path: ${path} ${parameter.name} -> ${newName}`);
+          newSpec.paths[path].parameters[index].name = newName; // Update the name field
+        }
+      }
+      });
+    }
+    Object.keys(newSpec.paths[path]).forEach((method) => {
+      if (newSpec.paths[path][method].parameters) {
+        newSpec.paths[path][method].parameters.forEach((parameter: any, index: number) => {
+          if (parameter.in === 'path') {
+            const newName = camelToSnake(parameter.name);
+            if(parameter.name !== newName) {
+              // console.log(`Fixing parameter name in path: ${path} ${method} ${parameter.name} -> ${newName}`);
+              newSpec.paths[path][method].parameters[index].name = newName; // Update the name field
+            }
           }
-          return param;
         });
       }
-    }
-  }
+    });
+  });
 
   return newSpec;
 }
@@ -81,7 +100,8 @@ function fixParameterNames(spec: any): any {
 function processSpec(spec: any): any {
   let newSpec = formatStringValues(spec);
   newSpec = nullableTypeFix(newSpec);
-  newSpec= fixParameterNames(newSpec);
+  newSpec = fixParameterNamesInPath(newSpec);
+  newSpec = fixParameterNamesInOpParams(newSpec);
   return newSpec;
 }
 

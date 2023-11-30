@@ -92,7 +92,7 @@ export function getResourceName(
                         (searchResult === null) ? 'null' :
                         typeof searchResult;
     
-        let searchResultStr;
+        let searchResultStr: string;
         switch (resultType) {
           case 'array':
               // Handle array result
@@ -175,13 +175,13 @@ export function getStackQLMethodName(
     return stackQLMethodName;
 }
 
-function getObjectKey(providerName: string, service: string, resource: string, operationId: string, debug: boolean) : string | false {
-  const objectKey = getObjectKeyforProvider(providerName, service, resource, operationId, debug);
+function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {
+  const objectKey = getObjectKeyforProvider(providerName, service, resource, stackQLMethodName, debug);
   if (objectKey) {
     return objectKey;
   } else {
     // do something rules based here...
-    debug ? logger.debug(`no object key found for ${providerName}.${service}.${resource}.${operationId}`) : null;
+    debug ? logger.debug(`no object key found for ${providerName}.${service}.${resource} : ${stackQLMethodName}`) : null;
   }
   return false
 }
@@ -269,12 +269,10 @@ export function addSqlVerb(
     operationId: string,
     _debug: boolean,
   ): any {
-    
-    
-    
-    const pattern = /\{(\+)?[\w]*\}/g;
+    // const pattern = /\{(\+)?[\w]*\}/g;
+    const pattern = /\{(\+)?[\w-]*\}/g;
     const matches = pathKey.match(pattern) || [];
-    switch (getSqlVerb(op, stackQLMethodName, verbKey, providerName, service, resource)) {
+    switch (getSqlVerb(op, stackQLMethodName, pathKey, verbKey, providerName, service, resource)) {
       case 'select':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
           {
@@ -367,7 +365,7 @@ function includes(str: string, arr: string[]): boolean {
     return false;
 }
 
-function getSqlVerb(op: any, stackQLMethodName: string, verbKey: string, providerName: string, service: string, resource: string): string {
+function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey: string, providerName: string, service: string, resource: string): string {
     
     // if the spec is annotated, just use this
     if (op['x-stackQL-verb']) {
@@ -380,6 +378,11 @@ function getSqlVerb(op: any, stackQLMethodName: string, verbKey: string, provide
         return providerVerb;
     }
     
+    // OData thing
+    if (pathKey.includes('$count') || pathKey.includes('$value') || pathKey.includes('$batch') || pathKey.includes('$metadata') || pathKey.includes('$ref') || pathKey.includes('$batch')){
+      return 'exec';
+    }
+
     // apply general rules
     let verb = 'exec';
     switch (verbKey) {
@@ -412,12 +415,12 @@ function getSqlVerb(op: any, stackQLMethodName: string, verbKey: string, provide
         if (includes(stackQLMethodName, ['create', 'insert']) && !includes(stackQLMethodName, ['recreate'])){
           verb = 'insert';
         }
-        if (startsOrEndsWith(stackQLMethodName, [
-          'add',
-          // 'post',
-        ])){
-          verb = 'insert';
-        }
+        // if (startsOrEndsWith(stackQLMethodName, [
+        //   'add',
+        //   'post',
+        // ])){
+        //   verb = 'insert';
+        // }
         break;
       case 'delete':
         if (includes(stackQLMethodName, ['delete', 'remove']) && !includes(stackQLMethodName, ['undelete'])){

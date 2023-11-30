@@ -5,26 +5,27 @@ obtain a spec from [here](https://github.com/microsoftgraph/msgraph-metadata/blo
 clean up the spec dirs and files
 
 ```
-rm -f ref/azuread/openapi_formatted.yaml
+rm -f ref/azuread/openapi-formatted.yaml
 rm -rf dev/azuread
 rm -rf src/azuread
-```
-
-### `format`
-
-```
-./openapisaurus format \
-ref/azuread/openapi.yaml \
-ref/azuread/openapi_formatted.yaml \
---overwrite \
---verbose
 ```
 
 ### `split`
 
 ```
+./openapisaurus format \
+ref/azuread/openapi.yaml \
+ref/azuread/openapi-formatted.yaml \
+--overwrite \
+--verbose
+```
+
+
+### `split`
+
+```
 ./openapisaurus split \
-ref/azuread/openapi_formatted.yaml \
+ref/azuread/openapi-formatted.yaml \
 --providerName=azuread \
 --svcDiscriminator='"tags"[0] | (input) => input.split(".")[0]' \
 --outputDir=dev

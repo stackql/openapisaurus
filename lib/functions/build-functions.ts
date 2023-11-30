@@ -1,13 +1,19 @@
 // deno-lint-ignore-file no-explicit-any
 
-function fixTypeFields(schema: any): any {
+function fixTypeFields(schema: { [x: string]: any; type: string | string[]; } | null) {
   if (schema === null || typeof schema !== 'object') {
     return schema;
   }
 
-  // Handle the 'type' field
+  // Handle the 'type' field for arrays with specific conditions
   if (Array.isArray(schema.type)) {
-    schema.type = schema.type.find((type: any) => type !== 'null') || schema.type[0];
+    if (schema.type.length === 2 && schema.type.includes('null')) {
+      // Set to the non-null type
+      schema.type = schema.type.find((type: string) => type !== 'null') || '';
+    } else if (schema.type.length > 2) {
+      // Set to string for safety
+      schema.type = 'string';
+    }
   }
 
   // Recurse into object properties or array items
