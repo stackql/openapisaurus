@@ -70,6 +70,17 @@ export const servicesMap = {
 }
 
 export const resourcesMap = {
+    groups: {
+        nameMap: {},
+        opIdMap: {
+            'groups.calendar.GetCalendarView': 'calendar_view_event',
+            'groups.calendar.ListCalendarView': 'calendar_view_event',
+            'groups.calendar.calendarView.ListAttachments': 'calendar_view_calender_attachments',
+            'groups.calendar.calendarView.GetAttachments': 'calendar_view_calender_attachments',
+            'groups.calendar.calendarView.CreateAttachments': 'calendar_view_calender_attachments',
+            'groups.calendar.calendarView.DeleteAttachments': 'calendar_view_calender_attachments',            
+        }
+    },
     // applications: {
     //     nameMap: {},
     //     opIdMap: {

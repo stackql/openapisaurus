@@ -63,19 +63,22 @@ dev \
     let tokens = input.split(".");
     tokens.shift(); // Remove the service token
 
-    // Process tokens to remove verbs, split camelCase, flatten the array, and de-duplicate
+    // Filter out tokens that start with "GetCount"
+    tokens = tokens.filter(token => !token.startsWith("GetCount"));
+
+    // Process the remaining tokens to remove verbs, split camelCase, flatten the array, and de-duplicate
     let processedTokens = tokens.map((token) => {
         // Remove the verb if its at the beginning of the token
         return splitCamelCase(token.replace(verbRegex, ""));
-    }).reduce((acc, val) => {
-        val.forEach(token => {
-            // De-duplicate only add if the current token is different from the last one in the accumulator
-            if (!acc.length || acc[acc.length - 1] !== token) {
-                acc.push(token);
-            }
-        });
+    }).reduce((acc, val) => acc.concat(val), []); // Flatten the array
+
+    // Deduplicate tokens by only adding them if they are different from the previous one
+    processedTokens = processedTokens.reduce((acc, token) => {
+        if (!acc.length || acc[acc.length - 1] !== token) {
+            acc.push(token);
+        }
         return acc;
-    }, []); // Initialize the accumulator as an empty array
+    }, []);
 
     return processedTokens.join("_");
 }' \
