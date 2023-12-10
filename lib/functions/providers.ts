@@ -5,6 +5,7 @@ interface Provider {
     servicesMap: Record<string, string>;
     resourcesMap: Record<string, any>;
     objectKeysAndSqlVerbs: Record<string, any>;
+    methodNameByOpIdMap: Record<string, any>;
     methodNameMap: Record<string, any>;
     methodNameTransforms: Record<string, any>;
 }
@@ -117,6 +118,17 @@ export function getSqlVerbforProvider(operationId: string, _verbKey: string, pro
         }
     }
     return false;
+}
+
+export function getStackQLMethodNameforProviderByOpId(providerName: string, service: string, operationId: string): string | undefined {
+    if (providerName in typedProviders) {
+        if (service in typedProviders[providerName].methodNameByOpIdMap) {
+            if (operationId in typedProviders[providerName].methodNameByOpIdMap[service]) {
+                return typedProviders[providerName].methodNameByOpIdMap[service][operationId];
+            }
+        }
+    }
+    return undefined;
 }
 
 export function updateStackQLMethodNameforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string): string {

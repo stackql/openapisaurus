@@ -14,6 +14,7 @@ import {
   updateResourceName,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
+  getStackQLMethodNameforProviderByOpId,
   updateStackQLMethodNameforProvider,
   performMethodNameTransformsforProvider,
 } from "./providers.ts";
@@ -68,7 +69,7 @@ export function getResourceName(
         let pathTokens: string[] = [];
         pathTokens = getMeaningfulPathTokens(pathKey);
         pathTokens.forEach(token => {
-          if (token != service && token.length > 0){
+          if (token != service && token.length > 0 && !token.startsWith('$')){
             resTokens.push(token);
           }       
         });
@@ -163,8 +164,17 @@ export function getStackQLMethodName(
       return apiPaths[pathKey][verbKey]['x-stackQL-method'];
     }
 
+    let stackQLMethodName: string | undefined = undefined;
+
+    // check if there is a method listed by opid in the provider, if so return this
+    stackQLMethodName = getStackQLMethodNameforProviderByOpId(providerName, service, thisOperationId);
+
+    if (stackQLMethodName) {
+        return stackQLMethodName;
+    }
+
     // check for provider specific transforms on opid
-    let stackQLMethodName = performMethodNameTransformsforProvider(providerName, service, thisOperationId);
+    stackQLMethodName = performMethodNameTransformsforProvider(providerName, service, thisOperationId);
     
     // else perform general transforms (to remove invalid characters)
     stackQLMethodName = camelToSnake(stackQLMethodName);
@@ -274,17 +284,19 @@ export function addSqlVerb(
     const matches = pathKey.match(pattern) || [];
     switch (getSqlVerb(op, stackQLMethodName, pathKey, verbKey, providerName, service, resource)) {
       case 'select':
-        resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
-          {
-            '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
-            'path': pathKey,
-            'numTokens': matches.length, // (pathKey.match(pattern) || []).length,
-            'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
-            'enabled': true,
-            'operationId': operationId ? operationId : 'not found',
-            'respSchema': getRespSchemaName(op, service),
-          }
-        );
+        if(getRespSchemaName(op, service).length > 0){
+          resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
+            {
+              '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
+              'path': pathKey,
+              'numTokens': matches.length, // (pathKey.match(pattern) || []).length,
+              'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
+              'enabled': true,
+              'operationId': operationId ? operationId : 'not found',
+              'respSchema': getRespSchemaName(op, service),
+            }
+          );
+        }
         break;
       case 'insert':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['insert'].push(
@@ -412,7 +424,7 @@ function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey
         break;
       }  
       case 'post':
-        if (includes(stackQLMethodName, ['create', 'insert']) && !includes(stackQLMethodName, ['recreate'])){
+        if (includes(stackQLMethodName, ['create', 'insert']) && !includes(stackQLMethodName, ['recreate']) && stackQLMethodName != 'create_upload_session'){
           verb = 'insert';
         }
         // if (startsOrEndsWith(stackQLMethodName, [

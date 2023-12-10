@@ -118,52 +118,62 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
         const xStackQLResources = resourceDefs['components']['x-stackQL-resources'];
         try {
             Object.keys(xStackQLResources).forEach(xStackQLResKey => {
-                // delete resTokens
+                // Delete resTokens
                 delete xStackQLResources[xStackQLResKey]['resTokens'];
                 
-                // clean up pointers
+                // Clean up pointers in methods
                 Object.keys(xStackQLResources[xStackQLResKey]['methods']).forEach(methodName => {
                     const newOp = xStackQLResources[xStackQLResKey]['methods'][methodName]['operation']['$ref'].split('#/').pop();
-                    xStackQLResources[xStackQLResKey]['methods'][methodName]['operation'] =
-                    {
+                    xStackQLResources[xStackQLResKey]['methods'][methodName]['operation'] = {
                         '$ref': `#/${newOp}`
                     };
                 });
                 
-                const newSqlVerbs: types.NewSqlVerbs = {}; 
-                  
-                Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb: string) => {
-
+                const newSqlVerbs = {}; 
+                const refTokens = new Set(); // Set to store unique ref last tokens
+            
+                // Iterate through sqlVerbs
+                Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb) => {
                     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
                   
-                    const newSqlVerb: { $ref: string }[] = [];
-                    const tokens: string[] = [];
+                    const newSqlVerb = [];
+                    const tokens = []; // Array to store entire tokens strings
                   
                     // Sort by numTokens in descending order
-                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].sort((a: types.SqlVerbObj, b: types.SqlVerbObj) => b.numTokens - a.numTokens);
+                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].sort((a, b) => b.numTokens - a.numTokens);
                   
-                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: types.SqlVerbObj) => {
-                      if (sqlVerbObj.enabled) {
-                        tokens.push(sqlVerbObj.tokens);
-                        const thisRef: { $ref: string } = { $ref: sqlVerbObj.$ref };
-                        newSqlVerb.push(thisRef);
-                      }
+                    xStackQLResources[xStackQLResKey]['sqlVerbs'][sqlVerb].forEach((sqlVerbObj: { enabled: boolean, tokens?: any, $ref: any }) => {
+                        if (sqlVerbObj.enabled) {
+                            if (sqlVerbObj.tokens) {
+                                tokens.push(sqlVerbObj.tokens); // Push the entire token string
+                            }
+                            const thisRef = { $ref: sqlVerbObj.$ref } as const;
+                            newSqlVerb.push(thisRef);
+
+                            // Extract the last token of $ref and check for uniqueness
+                            const refLastToken = sqlVerbObj.$ref.split('/').pop()?.split('.').pop();
+                            if (refLastToken && refTokens.has(refLastToken)) {
+                                // Duplicate found, throw an error
+                                throw new Error(`Duplicate method name '${refLastToken}' found in resource '${xStackQLResKey}'`);
+                            }
+                            refTokens.add(refLastToken);
+                        }
                     });
                   
-                    // check if tokens are unique
+                    // Check if tokens are unique
                     if (tokens.length !== new Set(tokens).size) {
-                      logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
-                      logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
-                      logger.error(`tokens: ${JSON.stringify(tokens)}`);    
-                      throw 'Break';
+                        logger.error(`unreachable routes in ${service}/${xStackQLResKey}, with tokens: ${tokens}`);
+                        logger.error(`tokens.length: ${tokens.length}, new Set(tokens).size: ${new Set(tokens).size}`);
+                        logger.error(`tokens: ${JSON.stringify(tokens)}`);    
+                        throw 'Break';
                     }
                   
                     newSqlVerbs[sqlVerb] = newSqlVerb;
-                  });                
-
+                });                
+            
                 xStackQLResources[xStackQLResKey]['sqlVerbs'] = newSqlVerbs;
             });
-            
+
             outputData['components']['x-stackQL-resources'] = xStackQLResources
             const outputFile = `${destDir}/services/${service}.yaml`;
             logger.info(`writing service doc to ${outputFile}...`);
