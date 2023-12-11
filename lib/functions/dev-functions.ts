@@ -344,7 +344,7 @@ function getResponseCode(responses: any): string {
     if (responses) {
       Object.keys(responses).forEach(respKey => {
         // find the lowest response code that starts with 2 and return it
-        if (respKey === 'default'){
+        if (respKey === 'default' || respKey.toLowerCase() === '2xx'){
           respcode = respKey;
         }
         
