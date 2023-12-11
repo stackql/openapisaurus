@@ -56,34 +56,12 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
 
     // svcDiscriminator must have been supplied
     debug ? logger.debug(`svcDiscriminator supplied : ${discriminator}`) : null; 
-    const { jmespath, transforms } = parseDSL(discriminator);
-    const searchResult = search(operation, jmespath);
-    debug ? logger.debug(`searchResult: ${searchResult}`) : null; 
-    // Determine the type of searchResult
-    const resultType = Array.isArray(searchResult) ? 'array' :
-                    (searchResult === null) ? 'null' :
-                    typeof searchResult;
+    
+    const { searchResults, transformString } = parseDSL(discriminator, operation); 
 
-    let searchResultStr;
-    switch (resultType) {
-      case 'array':
-          // Handle array result
-          debug ? logger.debug(`searchResult is an array`) : null;
-          searchResultStr = searchResult[0];
-          break;
-      case 'string':
-          // Handle string result
-          debug ? logger.debug(`searchResult is a string`) : null;
-          searchResultStr = searchResult;
-          break;
-      default:
-          // Log and throw an error for any other type
-          logger.error(`Unexpected result type: ${resultType}`);
-          throw new Error(`Unhandled result type: ${resultType}`);
-    }
-    debug ? logger.debug(`applying transforms : ${transforms} , to ${searchResultStr}`) : null;     
-    thisSvc = applyTransformations(searchResultStr, transforms);
-    debug ? logger.debug(`initial resolved service token : ${thisSvc}`) : null;     
+    thisSvc = applyTransformations(searchResults.every(item => Array.isArray(item)) ? searchResults.flat() : searchResults, transformString);
+
+    debug ? logger.debug(`Resolved service name: ${thisSvc}`) : null;
 
   }
 

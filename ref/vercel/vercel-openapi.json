@@ -594,8 +594,11 @@
       "/deployments/{deploymentId}/builds": {
         "get": {
           "description": "Retrieves the list of builds given their deployment's unique identifier. No longer listed as public API as of May 2023.",
+          "operationId": "getBuildsForDeployment",
           "security": [],
-          "tags": [],
+          "tags": [
+            "deployments"
+          ],
           "responses": {
             "200": {
               "description": "",
@@ -2191,8 +2194,11 @@
       "/data-cache/purge-all": {
         "delete": {
           "description": "",
+          "operationId": "purgeAll",
           "security": [],
-          "tags": [],
+          "tags": [ 
+            "cache"
+          ],
           "responses": {
             "200": {
               "description": ""
@@ -2225,8 +2231,11 @@
       "/data-cache/billing-settings": {
         "patch": {
           "description": "",
+          "operationId": "enableExcessBilling",
           "security": [],
-          "tags": [],
+          "tags": [
+            "billing_settings"
+          ],
           "responses": {
             "200": {
               "description": "",

@@ -2,14 +2,21 @@
 
 Obtain doc from [https://openapi.vercel.sh](https://openapi.vercel.sh)
 
+```
+rm -rf dev/vercel
+rm -rf src/vercel
+```
+
 ### `split`
 
 ```
 ./openapisaurus split \
 ref/vercel/vercel-openapi.json \
 --providerName=vercel \
---svcdiscriminator='["tags"][0]' \
---outputDir=dev
+--svcDiscriminator='["tags"][0] | (input) => input' \
+--outputDir=dev \
+--overwrite \
+--verbose
 ```
 
 ### `dev`

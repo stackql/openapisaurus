@@ -93,20 +93,8 @@ export function getAllPathTokens(pathKey: string): string[] {
   return outTokens;
 }
 
-// export function parseDSL(dsl: string): { jmespaths: string[], transforms: string[] } {
-//   console.log(`Parsing DSL: ${dsl}`);
-  
-//   const parts = dsl.split(' | ');
-
-//   console.log(`${parts[0]}`);
-
-//   return { 
-//       jmespaths: JSON.parse(`[${parts[0]}]`), 
-//       transforms: parts.slice(1) 
-//   };
-// }
-
 export function parseDSL(dsl: string, operation: any) {
+  
   const [rawJmespaths, transformString] = dsl.split(' | ');
   const jmespaths = rawJmespaths.split(',').map(s => s.trim().replace(/"|'/g, '')); // Removing quotes and trimming spaces
   
@@ -116,19 +104,6 @@ export function parseDSL(dsl: string, operation: any) {
   // Return the search results and the transform string
   return { searchResults, transformString };
 }
-
-// function applyStringManipulation(input: string, manipulationFnString: string): string {
-//   const manipulationFn = eval(manipulationFnString);
-//   return manipulationFn(input);
-// }
-
-// export function applyTransformations(input: string, transforms: string[]): string {
-//   return transforms.reduce((result, transformString) => {
-//       // Apply each transform string as an anonymous function to the result
-//       return applyStringManipulation(result, transformString);
-//   }, input);
-// }
-
 
 function applyStringManipulation(inputs: string[], manipulationFnString: string): string {
   // Convert the string representation of the function into an actual function
