@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 
 export function camelToSnake(inStr: string): string {
 
@@ -92,23 +93,53 @@ export function getAllPathTokens(pathKey: string): string[] {
   return outTokens;
 }
 
-export function parseDSL(dsl: string): { jmespath: string, transforms: string[] } {
-  const parts = dsl.split(' | ');
-  return { 
-      jmespath: parts[0], 
-      transforms: parts.slice(1) 
-  };
+// export function parseDSL(dsl: string): { jmespaths: string[], transforms: string[] } {
+//   console.log(`Parsing DSL: ${dsl}`);
+  
+//   const parts = dsl.split(' | ');
+
+//   console.log(`${parts[0]}`);
+
+//   return { 
+//       jmespaths: JSON.parse(`[${parts[0]}]`), 
+//       transforms: parts.slice(1) 
+//   };
+// }
+
+export function parseDSL(dsl: string, operation: any) {
+  const [rawJmespaths, transformString] = dsl.split(' | ');
+  const jmespaths = rawJmespaths.split(',').map(s => s.trim().replace(/"|'/g, '')); // Removing quotes and trimming spaces
+  
+  // Run searches for each JMESPath query
+  const searchResults = jmespaths.map(jmespath => search(operation, jmespath));
+  
+  // Return the search results and the transform string
+  return { searchResults, transformString };
 }
 
-function applyStringManipulation(input: string, manipulationFnString: string): string {
-  const manipulationFn = eval(manipulationFnString);
-  return manipulationFn(input);
+// function applyStringManipulation(input: string, manipulationFnString: string): string {
+//   const manipulationFn = eval(manipulationFnString);
+//   return manipulationFn(input);
+// }
+
+// export function applyTransformations(input: string, transforms: string[]): string {
+//   return transforms.reduce((result, transformString) => {
+//       // Apply each transform string as an anonymous function to the result
+//       return applyStringManipulation(result, transformString);
+//   }, input);
+// }
+
+
+function applyStringManipulation(inputs: string[], manipulationFnString: string): string {
+  // Convert the string representation of the function into an actual function
+  const manipulationFn = eval(`(${manipulationFnString})`);
+  // Apply the function to the inputs
+  // Ensure inputs is an array of the expected arguments for the manipulation function
+  return manipulationFn(...inputs);
 }
 
-export function applyTransformations(input: string, transforms: string[]): string {
-  return transforms.reduce((result, transformString) => {
-      // Apply each transform string as an anonymous function to the result
-      return applyStringManipulation(result, transformString);
-  }, input);
+export function applyTransformations(inputs: string[], transformString: string): string {
+  // Since the transformation function may expect multiple arguments,
+  // ensure that inputs is an array of those arguments.
+  return applyStringManipulation(inputs, transformString);
 }
-

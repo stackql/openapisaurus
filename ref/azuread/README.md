@@ -33,7 +33,7 @@ ref/azuread/openapi-formatted.yaml \
 
 ### `dev`
 
-```
+<!-- ```
 ./openapisaurus dev \
 dev \
 --providerName=azuread \
@@ -41,38 +41,75 @@ dev \
 --resDiscriminator='"tags"[0] | (input) => input.split(".")[1]' \
 --overwrite \
 --verbose > aad_dev.log
-```
+``` -->
 
 ```
 ./openapisaurus dev \
 dev \
 --providerName=azuread \
 --providerConfig='{ "auth": { "type": "azure_default" }}' \
---resDiscriminator='"operationId" | (input) => {
+--resDiscriminator='"operationId","tags"[0] | (operationId, tag) => {
+    // List of excluded tags
+    const excludedTags = [
+        "groups.drive",
+        "groups.team",
+        "groups.site",
+        "groups.conversationThread",
+        "groups.onenote",
+        "groups.calendar",
+        "groups.profilePhoto",
+        "groups.plannerGroup",
+        "users.calendar",
+        "users.chat",
+        "users.contact",
+        "users.drive",
+        "users.site",
+        "users.team",
+        "users.message",
+        "users.onenote",
+        "users.person",
+        "users.presence",
+        "users.outlookUser",
+        "users.profilePhoto",
+        "users.plannerUser",
+        "users.todo",
+        "users.calendarGroup",
+        "users.userTeamwork",
+        "users.onlineMeeting",
+        "users.inferenceClassification",
+        "users.officeGraphInsights",
+        "users.employeeExperienceUser",
+        "users.contactFolder",
+    ];
+
+    // Check if the tag is in the excluded list
+    if (excludedTags.includes(tag)) {
+        return "skip_this_resource";
+    }
+
     const splitCamelCase = (token) => {
         return token
             .replace(/([a-z])([A-Z])/g, "$1 $2")
             .toLowerCase()
             .split(" ")
-            .filter(t => t); // Filter out any empty strings resulting from split
+            .filter(t => t);
     };
 
     const verbs = ["Get", "List", "Delete", "Create"];
     const verbRegex = new RegExp(`^(${verbs.join("|")})`, "i");
 
-    let tokens = input.split(".");
+    let tokens = operationId.split(".");
     tokens.shift(); // Remove the service token
 
-    // Filter out tokens that start with "GetCount"
     tokens = tokens.filter(token => !token.startsWith("GetCount"));
 
-    // Process the remaining tokens to remove verbs, split camelCase, flatten the array, and de-duplicate
     let processedTokens = tokens.map((token) => {
-        // Remove the verb if its at the beginning of the token
+        if(token.toLowerCase() === "lists" || token.startsWith("createdBy")){
+            return token;
+        }
         return splitCamelCase(token.replace(verbRegex, ""));
-    }).reduce((acc, val) => acc.concat(val), []); // Flatten the array
+    }).reduce((acc, val) => acc.concat(val), []);
 
-    // Deduplicate tokens by only adding them if they are different from the previous one
     processedTokens = processedTokens.reduce((acc, token) => {
         if (!acc.length || acc[acc.length - 1] !== token) {
             acc.push(token);

@@ -84,35 +84,46 @@ export function getResourceName(
       default:
         // resource discriminator provided
         debug ? logger.debug(`resource discriminator provided: ${resDiscriminator}`) : null;
-        let resValue;
-        const { jmespath, transforms } = parseDSL(resDiscriminator); // Parse the DSL
-        const searchResult = search(operation, jmespath);
-        debug ? logger.debug(`searchResult: ${searchResult}`) : null; 
+
+        const { searchResults, transformString } = parseDSL(resDiscriminator, operation); 
+
+        resourceName = applyTransformations(searchResults, transformString);
+        
+        debug ? logger.debug(`Resolved resource name: ${resourceName}`) : null;
+
+        // let resValue;
+        // const { jmespath, transforms } = parseDSL(resDiscriminator); // Parse the DSL
+        // const searchResult = search(operation, jmespath);
+        // debug ? logger.debug(`searchResult: ${searchResult}`) : null; 
         // Determine the type of searchResult
-        const resultType = Array.isArray(searchResult) ? 'array' :
-                        (searchResult === null) ? 'null' :
-                        typeof searchResult;
+        // const resultType = Array.isArray(searchResult) ? 'array' :
+        //                 (searchResult === null) ? 'null' :
+        //                 typeof searchResult;
     
-        let searchResultStr: string;
-        switch (resultType) {
-          case 'array':
+        // let searchResultStr: string;
+        // switch (resultType) {
+        //   case 'array':
               // Handle array result
-              debug ? logger.debug(`searchResult is an array`) : null;
-              searchResultStr = searchResult[0];
-              break;
-          case 'string':
+          //     debug ? logger.debug(`searchResult is an array`) : null;
+          //     searchResultStr = searchResult[0];
+          //     break;
+          // case 'string':
               // Handle string result
-              debug ? logger.debug(`searchResult is a string`) : null;
-              searchResultStr = searchResult;
-              break;
-          default:
+          //     debug ? logger.debug(`searchResult is a string`) : null;
+          //     searchResultStr = searchResult;
+          //     break;
+          // default:
               // Log and throw an error for any other type
-              logger.error(`Unexpected result type: ${resultType}`);
-              throw new Error(`Unhandled result type: ${resultType}`);
-        }
-        debug ? logger.debug(`applying transforms : ${transforms} , to ${searchResultStr}`) : null;     
-        resourceName = applyTransformations(searchResultStr, transforms);
-        debug ? logger.debug(`initial resolved resourcename : ${resourceName}`) : null;
+        //       logger.error(`Unexpected result type: ${resultType}`);
+        //       throw new Error(`Unhandled result type: ${resultType}`);
+        // }
+        // debug ? logger.debug(`applying transforms : ${transforms} , to ${searchResultStr}`) : null;     
+        // resourceName = applyTransformations(searchResultStr, transforms);
+        // debug ? logger.debug(`initial resolved resourcename : ${resourceName}`) : null;
+
+        
+
+
         break;
     }
 

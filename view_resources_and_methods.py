@@ -16,7 +16,7 @@ def generate_csv_from_yaml(yaml_file_path, csv_file_path):
         csvwriter = csv.writer(csvfile)
         
         # Write the header row
-        csvwriter.writerow(['resourceId', 'sqlVerb', 'ref', 'path', 'operationId', 'respSchema'])
+        csvwriter.writerow(['resourceId', 'sqlVerb', 'ref', 'path', 'tokens', 'operationId', 'respSchema'])
         
         # Navigate through the YAML content
         for resource_name, resource_content in data['components']['x-stackQL-resources'].items():
@@ -28,15 +28,16 @@ def generate_csv_from_yaml(yaml_file_path, csv_file_path):
                     ref = extract_last_token(verb_detail['$ref'])
                     # Extract the path
                     path = verb_detail['path']
+                    # Extract the tokens
+                    tokens = verb_detail['tokens']
                     # Extract the operationId
                     operation_id = verb_detail['operationId']
                     # Extract the last token of respSchema if it exists
                     resp_schema = ''
                     if 'respSchema' in verb_detail and verb_detail['respSchema']:
                         resp_schema = extract_last_token(verb_detail['respSchema'][0]['$ref'])
-
                     # Write to CSV
-                    csvwriter.writerow([resource_id, sql_verb, ref, path, operation_id, resp_schema])
+                    csvwriter.writerow([resource_id, sql_verb, ref, path, tokens, operation_id, resp_schema])
 
 # Check for command-line arguments
 if len(sys.argv) < 3:
