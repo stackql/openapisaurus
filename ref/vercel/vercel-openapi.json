@@ -14081,7 +14081,6 @@
               "application/json": {
                 "schema": {
                   "properties": {
-                    "additionalProperties": false,
                     "name": {
                       "type": "string",
                       "description": "The name of the DNS record",
@@ -18373,6 +18372,7 @@
               "name": "provider",
               "in": "query",
               "schema": {
+                "type": "string",
                 "enum": [
                   "github",
                   "github-custom-host",
@@ -18560,10 +18560,7 @@
               "name": "namespaceId",
               "in": "query",
               "schema": {
-                "type": [
-                  "string",
-                  "number"
-                ],
+                "type": "string",
                 "nullable": true
               }
             },
@@ -42540,7 +42537,32 @@
         },
         "Team": {
           "type": "object",
-          "description": "Data representing a Team."
+          "description": "Data representing a Team.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The Team's unique identifier.",
+              "example": "team_nllPyCtREAqxxdyFKbbMDlxd"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team's slug, which is unique across the Vercel platform.",
+              "example": "my-team"
+            },
+            "name": {
+              "nullable": true,
+              "type": "string",
+              "description": "Name associated with the Team account, or `null` if none has been provided.",
+              "example": "My Team"
+            },
+            "avatar": {
+              "nullable": true,
+              "type": "string",
+              "description": "The ID of the file used as avatar for this Team.",
+              "example": "6eb07268bcfadd309905ffb1579354084c24655c"
+            }
+          },
+          "additionalProperties": true
         },
         "TeamLimited": {
           "properties": {

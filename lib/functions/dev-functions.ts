@@ -260,9 +260,10 @@ export function addSqlVerb(
     // const pattern = /\{(\+)?[\w]*\}/g;
     const pattern = /\{(\+)?[\w-]*\}/g;
     const matches = pathKey.match(pattern) || [];
-    switch (getSqlVerb(op, stackQLMethodName, pathKey, verbKey, providerName, service, resource)) {
+    _debug ? logger.debug(`params: ${matches}`) : null;
+    _debug ? logger.debug(`getting sqlVerb for ${stackQLMethodName}`) : null;
+    switch (getSqlVerb(op, stackQLMethodName, pathKey, verbKey, providerName, service, resource, _debug)) {
       case 'select':
-        if(getRespSchemaName(op, service).length > 0){
           resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['select'].push(
             {
               '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
@@ -271,10 +272,9 @@ export function addSqlVerb(
               'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
               'enabled': true,
               'operationId': operationId ? operationId : 'not found',
-              'respSchema': getRespSchemaName(op, service),
+              'respSchema': getRespSchemaName(op, service).length > 0 ? getRespSchemaName(op, service) : null,
             }
           );
-        }
         break;
       case 'insert':
         resData['components']['x-stackQL-resources'][resource]['sqlVerbs']['insert'].push(
@@ -329,8 +329,8 @@ function getOperationRef(service: string, pathKey: string, verbKey: string): str
 }
   
 function getRespSchemaName(op: any, service: string): any[] {
-    for (const respCode in op.responses) {
-      if (respCode.startsWith('2')) {
+  for (const respCode in op.responses) {
+    if (respCode.startsWith('2')) {
         return getAllValuesForKey(service, op.responses[respCode], "$ref", ['examples', 'description', 'headers']);
       }
     }
@@ -355,7 +355,7 @@ function includes(str: string, arr: string[]): boolean {
     return false;
 }
 
-function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey: string, providerName: string, service: string, resource: string): string {
+function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey: string, providerName: string, service: string, resource: string, debug: boolean): string {
     
     // if the spec is annotated, just use this
     if (op['x-stackQL-verb']) {
@@ -377,7 +377,7 @@ function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey
     let verb = 'exec';
     switch (verbKey) {
       case 'get': {
-        if (includes(stackQLMethodName, ['get', 'list'])){
+        if (includes(stackQLMethodName, ['get', 'list'])){ 
           verb = 'select';
         }
         if (startsOrEndsWith(stackQLMethodName, [
@@ -420,5 +420,8 @@ function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey
       default:
         verb = 'exec';
     }
+
+    debug ? logger.debug(`verb for ${stackQLMethodName} : ${verb}`) : null;
+
     return verb;
 }

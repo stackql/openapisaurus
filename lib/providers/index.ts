@@ -9,3 +9,4 @@ export * as okta from './okta.ts';
 export * as github from './github.ts';
 export * as azuread from './azuread.ts';
 export * as homebrew from './homebrew.ts';
+export * as vercel from './vercel.ts';
