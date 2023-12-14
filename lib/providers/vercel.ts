@@ -89,7 +89,19 @@ export const objectKeysAndSqlVerbs = {
             },
         },
     },
+    checks: {
+        deployments: {
+            get_all_checks: {
+                objectKey: '$.checks',
+            },
+        },
+    },
     deployments: {
+        deployments: {
+            get_deployments: {
+                objectKey: '$.deployments',
+            },
+        },
         builds: {
             get_builds_for_deployment: {
                 objectKey: '$.builds',
@@ -148,6 +160,30 @@ export const objectKeysAndSqlVerbs = {
         members: {
             get_team_members: {
                 objectKey: '$.members',
+            },
+        },
+        teams: {
+            get_teams: {
+                objectKey: '$.teams',
+            },
+        },
+    },
+    projects: {
+        projects: {
+            get_projects: {
+                objectKey: '$.projects',
+            },
+        },
+        domains: {
+            get_project_domains: {
+                objectKey: '$.domains',
+            },
+        },
+    },
+    secrets: {
+        secrets: {
+            get_secrets: {
+                objectKey: '$.secrets',
             },
         },
     },
