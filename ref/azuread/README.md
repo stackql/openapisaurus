@@ -56,6 +56,9 @@ dev \
         "groups.site",
         "groups.conversationThread",
         "groups.onenote",
+        "groups.event",
+        "groups.conversation",
+        "groups.Functions",
         "groups.calendar",
         "groups.profilePhoto",
         "groups.plannerGroup",
@@ -80,6 +83,8 @@ dev \
         "users.officeGraphInsights",
         "users.employeeExperienceUser",
         "users.contactFolder",
+        "users.Functions",
+        "users.Actions",
     ];
 
     // Check if the tag is in the excluded list
@@ -95,7 +100,7 @@ dev \
             .filter(t => t);
     };
 
-    const verbs = ["Get", "List", "Delete", "Create"];
+    const verbs = ["Get", "List", "Delete", "Create", "Add", "Check", "Update", "Remove", "Replace", "Validate", "Set", "Unset", "Acquire"];
     const verbRegex = new RegExp(`^(${verbs.join("|")})`, "i");
 
     let tokens = operationId.split(".");

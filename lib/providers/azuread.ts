@@ -74,6 +74,7 @@ export const resourcesMap = {
         nameMap: {},
         opIdMap: {
             'applications.GetCount-8398': 'application',
+            'applications.application.GetLogo': 'application',
         },
     },
     groups: {
@@ -104,12 +105,44 @@ export const methodNameTransforms = {
     },
 }
 
-export const methodNameByOpIdMap = {
-}
+export const methodNameByOpIdMap = {}
 
 export const methodNameMap = {}
 
-export const objectKeysAndSqlVerbs = {}
+export const objectKeysAndSqlVerbs = {
 
+    _objectKeyExpression: (service: string, resource: string, stackQLMethodName: string) => {
+        if (stackQLMethodName.startsWith('list_')) {
+            return '$.value';
+        }
+        return false;
+    },
 
-
+    applications: {
+        // app_management_policies: {
+        //     list_app_management_policies: {
+        //         objectKey: '$.value',
+        //     },
+        // },
+        application: {
+            get_logo: {
+                sqlVerb: 'exec',
+            },
+        },
+        // owners: {
+        //     list_owners: {
+        //         objectKey: '$.value',
+        //     },
+        // },
+        // token_issuance_policies: {
+        //     list_token_issuance_policies: {
+        //         objectKey: '$.value',
+        //     },
+        // },
+        // token_lifetime_policies: {
+        //     list_token_lifetime_policies: {
+        //         objectKey: '$.value',
+        //     },
+        // },
+    },
+}

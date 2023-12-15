@@ -164,9 +164,9 @@ export function getStackQLMethodName(
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {
-  const objectKey = getObjectKeyforProvider(providerName, service, resource, stackQLMethodName, debug);
-  if (objectKey) {
-    return objectKey;
+  const objectKeyFromProvider = getObjectKeyforProvider(providerName, service, resource, stackQLMethodName, debug);
+  if (objectKeyFromProvider) {
+    return objectKeyFromProvider;
   } else {
     // do something rules based here...
     debug ? logger.debug(`no object key found for ${providerName}.${service}.${resource} : ${stackQLMethodName}`) : null;

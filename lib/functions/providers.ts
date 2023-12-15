@@ -76,31 +76,67 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean) : string | false {
+// export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean) : string | false {
+//     if (providerName in typedProviders) {
+//         const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
+        
+//         let objectKey = '_defaultObjectKey';
+
+//         if ('_defaultObjectKey' in providerObjectKeysAndSqlVerbs) {
+//             objectKey = providerObjectKeysAndSqlVerbs['_defaultObjectKey'];
+//         }
+
+//         if (service in providerObjectKeysAndSqlVerbs) {
+//             if (resource in providerObjectKeysAndSqlVerbs[service]) {
+//                 if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
+//                     if ('objectKey' in providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]){
+//                         objectKey = providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
+//                     }
+//                 }
+//             }
+//         }
+
+//         if (objectKey === '_defaultObjectKey') {
+//             return false;
+//         } else {
+//             return objectKey;
+//         } 
+//     }
+//     return false;
+// }
+
+export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean): string | false {
     if (providerName in typedProviders) {
         const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
-        
-        let objectKey = '_defaultObjectKey';
 
-        if ('_defaultObjectKey' in providerObjectKeysAndSqlVerbs) {
-            objectKey = providerObjectKeysAndSqlVerbs['_defaultObjectKey'];
-        }
-
-        if (service in providerObjectKeysAndSqlVerbs) {
-            if (resource in providerObjectKeysAndSqlVerbs[service]) {
-                if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
-                    if ('objectKey' in providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]){
-                        objectKey = providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
+        const getObjectKey = () => {
+			// have an extact match, return it
+            if (service in providerObjectKeysAndSqlVerbs) {
+                if (resource in providerObjectKeysAndSqlVerbs[service]) {
+                    if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
+                        return providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
                     }
                 }
             }
-        }
 
-        if (objectKey === '_defaultObjectKey') {
+			// have an expression, use it if it returns something
+            if ('_objectKeyExpression' in providerObjectKeysAndSqlVerbs) {
+				if(providerObjectKeysAndSqlVerbs['_objectKeyExpression'](service, resource, stackQLMethodName)){
+					return providerObjectKeysAndSqlVerbs['_objectKeyExpression'](service, resource, stackQLMethodName);
+				}
+            }
+
+			// provider default declared, use this
+            if ('_defaultObjectKey' in providerObjectKeysAndSqlVerbs) {
+                return providerObjectKeysAndSqlVerbs['_defaultObjectKey'];
+            }
+
             return false;
-        } else {
-            return objectKey;
-        } 
+        };
+
+        const objectKey = getObjectKey();
+
+        return objectKey;
     }
     return false;
 }
