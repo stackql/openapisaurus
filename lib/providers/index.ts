@@ -10,3 +10,4 @@ export * as github from './github.ts';
 export * as azuread from './azuread.ts';
 export * as homebrew from './homebrew.ts';
 export * as vercel from './vercel.ts';
+export * as pagerduty from './pagerduty.ts';

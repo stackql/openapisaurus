@@ -307,23 +307,27 @@ export function addSqlVerb(
 }
 
 function getResponseCode(responses: any): string {
-    let respcode = '200';
-    if (responses) {
-      Object.keys(responses).forEach(respKey => {
-        // find the lowest response code that starts with 2 and return it
-        if (respKey === 'default' || respKey.toLowerCase() === '2xx'){
-          respcode = respKey;
-        }
-        
-        if (respKey.startsWith('2') && respKey < respcode) {
-          respcode = respKey;
-        }
+  if (!responses) {
+      return '200';
+  }
 
-      });
-    }
-    return respcode;
+  if ('default' in responses) {
+      return 'default';
+  }
+
+  const twoXXKey = Object.keys(responses).find(key => key.toLowerCase() === '2xx');
+  if (twoXXKey) {
+      return twoXXKey;
+  }
+
+  const twoXXCodes = Object.keys(responses).filter(respKey => respKey.startsWith('2') && !isNaN(parseInt(respKey)));
+  if (twoXXCodes.length === 0) {
+      return '200';
+  }
+
+  return twoXXCodes.sort()[0];
 }
-  
+
 function getOperationRef(service: string, pathKey: string, verbKey: string): string {
     return `${service}.yaml#/paths/${pathKey.replace(/\//g, '~1')}/${verbKey}`;
 }
