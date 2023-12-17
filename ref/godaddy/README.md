@@ -41,6 +41,13 @@ dev \
 --verbose
 ```
 
+### Inspect Objects
+
+```
+node tests/inspectProvider.js godaddy 2>&1 | tee godaddy.log
+```
+
+
 ### `test`
 
 ```

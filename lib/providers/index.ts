@@ -11,3 +11,4 @@ export * as azuread from './azuread.ts';
 export * as homebrew from './homebrew.ts';
 export * as vercel from './vercel.ts';
 export * as pagerduty from './pagerduty.ts';
+export * as godaddy from './godaddy.ts';

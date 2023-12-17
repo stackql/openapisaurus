@@ -20,7 +20,7 @@ ref/pagerduty/pager-duty-openapiv3.json \
 ./openapisaurus dev \
 dev \
 --providerName=pagerduty \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "PAGERDUTY_API_TOKEN" }}' \
+--providerConfig='{ "auth": { "type": "api_key", "valuePrefix": "Token token=", "credentialsenvvar": "PAGERDUTY_API_TOKEN" }}' \
 --overwrite \
 --verbose
 ```
