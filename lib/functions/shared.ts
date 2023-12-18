@@ -118,3 +118,21 @@ export function applyTransformations(inputs: string[], transformString: string):
   // ensure that inputs is an array of those arguments.
   return applyStringManipulation(inputs, transformString);
 }
+
+export function startsOrEndsWith(str: string, arr: string[]): boolean {
+  for (let i = 0; i < arr.length; i++) {
+    if (str.startsWith(arr[i]) || str.endsWith(arr[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function includes(str: string, arr: string[]): boolean {
+  for (let i = 0; i < arr.length; i++) {
+    if (str.includes(arr[i])) {
+      return true;
+    }
+  }
+  return false;
+}

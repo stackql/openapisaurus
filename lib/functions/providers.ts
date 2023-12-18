@@ -4,10 +4,11 @@ import * as providers from '../providers/index.ts';
 interface Provider {
     servicesMap: Record<string, string>;
     resourcesMap: Record<string, any>;
+    stackqlMethodNameMap: Record<string, any>;
     objectKeysAndSqlVerbs: Record<string, any>;
-    methodNameByOpIdMap: Record<string, any>;
-    methodNameMap: Record<string, any>;
-    methodNameTransforms: Record<string, any>;
+    // methodNameByOpIdMap: Record<string, any>;
+    // methodNameMap: Record<string, any>;
+    // methodNameTransforms: Record<string, any>;
 }
 
 const typedProviders = providers as unknown as Record<string, Provider>;
@@ -76,34 +77,29 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-// export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean) : string | false {
-//     if (providerName in typedProviders) {
-//         const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
-        
-//         let objectKey = '_defaultObjectKey';
+export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string): string {
+    if (providerName in typedProviders) {
+        const providerData = typedProviders[providerName].stackqlMethodNameMap;
 
-//         if ('_defaultObjectKey' in providerObjectKeysAndSqlVerbs) {
-//             objectKey = providerObjectKeysAndSqlVerbs['_defaultObjectKey'];
-//         }
+        // 1. Check if there is a method listed by opid in the provider
+        if (service in providerData.methodNameByOpIdMap && operationId in providerData.methodNameByOpIdMap[service]) {
+            return providerData.methodNameByOpIdMap[service][operationId];
+        }
 
-//         if (service in providerObjectKeysAndSqlVerbs) {
-//             if (resource in providerObjectKeysAndSqlVerbs[service]) {
-//                 if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
-//                     if ('objectKey' in providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]){
-//                         objectKey = providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
-//                     }
-//                 }
-//             }
-//         }
+        // 2. Perform provider specific transforms on opid
+        if (service in providerData.methodNameTransforms) {
+            return providerData.methodNameTransforms[service](operationId);
+        } else if ('allServices' in providerData.methodNameTransforms) {
+            return providerData.methodNameTransforms['allServices'](operationId);
+        }
 
-//         if (objectKey === '_defaultObjectKey') {
-//             return false;
-//         } else {
-//             return objectKey;
-//         } 
-//     }
-//     return false;
-// }
+        // 3. Check for final provider name overrides
+        if (service in providerData.methodNameMap && resource in providerData.methodNameMap[service] && operationId in providerData.methodNameMap[service][resource]) {
+            return providerData.methodNameMap[service][resource][operationId];
+        }
+    }
+    return operationId; // Default to operationId if no specific method name is found
+}
 
 export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean): string | false {
     if (providerName in typedProviders) {
@@ -156,42 +152,42 @@ export function getSqlVerbforProvider(operationId: string, _verbKey: string, pro
     return false;
 }
 
-export function getStackQLMethodNameforProviderByOpId(providerName: string, service: string, operationId: string): string | undefined {
-    if (providerName in typedProviders) {
-        if (service in typedProviders[providerName].methodNameByOpIdMap) {
-            if (operationId in typedProviders[providerName].methodNameByOpIdMap[service]) {
-                return typedProviders[providerName].methodNameByOpIdMap[service][operationId];
-            }
-        }
-    }
-    return undefined;
-}
+// export function getStackQLMethodNameforProviderByOpId(providerName: string, service: string, operationId: string): string | undefined {
+//     if (providerName in typedProviders) {
+//         if (service in typedProviders[providerName].methodNameByOpIdMap) {
+//             if (operationId in typedProviders[providerName].methodNameByOpIdMap[service]) {
+//                 return typedProviders[providerName].methodNameByOpIdMap[service][operationId];
+//             }
+//         }
+//     }
+//     return undefined;
+// }
 
-export function updateStackQLMethodNameforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string): string {
-    if (providerName in typedProviders) {
-        if (service in typedProviders[providerName].methodNameMap) {
-            if (resource in typedProviders[providerName].methodNameMap[service]) {
-                if (stackQLMethodName in typedProviders[providerName].methodNameMap[service][resource]) {
-                        return typedProviders[providerName].methodNameMap[service][resource][stackQLMethodName];
-                }
-            }
-        }
-    }
-    return stackQLMethodName;
-}
+// export function updateStackQLMethodNameforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string): string {
+//     if (providerName in typedProviders) {
+//         if (service in typedProviders[providerName].methodNameMap) {
+//             if (resource in typedProviders[providerName].methodNameMap[service]) {
+//                 if (stackQLMethodName in typedProviders[providerName].methodNameMap[service][resource]) {
+//                         return typedProviders[providerName].methodNameMap[service][resource][stackQLMethodName];
+//                 }
+//             }
+//         }
+//     }
+//     return stackQLMethodName;
+// }
 
-export function performMethodNameTransformsforProvider(providerName: string, service: string, operationId: string): string {
-    if (providerName in typedProviders) {
-        const providerTransforms = typedProviders[providerName].methodNameTransforms;
+// export function performMethodNameTransformsforProvider(providerName: string, service: string, operationId: string): string {
+//     if (providerName in typedProviders) {
+//         const providerTransforms = typedProviders[providerName].methodNameTransforms;
 
-        // Check if a specific service transform is defined
-        if (service in providerTransforms) {
-            return providerTransforms[service](operationId);
-        } 
-        // Check if a general transform for all services is defined
-        else if ('allServices' in providerTransforms) {
-            return providerTransforms['allServices'](operationId);
-        }
-    }
-    return operationId; // return operationId if no specific transform is found
-}
+//         // Check if a specific service transform is defined
+//         if (service in providerTransforms) {
+//             return providerTransforms[service](operationId);
+//         } 
+//         // Check if a general transform for all services is defined
+//         else if ('allServices' in providerTransforms) {
+//             return providerTransforms['allServices'](operationId);
+//         }
+//     }
+//     return operationId; // return operationId if no specific transform is found
+// }

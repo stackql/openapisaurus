@@ -6,6 +6,12 @@ rm -rf src/pagerduty
 ### `split`
 
 ```
+make Accept and Content-Type headers optional
+```
+
+### `split`
+
+```
 ./openapisaurus split \
 ref/pagerduty/pager-duty-openapiv3.json \
 --providerName=pagerduty \
@@ -35,6 +41,13 @@ dev \
 --overwrite \
 --verbose
 ```
+
+### Inspect Objects
+
+```
+node tests/inspectProvider.js pagerduty 2>&1 | tee pagerduty.log
+```
+
 
 ### Run Test Suite
 

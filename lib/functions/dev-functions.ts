@@ -9,14 +9,17 @@ import {
   camelToSnake,
   parseDSL,
   applyTransformations,
+  startsOrEndsWith,
+  includes,  
 } from "./shared.ts";
 import {
   updateResourceName,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
-  getStackQLMethodNameforProviderByOpId,
-  updateStackQLMethodNameforProvider,
-  performMethodNameTransformsforProvider,
+  getStackQLMethodNameforProvider,
+  // getStackQLMethodNameforProviderByOpId,
+  // updateStackQLMethodNameforProvider,
+  // performMethodNameTransformsforProvider,
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 import * as types from "../types/types.ts";
@@ -120,47 +123,73 @@ export function addResource(resData: any, providerName: string, service: string,
     return resData;
 }
 
+// export function getStackQLMethodName(
+//     apiPaths: any,
+//     pathKey: string,
+//     verbKey: string,
+//     // existingOpIds: string[],
+//     thisOperationId: string,
+//     providerName: string,
+//     service: string,
+//     resource: string
+//   ): string {
+    
+//     /*
+//     * stackql method names are derived from the operationId
+//     * they are used to uniquely identify routes to operations in the providers OpenAPI spec
+//     * stackql (sql) verbs are then mapped back to the stackQL method
+//     */
+
+//     // if the spec is annotated, just use this
+//     if (apiPaths[pathKey][verbKey]['x-stackQL-method']) {
+//       return apiPaths[pathKey][verbKey]['x-stackQL-method'];
+//     }
+
+//     let stackQLMethodName: string | undefined = undefined;
+
+//     // check if there is a method listed by opid in the provider, if so return this
+//     stackQLMethodName = getStackQLMethodNameforProviderByOpId(providerName, service, thisOperationId);
+
+//     if (stackQLMethodName) {
+//         return stackQLMethodName;
+//     }
+
+//     // check for provider specific transforms on opid
+//     stackQLMethodName = performMethodNameTransformsforProvider(providerName, service, thisOperationId);
+    
+//     // else perform general transforms (to remove invalid characters)
+//     stackQLMethodName = camelToSnake(stackQLMethodName);
+
+//     // final provider name overrides
+//     stackQLMethodName = updateStackQLMethodNameforProvider(providerName, service, resource, stackQLMethodName);
+
+//     return stackQLMethodName;
+// }
+
 export function getStackQLMethodName(
-    apiPaths: any,
-    pathKey: string,
-    verbKey: string,
-    // existingOpIds: string[],
-    thisOperationId: string,
-    providerName: string,
-    service: string,
-    resource: string
-  ): string {
-    
-    /*
-    * stackql method names are derived from the operationId
-    * they are used to uniquely identify routes to operations in the providers OpenAPI spec
-    * stackql (sql) verbs are then mapped back to the stackQL method
-    */
+  apiPaths: any,
+  pathKey: string,
+  verbKey: string,
+  thisOperationId: string,
+  providerName: string,
+  service: string,
+  resource: string
+): string {
 
-    // if the spec is annotated, just use this
-    if (apiPaths[pathKey][verbKey]['x-stackQL-method']) {
-      return apiPaths[pathKey][verbKey]['x-stackQL-method'];
-    }
+  /*
+  * stackql method names are derived from the operationId
+  * they are used to uniquely identify routes to operations in the providers OpenAPI spec
+  * stackql (sql) verbs are then mapped back to the stackQL method
+  */
 
-    let stackQLMethodName: string | undefined = undefined;
+  
+  // Use 'x-stackQL-method' if available
+  if (apiPaths[pathKey][verbKey]['x-stackQL-method']) {
+    return apiPaths[pathKey][verbKey]['x-stackQL-method'];
+  }
 
-    // check if there is a method listed by opid in the provider, if so return this
-    stackQLMethodName = getStackQLMethodNameforProviderByOpId(providerName, service, thisOperationId);
-
-    if (stackQLMethodName) {
-        return stackQLMethodName;
-    }
-
-    // check for provider specific transforms on opid
-    stackQLMethodName = performMethodNameTransformsforProvider(providerName, service, thisOperationId);
-    
-    // else perform general transforms (to remove invalid characters)
-    stackQLMethodName = camelToSnake(stackQLMethodName);
-
-    // final provider name overrides
-    stackQLMethodName = updateStackQLMethodNameforProvider(providerName, service, resource, stackQLMethodName);
-
-    return stackQLMethodName;
+  // Delegate to getStackQLMethodNameforProvider
+  return getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId);
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {
@@ -341,24 +370,6 @@ function getRespSchemaName(op: any, service: string): any[] {
     return [];
 }
   
-function startsOrEndsWith(str: string, arr: string[]): boolean {
-    for (let i = 0; i < arr.length; i++) {
-      if (str.startsWith(arr[i]) || str.endsWith(arr[i])) {
-        return true;
-      }
-    }
-    return false;
-}
-
-function includes(str: string, arr: string[]): boolean {
-    for (let i = 0; i < arr.length; i++) {
-      if (str.includes(arr[i])) {
-        return true;
-      }
-    }
-    return false;
-}
-
 function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey: string, providerName: string, service: string, resource: string, debug: boolean): string {
     
     // if the spec is annotated, just use this
