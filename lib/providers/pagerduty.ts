@@ -25,6 +25,7 @@ export const resourcesMap = {
     teams: {
         nameMap: {
             notification_subscriptions_unsubscribe: 'notification_subscriptions',
+            users: 'members',
         },
         opIdMap: {},        
     },
@@ -46,7 +47,67 @@ export const resourcesMap = {
             webhook_subscriptions_ping: 'webhook_subscriptions',
         },
         opIdMap: {},        
-    },                
+    },
+    automation_actions: {
+        nameMap: {
+            actions_invocations: 'actions',
+        },
+        opIdMap: {},
+    },   
+    business_services:{
+        nameMap: {
+            unsubscribe: 'account_subscription',
+        },
+        opIdMap: {},
+    },
+    event_orchestrations: {
+        nameMap: {
+            integrations_migration: 'integrations',
+        },
+        opIdMap: {},
+    },
+    extensions: {
+        nameMap: {
+            enable: 'extensions',
+        },
+        opIdMap: {},
+    },
+    incident_workflows: {
+        nameMap: {
+            triggers_services: 'triggers',
+            instances: 'incident_workflows',
+        },
+        opIdMap: {},
+    },
+    incidents: {
+        nameMap: {
+            merge: 'incidents',
+            responder_requests: 'incidents',
+            snooze: 'incidents',
+            status_updates: 'incidents',
+            status_updates_unsubscribe: 'incidents',
+        },
+        opIdMap: {},
+    },
+    log_entries: {
+        nameMap: {
+            channel: 'log_entries',
+        },
+        opIdMap: {},
+    },
+    schedules: {
+        nameMap: {
+            preview: 'schedules',
+        },
+        opIdMap: {},
+    },
+    service_dependencies:{
+        nameMap: {
+            disassociate: 'technical_services',
+            associate: 'technical_services',
+        },
+        opIdMap: {},
+    },
 }
 
 export const stackqlMethodNameMap = {
@@ -85,6 +146,7 @@ export const objectKeysAndSqlVerbs = {
             'past_incidents',
             'related_incidents',
             'license_allocations',
+            'status_dashboards',
             'maintenance_window', 'maintenance_windows',
             'webhook_subscription', 'webhook_subscriptions',
         ];
@@ -92,7 +154,7 @@ export const objectKeysAndSqlVerbs = {
         // Check for multi part suffixes
         for (const suffix of multiPartSuffixes) {
             if (stackQLMethodName.endsWith(suffix)) {
-                return suffix;
+                return `$.${suffix}`;
             }
         }
     
@@ -100,13 +162,20 @@ export const objectKeysAndSqlVerbs = {
         for (const prefix of methodPrefixes) {
             if (stackQLMethodName.startsWith(prefix)) {
                 const parts = stackQLMethodName.split('_');
-                return parts[parts.length - 1]; // Return the last part
+                return `$.${parts[parts.length - 1]}`; // Return the last part
             }
         }
     
         return false;
     },
     
+    abilities: {
+        abilities: {
+            get_ability: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
     analytics: {
         metrics_incidents_all: {
             get_analytics_metrics_incidents_all: {
@@ -131,12 +200,15 @@ export const objectKeysAndSqlVerbs = {
                 sqlVerb: 'select',    
                 objectKey: '$.data',
             },
+            get_analytics_incidents_by_id: {
+                objectKey: '$',
+            },            
         },
         raw_incidents_responses: {
             get_analytics_incident_responses_by_id: {
                 objectKey: '$.responses',
             },
-        },                        
+        }, 
     },
     automation_actions: {
         actions_services: {
@@ -165,6 +237,11 @@ export const objectKeysAndSqlVerbs = {
         },
     },
     business_services: {
+        business_services: {
+            get_business_service: {
+                objectKey: '$.business_service',
+            },
+        },
         impacts: {
             get_business_service_impacts: {
                 objectKey: '$.services',
@@ -219,11 +296,27 @@ export const objectKeysAndSqlVerbs = {
                 objectKey: '$.orchestration_path',
             },
         },
+        services_active: {
+            get_orch_active_status: {
+                objectKey: '$',
+            },
+        },
     },
     incidents: {
         field_values_schema: {
             get_schema_for_incident: {
                 objectKey: '$.schema',
+            },
+        },
+        incidents: {
+            create_incident_responder_request: {
+                sqlVerb: 'exec',
+            },
+            create_incident_snooze: {
+                sqlVerb: 'exec',
+            },
+            create_incident_status_update: {
+                sqlVerb: 'exec',
             },
         },
     },
@@ -274,6 +367,11 @@ export const objectKeysAndSqlVerbs = {
                 objectKey: '$.services',
             },
         },
+        status_dashboards: {
+            get_status_dashboard_by_id: {
+                objectKey: '$.status_dashboard',
+            },
+        },
     },
     teams: {
         members: {
@@ -290,6 +388,40 @@ export const objectKeysAndSqlVerbs = {
             get_user_handoff_notification_rules: {
                 objectKey: '$.oncall_handoff_notification_rules',
             },            
-        }
+        },
+        contact_methods: {
+            get_user_contact_method: {
+                objectKey: '$.contact_method',
+            },
+        },
+        notification_rules: {
+            get_user_notification_rule: {
+                objectKey: '$.notification_rule',
+            },
+        },
+        sessions: {
+            get_user_session: {
+                objectKey: '$.user_session',
+            },
+        },
+        status_update_notification_rules: {
+            get_user_status_update_notification_rule: {
+                objectKey: '$.notification_rule',
+            },
+        },
+    },
+    log_entries: {
+        log_entries: {
+            get_log_entry: {
+                objectKey: '$.log_entry',
+            },
+        },
+    },
+    response_plays: {
+        response_plays: {
+            get_response_play: {
+                objectKey: '$.response_play',
+            },
+        },
     },
 }

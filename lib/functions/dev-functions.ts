@@ -189,7 +189,7 @@ export function getStackQLMethodName(
   }
 
   // Delegate to getStackQLMethodNameforProvider
-  return getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId);
+  return camelToSnake(getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId));
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {

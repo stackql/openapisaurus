@@ -14199,9 +14199,14 @@
                                                     "type": "array",
                                                     "description": "The set of abilities your account has.",
                                                     "items": {
-                                                        "type": "string",
-                                                        "description": "A single ability, as a name.",
-                                                        "readOnly": true
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "ability_name": {
+                                                                "type": "string",
+                                                                "description": "A single ability, as a name.",
+                                                                "readOnly": true
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             },
@@ -31290,24 +31295,24 @@
                                             "type": "array",
                                             "description": "A list of Related Incidents and their relationships.",
                                             "items": {
+                                                "type": "object",
                                                 "properties": {
-                                                    "incident": {
-                                                        "$ref": "#/components/schemas/Incident"
+                                                    "incident_details": {
+                                                        "$ref": "#/components/schemas/Incident",
+                                                        "description": "Details of the incident."
                                                     },
-                                                    "relationships": {
+                                                    "relationship_details": {
                                                         "type": "array",
                                                         "description": "A list of reasons for why the Incident is considered related.",
                                                         "items": {
+                                                            "type": "object",
                                                             "properties": {
-                                                                "type": {
+                                                                "relationship_type": {
                                                                     "type": "string",
-                                                                    "description": "The type of relationship. A relationship outlines the reason why two Incidents are considered related.",
-                                                                    "enum": [
-                                                                        "machine_learning_inferred",
-                                                                        "service_dependency"
-                                                                    ]
+                                                                    "description": "The type of relationship. A relationship outlines the reason why two Incidents are considered related."
                                                                 },
-                                                                "metadata": {
+                                                                "relationship_metadata": {
+                                                                    "description": "Metadata associated with the relationship.",
                                                                     "anyOf": [
                                                                         {
                                                                             "$ref": "#/components/schemas/RelatedIncidentMachineLearningRelationship"
