@@ -1,0 +1,31 @@
+build_errors:
+  name: build_errors
+  id: homebrew.formula.build_errors
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          formula_name as name,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.build_error.30d'), '$.' || formula_name) as build_errors_30d
+          FROM
+          homebrew.formula.formula
+formula_usage_metrics:
+  name: formula_usage_metrics
+  id: homebrew.formula.formula_usage_metrics
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          formula_name as name,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install.30d'), '$.' || formula_name) as installs_30d,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install.90d'), '$.' || formula_name) as installs_90d,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install.365d'), '$.' || formula_name) as installs_365d,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.30d'), '$.' || formula_name) as install_on_requests_30d,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.90d'), '$.' || formula_name) as install_on_requests_90d,
+          JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.365d'), '$.' || formula_name) as install_on_requests_365d	
+          FROM
+          homebrew.formula.formula

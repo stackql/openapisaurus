@@ -1,5 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
 
+import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
+import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import { logger } from "../util/logging.ts";
+
 function fixTypeFields(schema: { [x: string]: any; type: string | string[]; } | null) {
   if (schema === null || typeof schema !== 'object') {
     return schema;
@@ -83,4 +87,35 @@ export function fixComponentIssues(components: Record<string, any>): Record<stri
   }
 
   return outputComponents;
+}
+
+export function addViewsToResources(providerName: string, serviceName: string, xStackQLResources: Record<string, any>): Promise<Record<string, any>> {
+  const cwd = Deno.cwd();
+  const viewsDir = `${cwd}/views/${providerName}/${serviceName}`;
+  const viewsFile = `${viewsDir}/views.yaml`;
+  
+  // Check if views.yaml exists
+  if (!existsSync(viewsFile)) {
+      logger.info(`No views.yaml found for ${serviceName} in ${providerName}, skipping...`);
+      return Promise.resolve(xStackQLResources);
+  }
+
+  // Read and parse views.yaml
+  let views;
+  try {
+    views = yaml.load(Deno.readTextFileSync(viewsFile));
+  } catch (e) {
+    logger.error(`Error reading or parsing views.yaml for ${serviceName} in ${providerName}: ${e}`);
+    throw e;
+  }
+
+  // Iterate through views and check for name collisions
+  Object.keys(views).forEach(viewName => {
+    if (xStackQLResources[viewName]) {
+      throw new Error(`Name collision detected: View '${viewName}' in ${serviceName} of ${providerName} collides with an existing resource name.`);
+    }
+  });
+
+  // Merge views into x-stackQL-resources
+  return { ...xStackQLResources, ...views };
 }

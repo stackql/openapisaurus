@@ -47,6 +47,22 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 ./stackql shell --registry="${REG_STR}"
 ```
 
+check views:
+
+```
+SELECT homepage FROM homebrew.formula.formula
+WHERE formula_name = 'stackql';
+
+SELECT * FROM homebrew.formula.build_errors
+WHERE formula_name = 'stackql';
+
+SELECT * FROM homebrew.formula.formula_usage_metrics
+WHERE formula_name = 'stackql';
+
+```
+
+
+
 ### Run Test Suite
 
 from the `stackql-provider-tests` directory:

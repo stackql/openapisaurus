@@ -6,7 +6,7 @@ import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
 import { createDestDir } from "../util/fs.ts";
 import { providerVersion } from "../types/constants.ts";
-import { fixSchemaIssues, fixPathIssues, fixComponentIssues } from "../functions/build-functions.ts";
+import { addViewsToResources, fixPathIssues, fixComponentIssues } from "../functions/build-functions.ts";
 
 export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
 
@@ -174,7 +174,18 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 xStackQLResources[xStackQLResKey]['sqlVerbs'] = newSqlVerbs;
             });
 
-            outputData['components']['x-stackQL-resources'] = xStackQLResources
+
+            // Add views to resources
+            try {
+                const updatedResources = await addViewsToResources(providerName, service, xStackQLResources, apiDocDirRoot);
+                outputData['components']['x-stackQL-resources'] = updatedResources;
+            } catch (e) {
+                logger.error(`Error adding views to resources: ${e}`);
+                return false;
+            }
+
+            // outputData['components']['x-stackQL-resources'] = xStackQLResources
+
             const outputFile = `${destDir}/services/${service}.yaml`;
             logger.info(`writing service doc to ${outputFile}...`);
             Deno.writeTextFileSync(outputFile, yaml.dump(outputData, {lineWidth: -1}));
