@@ -218,6 +218,9 @@ export function addOperation(
   ): any {
 
     const respCode = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
+
+    const mediaType = getMediaType(apiPaths[pathKey][verbKey]?.responses[respCode]?.content);
+
     const opRef = getOperationRef(service, pathKey, verbKey);
 
     resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName] = {};
@@ -225,7 +228,7 @@ export function addOperation(
     resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response'] = {};
     resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['operation']['$ref'] = opRef;
     resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['operation']['operationId'] = operationId;
-    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['mediaType'] = 'application/json';
+    resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['mediaType'] = mediaType;
     resData.components['x-stackQL-resources'][resource]['methods'][stackQLMethodName]['response']['openAPIDocKey'] = respCode;
     
     // get objectKey if exists (get only)
@@ -355,6 +358,23 @@ function getResponseCode(responses: any): string {
   }
 
   return twoXXCodes.sort()[0];
+}
+
+function getMediaType(content: any) {
+  if (!content) {
+    return 'application/json';
+  }
+
+  // Iterate through the keys of the content object
+  for (const key in content) {
+    // Check if the key starts with 'application/json'
+    if (key.startsWith('application/json')) {
+      return key;
+    }
+  }
+
+  // Fallback to a default value if no matching media type is found
+  return 'application/json';
 }
 
 function getOperationRef(service: string, pathKey: string, verbKey: string): string {
