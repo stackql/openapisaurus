@@ -21,13 +21,44 @@ ref/datadog/datadog-openapi.yaml \
 --verbose
 ```
 
+DD_APP_KEY 
+
 ### `dev`
 
 ```
 ./openapisaurus dev \
 dev \
 --providerName=datadog \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DATADOG_TOKEN" }}' \
+--resDiscriminator='"operationId" | (operationId) => {
+  const exceptionTokens = {
+    "AuthN": "authn",
+    "CI": "ci",
+    "AWS": "aws",
+    "GCP": "gcp",
+    "APM": "apm",
+    "RUM": "rum",
+    "DORA": "dora"
+  };
+
+  // Replace exceptions in the operationId
+  Object.keys(exceptionTokens).forEach(key => {
+    operationId = operationId.replace(new RegExp(key, "g"), exceptionTokens[key]);
+  });
+
+  // Convert to snake case
+  let snakeCase = operationId.replace(/[A-Z]/g, letter => "_" + letter.toLowerCase());
+
+  // Remove the first token and ensure the last token is plural
+  let tokens = snakeCase.split("_").filter(t => t);
+  tokens.shift(); // Remove the first token
+  let lastToken = tokens[tokens.length - 1];
+  if (!lastToken.endsWith("s")) {
+    tokens[tokens.length - 1] += "s"; // Make the last token plural
+  }
+
+  return tokens.join("_");
+}' \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DD_API_KEY" }}' \
 --overwrite \
 --verbose
 ```
@@ -35,7 +66,7 @@ dev \
 
 ### `build`
 
-```bash
+```
 ./openapisaurus build \
 dev \
 --providerName=datadog \
@@ -44,4 +75,15 @@ dev \
 --verbose
 ```
 
+### Run Test Suite
 
+from the `stackql-provider-tests` directory:
+
+```
+cd ../stackql-provider-tests
+sh test-provider.sh \
+datadog \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+```

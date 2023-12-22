@@ -1,22 +1,52 @@
 // deno-lint-ignore-file no-explicit-any
 import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 
+// export function camelToSnake(inStr: string): string {
+
+//   // Step 1: Replace hyphens with underscores and special characters with underscores
+//   let processedStr = inStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
+
+//   // Step 2: Handle consecutive uppercase letters (e.g., "EC2" becomes "Ec2")
+//   processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, (match, p1, p2) => 
+//       p1.charAt(0) + p1.slice(1).toLowerCase() + p2
+//   );
+
+//   // Step 3: Insert underscores before uppercase letters and convert them to lowercase
+//   processedStr = processedStr.replace(/([A-Z])/g, (match, letter, offset) => 
+//       (offset > 0 ? '_' : '') + letter.toLowerCase()
+//   );
+
+//   // Step 4: Replace multiple underscores with a single one and trim edges again
+//   processedStr = processedStr.replace(/_{2,}/g, '_').replace(/^_+|_+$/g, '');
+
+//   return processedStr;
+// }
+
 export function camelToSnake(inStr: string): string {
+
+  // Step : Replace exceptions in the input string
+  const exceptions = {
+    "AuthN": "authn",
+  };
+
+  // Replace exceptions in the input string
+  Object.keys(exceptions).forEach(key => {
+    inStr = inStr.replace(new RegExp(key, 'g'), exceptions[key]);
+  });
 
   // Step 1: Replace hyphens with underscores and special characters with underscores
   let processedStr = inStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
 
-  // Step 2: Handle consecutive uppercase letters (e.g., "EC2" becomes "Ec2")
-  processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, (match, p1, p2) => 
-      p1.charAt(0) + p1.slice(1).toLowerCase() + p2
-  );
+  // Step 2: Insert underscore before a group of uppercase letters followed by a lowercase letter
+  processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
 
-  // Step 3: Insert underscores before uppercase letters and convert them to lowercase
-  processedStr = processedStr.replace(/([A-Z])/g, (match, letter, offset) => 
-      (offset > 0 ? '_' : '') + letter.toLowerCase()
-  );
+  // Step 3: Insert underscore before a lowercase letter followed by an uppercase letter
+  processedStr = processedStr.replace(/([a-z])([A-Z])/g, '$1_$2');
 
-  // Step 4: Replace multiple underscores with a single one and trim edges again
+  // Step 4: Lowercase the entire string
+  processedStr = processedStr.toLowerCase();
+
+  // Step 5: Replace multiple underscores with a single one and trim edges again
   processedStr = processedStr.replace(/_{2,}/g, '_').replace(/^_+|_+$/g, '');
 
   return processedStr;
