@@ -5,22 +5,25 @@ https://docs.datadoghq.com/getting_started/api/
 ```bash
 npm i postman-to-openapi -g
 p2o ./datadog-postman-collection.json -f ./datadog-openapi.json -o options.json
+
+rm -rf dev/datadog
+rm -rf src/datadog
 ```
 
 ### Spilt
-```bash
-./openapisaurus split \
-ref/datadog/datadog-openapi.json \
---providerName=datadog \
---svcdiscriminator='["tags"][0]' \
---outputDir=dev \
---overwrite
 ```
-
+./openapisaurus split \
+ref/datadog/datadog-openapi.yaml \
+--providerName=datadog \
+--svcDiscriminator='["tags"][0] | (input) => input.replace(/ /g, "_")' \
+--outputDir=dev \
+--overwrite \
+--verbose
+```
 
 ### `dev`
 
-```bash
+```
 ./openapisaurus dev \
 dev \
 --providerName=datadog \

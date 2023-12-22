@@ -1,3 +1,23 @@
+info:
+  name: info
+  id: homebrew.formula.info
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          full_name,
+          generated_date,
+          --desc as description,
+          homepage,
+          JSON_EXTRACT(versions, '$.stable') as latest_version,
+          license,
+          deprecated,
+          disabled
+          FROM
+          homebrew.formula.formula
 build_errors:
   name: build_errors
   id: homebrew.formula.build_errors
@@ -11,9 +31,9 @@ build_errors:
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.build_error.30d'), '$.' || formula_name) as build_errors_30d
           FROM
           homebrew.formula.formula
-formula_usage_metrics:
-  name: formula_usage_metrics
-  id: homebrew.formula.formula_usage_metrics
+usage_metrics:
+  name: usage_metrics
+  id: homebrew.formula.usage_metrics
   config:
     views:
       select:
@@ -27,5 +47,94 @@ formula_usage_metrics:
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.30d'), '$.' || formula_name) as install_on_requests_30d,
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.90d'), '$.' || formula_name) as install_on_requests_90d,
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.365d'), '$.' || formula_name) as install_on_requests_365d	
+          FROM
+          homebrew.formula.formula
+dependencies:
+  name: dependencies
+  id: homebrew.formula.dependencies
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          JSON_EXTRACT(dependencies, '$') as dependencies,
+          JSON_EXTRACT(head_dependencies, '$') as head_dependencies,
+          JSON_EXTRACT(build_dependencies, '$') as build_dependencies,
+          JSON_EXTRACT(test_dependencies, '$') as test_dependencies,
+          JSON_EXTRACT(optional_dependencies, '$') as optional_dependencies,
+          JSON_EXTRACT(recommended_dependencies, '$') as recommended_dependencies
+          FROM
+          homebrew.formula.formula
+conflicts:
+  name: conflicts
+  id: homebrew.formula.conflicts
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          JSON_EXTRACT(conflicts_with, '$') as conflicts_with,
+          JSON_EXTRACT(conflicts_with_reasons, '$') as conflicts_with_reasons
+          FROM
+          homebrew.formula.formula
+lifecycle:
+  name: lifecycle
+  id: homebrew.formula.lifecycle
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          deprecated,
+          deprecation_date,
+          deprecation_reason,
+          disabled,
+          disable_date,
+          disable_reason
+          FROM
+          homebrew.formula.formula
+urls:
+  name: urls
+  id: homebrew.formula.urls
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          homepage,
+          JSON_EXTRACT(urls, '$.stable.url') as stable_url,
+          JSON_EXTRACT(urls, '$.head.url') as head_url,
+          JSON_EXTRACT(urls, '$.stable.tag') as stable_tag,
+          JSON_EXTRACT(urls, '$.stable.revision') as stable_revision,
+          JSON_EXTRACT(urls, '$.stable.using') as stable_using,
+          JSON_EXTRACT(urls, '$.stable.checksum') as stable_checksum,
+          JSON_EXTRACT(urls, '$.head.url') as head_branch,
+          JSON_EXTRACT(urls, '$.head.url') as head_using
+          FROM
+          homebrew.formula.formula
+versions:
+  name: versions
+  id: homebrew.formula.versions
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          SELECT
+          name as formula_name,
+          JSON_EXTRACT(versions, '$.stable') as stable_version,
+          JSON_EXTRACT(versions, '$.head') as head_version,
+          CASE 
+          WHEN JSON_EXTRACT(versions, '$.bottle') = 1 THEN 'true'
+          ELSE 'false' 
+          END as bottle_available
           FROM
           homebrew.formula.formula

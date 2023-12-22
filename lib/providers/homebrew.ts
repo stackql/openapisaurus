@@ -8,6 +8,10 @@ export const resourcesMap = {
     },
 }
 
-export const methodNameMap = {}
+export const stackqlMethodNameMap = {
+    methodNameByOpIdMap: {},
+    methodNameTransforms: {},
+    methodNameMap: {},
+}
 
 export const objectKeysAndSqlVerbs = {}
