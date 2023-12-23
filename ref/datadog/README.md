@@ -67,7 +67,6 @@ dev \
 --verbose
 ```
 
-
 ### `build`
 
 ```
@@ -75,6 +74,12 @@ dev \
 dev \
 --providerName=datadog \
 --outputDir=src \
+--servers='[
+  {
+    "url": "https://api.datadoghq.com",
+    "description": "Datadog API"
+  }
+]' \
 --overwrite \
 --verbose
 ```
