@@ -23,6 +23,9 @@ export function updateServiceName(
     let outServiceName = inServiceName;
     if (providerName in typedProviders) {
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
+
+        console.log(typedProviders[providerName].servicesMap[inServiceName]);
+        
         outServiceName = typedProviders[providerName].servicesMap[inServiceName] || inServiceName;
         debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     }

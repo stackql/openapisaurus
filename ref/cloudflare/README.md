@@ -1,13 +1,19 @@
 ## `cloudflare` Provider Dev
 
+```
+rm -rf dev/cloudflare
+rm -rf src/cloudflare
+```
+
 ### `split`
 
 ```
 ./openapisaurus split \
 ref/cloudflare/cloudflare-api.json \
 --providerName=cloudflare \
---svcdiscriminator='["tags"][0]' \
---outputDir=dev
+--svcDiscriminator='["tags"][0] | (input) => input.replace(/ /g, "_").replace(/\//g, "_")' \
+--outputDir=dev \
+--verbose > cloudflare-split.log
 ```
 
 ### `dev`
@@ -16,7 +22,7 @@ ref/cloudflare/cloudflare-api.json \
 ./openapisaurus dev \
 dev \
 --providerName=cloudflare \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "CLOUDFLARE_API_TOKEN" }}' \
+--providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "CLOUDFLARE_API_KEY" }}' \
 --overwrite \
 --verbose
 ```
