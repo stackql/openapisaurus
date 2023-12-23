@@ -37,7 +37,11 @@ dev \
     "GCP": "gcp",
     "APM": "apm",
     "RUM": "rum",
-    "DORA": "dora"
+    "DORA": "dora",
+    "STS": "Sts",
+    "IP": "Ip",
+    "API": "Api",
+    "IdP": "Idp",
   };
 
   // Replace exceptions in the operationId
@@ -73,6 +77,12 @@ dev \
 --outputDir=src \
 --overwrite \
 --verbose
+```
+
+### Inspect Objects
+
+```
+node tests/inspectProvider.js datadog 2>&1 | tee datadog.log
 ```
 
 ### Run Test Suite

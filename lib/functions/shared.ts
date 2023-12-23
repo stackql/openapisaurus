@@ -27,6 +27,7 @@ export function camelToSnake(inStr: string): string {
   // Step : Replace exceptions in the input string
   const exceptions = {
     "AuthN": "authn",
+    "IdP": "idp",
   };
 
   // Replace exceptions in the input string
