@@ -18,6 +18,7 @@ info:
           disabled
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 build_errors:
   name: build_errors
   id: homebrew.formula.build_errors
@@ -31,6 +32,7 @@ build_errors:
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.build_error.30d'), '$.' || formula_name) as build_errors_30d
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 usage_metrics:
   name: usage_metrics
   id: homebrew.formula.usage_metrics
@@ -49,6 +51,7 @@ usage_metrics:
           JSON_EXTRACT(JSON_EXTRACT(analytics, '$.install_on_request.365d'), '$.' || formula_name) as install_on_requests_365d	
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 dependencies:
   name: dependencies
   id: homebrew.formula.dependencies
@@ -67,6 +70,7 @@ dependencies:
           JSON_EXTRACT(recommended_dependencies, '$') as recommended_dependencies
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 conflicts:
   name: conflicts
   id: homebrew.formula.conflicts
@@ -81,6 +85,7 @@ conflicts:
           JSON_EXTRACT(conflicts_with_reasons, '$') as conflicts_with_reasons
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 lifecycle:
   name: lifecycle
   id: homebrew.formula.lifecycle
@@ -99,6 +104,7 @@ lifecycle:
           disable_reason
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 urls:
   name: urls
   id: homebrew.formula.urls
@@ -120,6 +126,7 @@ urls:
           JSON_EXTRACT(urls, '$.head.url') as head_using
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'
 versions:
   name: versions
   id: homebrew.formula.versions
@@ -138,3 +145,4 @@ versions:
           END as bottle_available
           FROM
           homebrew.formula.formula
+          WHERE formula_name = 'stackql'

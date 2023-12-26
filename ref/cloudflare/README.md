@@ -12,8 +12,7 @@ rm -rf src/cloudflare
 ref/cloudflare/cloudflare-api.json \
 --providerName=cloudflare \
 --svcDiscriminator='["tags"][0] | (input) => input.replace(/ /g, "_").replace(/\//g, "_")' \
---outputDir=dev \
---verbose > cloudflare-split.log
+--outputDir=dev 
 ```
 
 ### `dev`
@@ -26,6 +25,16 @@ dev \
 --overwrite \
 --verbose
 ```
+
+--resDiscriminator='"operationId","tags"[0] | (operationId, tag) => {
+    let formattedTag = tag.toLowerCase().replace(/\s/g, "-").replace(/\(/g, "(-").replace(/\)/g, "-)");
+    let resourceName = operationId.replace(formattedTag, "");
+    resourceName = resourceName.split("-").slice(1).join("_");
+    return resourceName;
+}' \
+
+
+
 
 ### `build`
 

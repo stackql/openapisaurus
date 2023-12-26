@@ -25,7 +25,7 @@ export function updateServiceName(
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
 
         console.log(typedProviders[providerName].servicesMap[inServiceName]);
-        
+
         outServiceName = typedProviders[providerName].servicesMap[inServiceName] || inServiceName;
         debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     }
@@ -80,7 +80,7 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string): string {
+export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string, tag: string): string {
     if (providerName in typedProviders) {
         const providerData = typedProviders[providerName].stackqlMethodNameMap;
 
@@ -91,9 +91,9 @@ export function getStackQLMethodNameforProvider(providerName: string, service: s
 
         // 2. Perform provider specific transforms on opid
         if (service in providerData.methodNameTransforms) {
-            return providerData.methodNameTransforms[service](operationId);
+            return providerData.methodNameTransforms[service](service, resource, operationId, tag);
         } else if ('allServices' in providerData.methodNameTransforms) {
-            return providerData.methodNameTransforms['allServices'](operationId);
+            return providerData.methodNameTransforms['allServices'](service, resource, operationId, tag);
         }
 
         // 3. Check for final provider name overrides

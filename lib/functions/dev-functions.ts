@@ -188,8 +188,12 @@ export function getStackQLMethodName(
     return apiPaths[pathKey][verbKey]['x-stackQL-method'];
   }
 
+  let tag = apiPaths[pathKey][verbKey]['tags'] && apiPaths[pathKey][verbKey]['tags'].length > 0 
+  ? apiPaths[pathKey][verbKey]['tags'][0] 
+  : '';
+  
   // Delegate to getStackQLMethodNameforProvider
-  return camelToSnake(getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId));
+  return camelToSnake(getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId, tag));
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {
