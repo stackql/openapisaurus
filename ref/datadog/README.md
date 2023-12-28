@@ -1,19 +1,22 @@
-### fork the Postman collection
-https://docs.datadoghq.com/getting_started/api/
+### obtain the API doc
 
-### convert the postman collection to openapi specs
+Download the API spec from one of the DataDog SDKs, e.g. [datadog-api-client-python](https://github.com/DataDog/datadog-api-client-python/blob/master/.generator/schemas/v2/openapi.yaml).
+
+### prep
+remove the `datadog` provider directories:
+
 ```bash
-npm i postman-to-openapi -g
-p2o ./datadog-postman-collection.json -f ./datadog-openapi.json -o options.json
-
 rm -rf dev/datadog
 rm -rf src/datadog
 ```
 
-### Spilt
-```
+### `spilt`
+
+split the api spec based upon the first `tag` value:
+
+```bash
 ./openapisaurus split \
-ref/datadog/datadog-openapi.yaml \
+ref/datadog/openapi.yaml \
 --providerName=datadog \
 --svcDiscriminator='["tags"][0] | (input) => input.replace(/ /g, "_")' \
 --outputDir=dev \
@@ -21,11 +24,11 @@ ref/datadog/datadog-openapi.yaml \
 --verbose
 ```
 
-DD_APP_KEY 
-
 ### `dev`
 
-```
+extract stackql resources and methods from the `datadog` provider service specs:
+
+```bash
 ./openapisaurus dev \
 dev \
 --providerName=datadog \
@@ -62,39 +65,51 @@ dev \
 
   return tokens.join("_");
 }' \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "DD_API_KEY" }}' \
+--providerConfig='{ "auth": { "type": "custom", "location": "header", "name": "DD-API-KEY", "credentialsenvvar": "DD_API_KEY", "successor": { "type": "custom", "location": "header", "name": "DD-APPLICATION-KEY", "credentialsenvvar": "DD_APP_KEY" }}}' \
 --overwrite \
 --verbose
 ```
 
 ### `build`
 
-```
+build the `datadog` provider, including merging of view defined in `views/datadog`:
+
+```bash
 ./openapisaurus build \
 dev \
 --providerName=datadog \
 --outputDir=src \
 --servers='[
   {
-    "url": "https://api.datadoghq.com",
-    "description": "Datadog API"
+    "url": "https://{dd_site:^(?:api\\.datadoghq\\.com|us3\\.datadoghq\\.com|us5\\.datadoghq\\.com|datadoghq\\.eu|ddog-gov\\.com)$}/",
+    "variables": {
+      "dd_site": {
+        "default": "api.datadoghq.com",
+        "description": "The regional site for Datadog customers."
+      }
+    }
   }
 ]' \
 --overwrite \
 --verbose
 ```
+<!-- "api.datadoghq.com",
+"us3.datadoghq.com",
+"us5.datadoghq.com",
+"datadoghq.eu",
+"ddog-gov.com" -->
 
-### Inspect Objects
+### inspect objects
 
-```
+```bash
 node tests/inspectProvider.js datadog 2>&1 | tee datadog.log
 ```
 
-### Run Test Suite
+### run test suite
 
 from the `stackql-provider-tests` directory:
 
-```
+```bash
 cd ../stackql-provider-tests
 sh test-provider.sh \
 datadog \
@@ -102,3 +117,21 @@ false \
 /mnt/c/LocalGitRepos/stackql/openapisaurus \
 true
 ```
+
+### inspect and test `datadog` provider using the local registry
+
+```bash
+export DD_API_KEY="<your_app_key>"
+export DD_APP_KEY="<your_app_key>"
+...
+PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
+REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
+./stackql shell --registry="${REG_STR}"
+```
+
+test views...
+
+```sql
+SELECT name, email, status, mfa_enabled, verified FROM datadog.users.vw_users WHERE dd_site = 'us3.datadoghq.com'; 
+```
+

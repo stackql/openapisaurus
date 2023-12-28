@@ -165,20 +165,6 @@ export const objectKeysAndSqlVerbs = {
             },
         },
     },
-    // roles: {
-    //     role_permissions: {
-    //         remove_role_from_archive: {
-    //             sqlVerb: 'exec',
-    //         },
-    //     },
-    // },            
 
     _defaultObjectKey: '$.data',    
 }
-
-// datadog.. => datadog.roles. (EXEC)
-// datadog.roles.permission_to_roles => datadog.roles.role_permissions (EXEC)
-
-// datadog.security_monitoring.security_monitoring_signal_assignees => datadog.security_monitoring.security_monitoring_signals (check delete etc)
-// datadog.security_monitoring.security_monitoring_signal_incidents => datadog.security_monitoring.security_monitoring_signals (check delete etc)
-// datadog.security_monitoring.security_monitoring_signal_states => datadog.security_monitoring.security_monitoring_signals (check delete etc)

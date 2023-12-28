@@ -4,7 +4,7 @@
 
 enrich formula.yaml with field descriptions from [Homebrew Formula Cookbook](https://docs.brew.sh/Formula-Cookbook)
 
-### `prep`
+### `format`
 
 move the `formula.yaml` file to the `dev/homebrew` directory:
 
@@ -19,7 +19,6 @@ for service in "${services[@]}"
 do
   mkdir ${servicesdir}/${service}
   ./openapisaurus format ref/homebrew/${service}.yaml ${servicesdir}/${service}/${service}.yaml
-  # cp ref/homebrew/${service}.yaml ${servicesdir}/${service}/${service}.yaml
 done
 ```
 
@@ -72,28 +71,56 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 
 check views:
 
+SELECT * FROM homebrew.formula.vw_dependencies
+WHERE formula_name IN ('stackql', 'terraform');
+
 ```sql
-SELECT * FROM homebrew.formula.info
+SELECT * FROM homebrew.formula.vw_info
+WHERE formula_name = 'stackql';
+
+SELECT * FROM homebrew.formula.vw_info
 WHERE formula_name IN ('stackql', 'terraform');
 
-SELECT * FROM homebrew.formula.versions
+SELECT * FROM homebrew.formula.vw_versions
 WHERE formula_name = 'stackql';
 
-SELECT * FROM homebrew.formula.usage_metrics
+SELECT * FROM homebrew.formula.vw_versions
 WHERE formula_name IN ('stackql', 'terraform');
 
-SELECT * FROM homebrew.formula.build_errors
+SELECT * FROM homebrew.formula.vw_build_errors
 WHERE formula_name = 'stackql';
 
-SELECT * FROM homebrew.formula.dependencies
+SELECT * FROM homebrew.formula.vw_build_errors
+WHERE formula_name IN ('stackql', 'terraform');
+
+SELECT * FROM homebrew.formula.vw_usage_metrics
 WHERE formula_name = 'stackql';
 
-SELECT * FROM homebrew.formula.conflicts
+SELECT * FROM homebrew.formula.vw_usage_metrics
+WHERE formula_name = ('stackql', 'terraform');
+--sql packet preparation error: row value misused 
+
+SELECT * FROM homebrew.formula.vw_dependencies
 WHERE formula_name = 'stackql';
 
-SELECT * FROM homebrew.formula.lifecycle
+SELECT * FROM homebrew.formula.vw_dependencies
+WHERE formula_name IN ('stackql', 'terraform');
+
+SELECT * FROM homebrew.formula.vw_conflicts
 WHERE formula_name = 'stackql';
 
-SELECT * FROM homebrew.formula.urls 
+SELECT * FROM homebrew.formula.vw_conflicts
+WHERE formula_name IN ('stackql', 'terraform');
+
+SELECT * FROM homebrew.formula.vw_lifecycle
 WHERE formula_name = 'stackql';
+
+SELECT * FROM homebrew.formula.vw_lifecycle
+WHERE formula_name IN ('stackql', 'terraform');
+
+SELECT * FROM homebrew.formula.vw_urls 
+WHERE formula_name = 'stackql';
+
+SELECT * FROM homebrew.formula.vw_urls 
+WHERE formula_name IN ('stackql', 'terraform');
 ```
