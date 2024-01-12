@@ -71,9 +71,6 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 
 check views:
 
-SELECT * FROM homebrew.formula.vw_dependencies
-WHERE formula_name IN ('stackql', 'terraform');
-
 ```sql
 SELECT * FROM homebrew.formula.vw_info
 WHERE formula_name = 'stackql';
@@ -97,8 +94,7 @@ SELECT * FROM homebrew.formula.vw_usage_metrics
 WHERE formula_name = 'stackql';
 
 SELECT * FROM homebrew.formula.vw_usage_metrics
-WHERE formula_name = ('stackql', 'terraform');
---sql packet preparation error: row value misused 
+WHERE formula_name IN ('stackql', 'terraform');
 
 SELECT * FROM homebrew.formula.vw_dependencies
 WHERE formula_name = 'stackql';
