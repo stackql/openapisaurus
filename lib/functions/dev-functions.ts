@@ -343,25 +343,28 @@ export function addSqlVerb(
 }
 
 function getResponseCode(responses: any): string {
+  // If no responses are defined, assume a '200' response code
   if (!responses) {
-      return '200';
+    return '200';
   }
 
+  // Find the first '2XX' status code, if any
+  const twoXXCodes = Object.keys(responses).filter(respKey => 
+    respKey.startsWith('2') && !isNaN(parseInt(respKey))
+  );
+
+  // If there are any '2XX' response codes, return the first one after sorting
+  if (twoXXCodes.length > 0) {
+    return twoXXCodes.sort()[0];
+  }
+
+  // If there's a 'default' response and no '2XX' response codes, return 'default'
   if ('default' in responses) {
-      return 'default';
+    return 'default';
   }
 
-  const twoXXKey = Object.keys(responses).find(key => key.toLowerCase() === '2xx');
-  if (twoXXKey) {
-      return twoXXKey;
-  }
-
-  const twoXXCodes = Object.keys(responses).filter(respKey => respKey.startsWith('2') && !isNaN(parseInt(respKey)));
-  if (twoXXCodes.length === 0) {
-      return '200';
-  }
-
-  return twoXXCodes.sort()[0];
+  // If there are no '2XX' codes and no 'default', return '200' by default
+  return '200';
 }
 
 function getMediaType(content: any) {
