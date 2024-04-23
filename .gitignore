@@ -7,3 +7,4 @@ stackql-zip
 *.env
 /creds
 *.csv
+nohup.out

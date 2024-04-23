@@ -141,7 +141,10 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                                                         thisOperationId, 
                                                                         providerName, 
                                                                         service, 
-                                                                        resource);
+                                                                        resource,
+                                                                        logger,
+                                                                        debug
+                                                                    );
                                   
                                     debug ? logger.debug(`stackQL method name : ${stackQLMethodName}...`) : null;
             

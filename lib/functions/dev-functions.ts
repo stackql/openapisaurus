@@ -173,7 +173,9 @@ export function getStackQLMethodName(
   thisOperationId: string,
   providerName: string,
   service: string,
-  resource: string
+  resource: string,
+  logger: any,
+  debug: boolean
 ): string {
 
   /*
@@ -193,7 +195,7 @@ export function getStackQLMethodName(
   : '';
   
   // Delegate to getStackQLMethodNameforProvider
-  return camelToSnake(getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId, tag));
+  return camelToSnake(getStackQLMethodNameforProvider(providerName, service, resource, thisOperationId, tag, logger));
 }
 
 function getObjectKey(providerName: string, service: string, resource: string, stackQLMethodName: string, debug: boolean) : string | false {
@@ -306,7 +308,7 @@ export function addSqlVerb(
               'path': pathKey,
               'numTokens': matches.length, // (pathKey.match(pattern) || []).length,
               'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
-              'enabled': true,
+              'enabled': getRespSchemaName(op, service).length > 0 ? true : false,
               'operationId': operationId ? operationId : 'not found',
               'respSchema': getRespSchemaName(op, service).length > 0 ? getRespSchemaName(op, service) : null,
             }
@@ -454,6 +456,11 @@ function getSqlVerb(op: any, stackQLMethodName: string, pathKey: string, verbKey
         //   verb = 'insert';
         // }
         break;
+      case 'put':
+        if (stackQLMethodName.startsWith('create_or_update')){
+            verb = 'insert';
+        }
+        break;        
       case 'delete':
         if (includes(stackQLMethodName, ['delete', 'remove']) && !includes(stackQLMethodName, ['undelete'])){
           verb = 'delete';

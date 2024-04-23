@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
+import { logger } from "../util/logging.ts";
 
 // export function camelToSnake(inStr: string): string {
 
@@ -24,6 +25,8 @@ import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 
 export function camelToSnake(inStr: string): string {
 
+  let convertedInStr = String(inStr);
+
   // Step : Replace exceptions in the input string
   const exceptions = {
     "AuthN": "authn",
@@ -32,11 +35,11 @@ export function camelToSnake(inStr: string): string {
 
   // Replace exceptions in the input string
   Object.keys(exceptions).forEach(key => {
-    inStr = inStr.replace(new RegExp(key, 'g'), exceptions[key]);
+    convertedInStr = convertedInStr.replace(new RegExp(key, 'g'), exceptions[key]);
   });
 
   // Step 1: Replace hyphens with underscores and special characters with underscores
-  let processedStr = inStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
+  let processedStr = convertedInStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
 
   // Step 2: Insert underscore before a group of uppercase letters followed by a lowercase letter
   processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
@@ -107,7 +110,8 @@ export function convertLowerCaseToTitleCase(str: string): string {
 }
 
 export function snakeToTitleCase(str: string): string {
-  const words = str.split('_');
+  let convStr = String(str);
+  const words = convStr.split('_');
   const titleCase = words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   return titleCase;
 }
@@ -137,6 +141,7 @@ export function parseDSL(dsl: string, operation: any) {
 }
 
 function applyStringManipulation(inputs: string[], manipulationFnString: string): string {
+  logger.info(`Applying string manipulation function: ${manipulationFnString}`);
   // Convert the string representation of the function into an actual function
   const manipulationFn = eval(`(${manipulationFnString})`);
   // Apply the function to the inputs

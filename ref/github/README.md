@@ -1,5 +1,14 @@
 ## `github` Provider Dev
 
+## TODO:
+
+```yaml
+    environment_secrets:
+      id: github.actions.environment_secrets
+      name: environment_secrets
+      title: Environment Secrets
+```
+
 ### `prep`
 
 rm -rf dev/github
@@ -13,7 +22,8 @@ ref/github/api.github.com.yaml \
 --providerName=github \
 --svcdiscriminator='["tags"][0]' \
 --outputDir=dev \
---overwrite
+--overwrite \
+--verbose
 ```
 
 ### `dev`

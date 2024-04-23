@@ -102,10 +102,109 @@ from the `stackql-provider-tests` directory:
 ```bash
 cd ../stackql-provider-tests
 
+# azure
+sh test-provider.sh \
+azure \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+
+# azure_extras
+sh test-provider.sh \
+azure_extras \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+
+# azure_stack
+sh test-provider.sh \
+azure_stack \
+false \
+/mnt/c/LocalGitRepos/stackql/openapisaurus \
+true
+
 # azure_isv
 sh test-provider.sh \
 azure_isv \
 false \
 /mnt/c/LocalGitRepos/stackql/openapisaurus \
 true
+```
+
+### inspect and test `azure` provider using the local registry
+
+```bash
+PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
+REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
+./stackql shell --registry="${REG_STR}"
+```
+
+queries...
+
+```sql
+/* get instances by resource groups */
+SELECT
+name,
+location,
+SPLIT_PART(id, '/', 3) as resource_group,
+JSON_EXTRACT(properties, '$.hardwareProfile.vmSize') as vm_size,
+JSON_EXTRACT(properties, '$.storageProfile.osDisk.osType') as os_type,
+JSON_EXTRACT(properties, '$.timeCreated') as time_created
+FROM azure.compute.virtual_machines 
+WHERE resourceGroupName IN  ('stackql-ops-cicd-dev-01', 'stackqlenv1', 'stackqlenv2', 'stackqlenv3', 'stackqlenv4')
+AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468';
+
+/* get instances by locations */
+SELECT
+name,
+location,
+SPLIT_PART(id, '/', 3) as resource_group,
+JSON_EXTRACT(properties, '$.hardwareProfile.vmSize') as vm_size,
+JSON_EXTRACT(properties, '$.storageProfile.osDisk.osType') as os_type,
+JSON_EXTRACT(properties, '$.timeCreated') as time_created
+FROM azure.compute.virtual_machines 
+WHERE location IN  ('southcentralus', 'australiaeast')
+AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468';
+
+/* get available sizes for instance */
+SELECT *
+FROM azure.compute.virtual_machines_available_sizes
+WHERE resourceGroupName =  'stackql-ops-cicd-dev-01'
+AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468'
+AND vmName = 'test';
+
+/* get instance state details */
+SELECT 
+computerName,
+json_array_length(disks) as num_disks,
+hyperVGeneration,
+osName,
+osVersion,
+JSON_EXTRACT(statuses, '$[1].displayStatus') as status
+FROM azure.compute.virtual_machine
+WHERE resourceGroupName =  'stackql-ops-cicd-dev-01'
+AND subscriptionId = '631d1c6d-2a65-43e7-93c2-688bfe4e1468'
+AND vmName = 'test';
+
+/* stop the instance */
+EXEC azure.compute.virtual_machine.power_off
+@subscriptionId='631d1c6d-2a65-43e7-93c2-688bfe4e1468',
+@resourceGroupName='stackql-ops-cicd-dev-01',
+@vmName='test';
+
+/* start the instance */
+EXEC azure.compute.virtual_machine.start
+@subscriptionId='631d1c6d-2a65-43e7-93c2-688bfe4e1468',
+@resourceGroupName='stackql-ops-cicd-dev-01',
+@vmName='test';
+```
+
+using the server...
+
+```bash
+nohup ./stackql --registry="${REG_STR}" --pgsrv.port=5444 srv &
+# to run queries
+psql -h localhost -p 5444 -d stackql -U stackql
+# to stop the server
+sudo kill $(sudo lsof -t -i:5444)
 ```

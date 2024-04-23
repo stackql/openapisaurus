@@ -15,13 +15,37 @@ import {
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 
-function findDescription(thisSvc: string, tags: types.Tag[]): string {
-  // Search for a tag with the matching name
-  const foundTag = tags.find(tag => tag.name === thisSvc);
+// function findDescription(thisSvc: string, tags: types.Tag[]): string {
+//   // Search for a tag with the matching name
+//   const foundTag = tags.find(tag => tag.name === thisSvc);
+  
+//   // If found, return the description; otherwise, return thisSvc
+//   console.log(`tags: ${JSON.stringify(tags)}`)
+//   console.log(`foundTag: ${foundTag}`) // prints `undefined`
+//   console.log(`thisSvc: ${thisSvc}`) // this is a string as expected
+  
+//   return foundTag ? foundTag.description : thisSvc; // why would this be a list?
+// }
 
-  // If found, return the description; otherwise, return thisSvc
-  return foundTag ? foundTag.description : thisSvc;
+function findDescription(thisSvc, tags) {
+  // Convert thisSvc to a string, safely handling null or undefined
+  thisSvc = thisSvc != null ? String(thisSvc) : '';
+
+  for (const tag of tags) {
+      // Convert tag.name and tag.description to strings regardless of their original type
+      const tagName = String(tag.name).trim().toLowerCase();
+      const tagDescription = String(tag.description);
+
+      if (tagName === thisSvc.trim().toLowerCase()) {
+          return tagDescription; // Return the description of the matching tag
+      }
+  }
+
+  console.log("No matching tag found.");
+  return thisSvc; // Return thisSvc if no tags match
 }
+
+
 
 export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
   if (exOption) {
@@ -59,7 +83,16 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
     
     const { searchResults, transformString } = parseDSL(discriminator, operation); 
 
-    thisSvc = applyTransformations(searchResults.every(item => Array.isArray(item)) ? searchResults.flat() : searchResults, transformString);
+    debug ? logger.debug(`searchResults : ${searchResults}`) : null; 
+    debug ? logger.debug(`transformString : ${transformString}`) : null; 
+
+    if (transformString !== undefined) {
+      thisSvc = applyTransformations(searchResults.every(item => Array.isArray(item)) ? searchResults.flat() : searchResults, transformString);
+    } else if (searchResults.length == 1){
+      thisSvc = searchResults[0];
+    } else {
+      logger.warning(`searchResults returned more than one result: ${searchResults}`);
+    }
 
     debug ? logger.debug(`Resolved service name: ${thisSvc}`) : null;
 

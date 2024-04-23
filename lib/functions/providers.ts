@@ -23,9 +23,6 @@ export function updateServiceName(
     let outServiceName = inServiceName;
     if (providerName in typedProviders) {
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
-
-        console.log(typedProviders[providerName].servicesMap[inServiceName]);
-
         outServiceName = typedProviders[providerName].servicesMap[inServiceName] || inServiceName;
         debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     }
@@ -80,7 +77,7 @@ export function updateResourceName(providerName: string, service: string, inReso
     return outResourceName;
 }
 
-export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string, tag: string): string {
+export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string, tag: string, logger: any, debug: boolean): string {
     if (providerName in typedProviders) {
         const providerData = typedProviders[providerName].stackqlMethodNameMap;
 
@@ -93,6 +90,7 @@ export function getStackQLMethodNameforProvider(providerName: string, service: s
         if (service in providerData.methodNameTransforms) {
             return providerData.methodNameTransforms[service](service, resource, operationId, tag);
         } else if ('allServices' in providerData.methodNameTransforms) {
+            debug ? logger.debug(`No specific transform found for ${service} in ${providerName}`): null;
             return providerData.methodNameTransforms['allServices'](service, resource, operationId, tag);
         }
 

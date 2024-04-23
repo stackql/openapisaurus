@@ -516,8 +516,23 @@ export const resourcesMap = {
     },    
 }
 
-export const methodNameMap = {
+export const stackqlMethodNameMap = {
+    methodNameByOpIdMap: {},
+    methodNameTransforms: {
+        allServices: (service, resource, operationId, tag) => {
+            const parts = operationId.split('/');
+            if (parts.length > 1) {
+                return parts[1];
+            } else {
+                return operationId;
+            }
+        },
+    },
+    methodNameMap: {},
 }
+
+// export const methodNameMap = {
+// }
 
 export const objectKeysAndSqlVerbs = {
     actions: {
@@ -735,3 +750,4 @@ export const objectKeysAndSqlVerbs = {
         },
     },
 }
+
