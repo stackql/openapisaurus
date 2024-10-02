@@ -6,7 +6,7 @@ interface Provider {
     resourcesMap: Record<string, any>;
     stackqlMethodNameMap: Record<string, any>;
     objectKeysAndSqlVerbs: Record<string, any>;
-    // methodNameByOpIdMap: Record<string, any>;
+    methodNameByOpIdMap: Record<string, any>;
     // methodNameMap: Record<string, any>;
     // methodNameTransforms: Record<string, any>;
 }

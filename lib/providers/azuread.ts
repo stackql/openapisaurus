@@ -1,3 +1,9 @@
+export const stackqlMethodNameMap = {
+    methodNameByOpIdMap: {},
+    methodNameTransforms: {},
+    methodNameMap: {},
+}
+
 export const servicesMap = {
     agreements: 'skip',
     agreement_acceptances: 'skip',
