@@ -39,7 +39,7 @@ export function camelToSnake(inStr: string): string {
   });
 
   // Step 1: Replace hyphens with underscores and special characters with underscores
-  let processedStr = convertedInStr.replace(/-/g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
+  let processedStr = convertedInStr.replace(/-/g, '_').replace(/ /g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
 
   // Step 2: Insert underscore before a group of uppercase letters followed by a lowercase letter
   processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');

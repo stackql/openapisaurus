@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import * as providers from '../providers/index.ts';
+import { plural, singular } from "https://deno.land/x/deno_plural/mod.ts";
 
 interface Provider {
     servicesMap: Record<string, string>;
@@ -56,7 +57,7 @@ export function updateResourceName(providerName: string, service: string, inReso
     let outResourceName = inResourceName;
     if (providerName in typedProviders) {
         debug ? logger.debug(`provider data found for ${providerName}`) : null;
-        if (service in typedProviders[providerName].resourcesMap) {
+        if (typedProviders[providerName]?.resourcesMap && service in typedProviders[providerName].resourcesMap) {
             debug ? logger.debug(`service data found for ${providerName}.${service}`) : null;
             // try to get new name from operationId
             const nameFromOpIdOrNull = getResourceNameFromOperationId(typedProviders[providerName].resourcesMap[service], operation.operationId, debug, logger); 
@@ -71,7 +72,11 @@ export function updateResourceName(providerName: string, service: string, inReso
                 outResourceName = nameFromOpIdOrNull;
                 debug ? logger.debug(`resource name changed from ${inResourceName} to ${outResourceName} via operationId`) : null;
             }
+        } else {
+            outResourceName = plural(outResourceName);    
         }
+    } else {
+        outResourceName = plural(outResourceName);
     }
 
     return outResourceName;

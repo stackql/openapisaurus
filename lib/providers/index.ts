@@ -14,3 +14,4 @@ export * as pagerduty from './pagerduty.ts';
 export * as godaddy from './godaddy.ts';
 export * as datadog from './datadog.ts';
 export * as azurecr from './azurecr.ts';
+export * as openai from './openai.ts';
