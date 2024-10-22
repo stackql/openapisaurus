@@ -89,19 +89,19 @@ export interface OpenAPISchema {
   };
 }
 
-export interface SqlVerbObj {
-  $ref: string;
-  path: string;
-  numTokens: number;
-  tokens: string;
-  enabled: boolean;
-  token: string;
-  respSchema?: string;
-}
+// export interface SqlVerbObj {
+//   $ref: string;
+//   path: string;
+//   numTokens: number;
+//   tokens: string;
+//   enabled: boolean;
+//   token: string;
+//   respSchema?: string;
+// }
 
-export interface NewSqlVerbs {
-  [key: string]: { $ref: string }[];
-}
+// export interface NewSqlVerbs {
+//   [key: string]: { $ref: string }[];
+// }
 
 export interface ProviderData {
   id: string;
@@ -123,7 +123,7 @@ export interface ProviderData {
   }
 }
 
-export interface Tag {
-  name: string;
-  description: string;
-}
+// export interface Tag {
+//   name: string;
+//   description: string;
+// }

@@ -5,8 +5,7 @@ obtain a spec from [here](https://github.com/openai/openai-openapi/blob/master/o
 clean up the spec dirs and files
 
 ```
-rm -rf dev/openai
-rm -rf src/openai
+rm -rf dev/openai/*
 ```
 
 ### `split`
@@ -52,19 +51,20 @@ dev \
     return resourceName;
 }' \
 --overwrite \
---verbose
+--verbose > openai_dev.log
 
 ```
 
 ### `build`
 
 ```
+rm -rf src/openai/*
 ./openapisaurus build \
 dev \
 --providerName=openai \
 --outputDir=src \
 --overwrite \
---verbose > openai.log
+--verbose > openai_build.log
 ```
 
 ### Test locally
@@ -77,9 +77,9 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 ```
 
 ```
-select * from openai.models.models
+select * from openai.models.models;
 
-select choices from openai.chat.chat_completions
+select choices from openai.chat.completions
 where data__model = 'gpt-4o'
 and data__messages = '[{"role": "system", "content": "what is stackql?"}]';
 ```
@@ -89,10 +89,10 @@ and data__messages = '[{"role": "system", "content": "what is stackql?"}]';
 from the `stackql-provider-tests` directory:
 
 ```
-cd ../stackql-provider-tests
+cd ../../stackql-provider-tests
 sh test-provider.sh \
 openai \
 false \
-/mnt/c/LocalGitRepos/stackql/openapisaurus \
+/mnt/c/LocalGitRepos/stackql/openapi-conversion/openapisaurus \
 true
 ```

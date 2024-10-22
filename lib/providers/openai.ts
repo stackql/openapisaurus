@@ -1,6 +1,27 @@
-export const objectKeysAndSqlVerbs = {
+export const servicesMap = {}
+
+export const resourcesMap = {
+    assistants: {
+        submitToolOuputsToRun: 'runs',
+        createThreadAndRun: 'threads',
+    },
+    fine_tuning: {
+        listPaginatedFineTuningJobs: 'jobs',
+    },
+}
+
+export const stackqlMethodNameMap = {}
+
+export const objectKeysAndSqlVerbsMap = {
+    assistants: {
+        threads: {
+            create_thread_and_run: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
     chat: {
-        chat_completions: {
+        completions: {
             create_chat_completion: {
                 sqlVerb: 'select',
             },
@@ -15,12 +36,3 @@ export const objectKeysAndSqlVerbs = {
     }
 }
 
-export const servicesMap = {}
-
-// export const resourcesMap = {}
-
-export const stackqlMethodNameMap = {
-    methodNameByOpIdMap: {},
-    methodNameTransforms: {},
-    methodNameMap: {},
-}

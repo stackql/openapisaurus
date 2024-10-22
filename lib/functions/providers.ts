@@ -1,199 +1,125 @@
 // deno-lint-ignore-file no-explicit-any
 import * as providers from '../providers/index.ts';
-import { plural, singular } from "https://deno.land/x/deno_plural/mod.ts";
+// import { plural, singular } from "https://deno.land/x/deno_plural/mod.ts";
 
 interface Provider {
     servicesMap: Record<string, string>;
     resourcesMap: Record<string, any>;
     stackqlMethodNameMap: Record<string, any>;
-    objectKeysAndSqlVerbs: Record<string, any>;
-    // methodNameByOpIdMap: Record<string, any>;
-    // methodNameMap: Record<string, any>;
-    // methodNameTransforms: Record<string, any>;
+    objectKeysAndSqlVerbsMap: Record<string, any>;
 }
 
 const typedProviders = providers as unknown as Record<string, Provider>;
 
 export function updateServiceName(
-    providerName: string, 
-    inServiceName: string, 
-    debug: boolean, 
+    providerName: string,
+    inServiceName: string,
+    debug: boolean,
     logger: any
 ): string {
     debug ? logger.debug(`checking for service name updates for [${inServiceName}] in [${providerName}]...`) : null;
-    let outServiceName = inServiceName;
-    if (providerName in typedProviders) {
-        debug ? logger.debug(`provider data found for ${providerName}`) : null;
-        outServiceName = typedProviders[providerName].servicesMap[inServiceName] || inServiceName;
-        debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
-    }
+
+    // Check if the provider exists in the typedProviders object and retrieve the mapped service name.
+    const outServiceName = typedProviders[providerName]?.servicesMap[inServiceName] ?? inServiceName;
+
+    debug ? logger.debug(`service name changed from ${inServiceName} to ${outServiceName}`) : null;
     return outServiceName;
 }
 
-function getResourceNameFromOperationId(data: any, operationId: string, debug: boolean, logger: any): string | false {
-    debug ? logger.debug(`running getResourceNameFromOperationId for ${operationId}...`) : null;
-    if ('opIdMap' in data) {
-        if (operationId in data['opIdMap']) {
-            debug ? logger.debug(`operationId data found for ${operationId}`) : null;
-            return data['opIdMap'][operationId];
-        }
-    }
-    return false;
-}
+// RESOURCE_NAME
+export function getResourceNameFromOperationId(
+    providerName: string, 
+    serviceName: string, 
+    operationId: string, 
+    debug: boolean, 
+    logger: any): string | false {
 
-function getNewResourceNameFromExisting(data: any, resourceName: string, debug: boolean, logger: any): string | false {
-    debug ? logger.debug(`running getNewResourceNameFromExisting for ${resourceName}...`) : null;
-    if ('nameMap' in data) {
-        if (resourceName in data['nameMap']) {
-            debug ? logger.debug(`resourceName data found for ${resourceName}`) : null;
-            return data['nameMap'][resourceName];
-        }
-    }
-    return false;
-}
+    const logPrefix = 'RESOURCE_NAME';
 
-export function updateResourceName(providerName: string, service: string, inResourceName: string, operation: any, debug: boolean, logger: any): string {
-    debug ? logger.debug(`checking for resource name updates for [${inResourceName}] in [${providerName}.${service}]...`) : null;
-    let outResourceName = inResourceName;
-    if (providerName in typedProviders) {
-        debug ? logger.debug(`provider data found for ${providerName}`) : null;
-        if (typedProviders[providerName]?.resourcesMap && service in typedProviders[providerName].resourcesMap) {
-            debug ? logger.debug(`service data found for ${providerName}.${service}`) : null;
-            // try to get new name from operationId
-            const nameFromOpIdOrNull = getResourceNameFromOperationId(typedProviders[providerName].resourcesMap[service], operation.operationId, debug, logger); 
-            if (!nameFromOpIdOrNull) {
-                // try to get new name from existing name
-                const nameFromExistingOrNull = getNewResourceNameFromExisting(typedProviders[providerName].resourcesMap[service], inResourceName, debug, logger);
-                if (nameFromExistingOrNull) {
-                    outResourceName = nameFromExistingOrNull;
-                    debug ? logger.debug(`resource name changed from ${inResourceName} to ${outResourceName} via name mapping`) : null;
-                }
-            } else {
-                outResourceName = nameFromOpIdOrNull;
-                debug ? logger.debug(`resource name changed from ${inResourceName} to ${outResourceName} via operationId`) : null;
-            }
-        } else {
-            outResourceName = plural(outResourceName);    
-        }
-    } else {
-        outResourceName = plural(outResourceName);
-    }
+    debug ? logger.debug(`[${logPrefix}] checking for resource name from service [${serviceName}], operationId [${operationId}] in [${providerName}]...`) : null;
 
+    // Check if the provider exists in the typedProviders object and teh service exists, then retrieve the mapped resource name, otherwise return false.
+    const outResourceName = typedProviders[providerName]?.resourcesMap?.[serviceName]?.[operationId] ?? false;
+
+    if (outResourceName) {
+        debug ? logger.debug(`[${logPrefix}] resource name found for ${serviceName} in ${providerName}`) : null;
+    }
     return outResourceName;
 }
 
-export function getStackQLMethodNameforProvider(providerName: string, service: string, resource: string, operationId: string, tag: string, logger: any, debug: boolean): string {
-    if (providerName in typedProviders) {
-        const providerData = typedProviders[providerName].stackqlMethodNameMap;
+// METHOD_NAME
+export function getStackQLMethodNameforProvider(
+    providerName: string, 
+    service: string, 
+    operationId: string, 
+    debug: boolean,
+    logger: any, 
+): string | false {
 
-        // 1. Check if there is a method listed by opid in the provider
-        if (service in providerData.methodNameByOpIdMap && operationId in providerData.methodNameByOpIdMap[service]) {
-            return providerData.methodNameByOpIdMap[service][operationId];
-        }
+    const logPrefix = 'METHOD_NAME';
 
-        // 2. Perform provider specific transforms on opid
-        if (service in providerData.methodNameTransforms) {
-            return providerData.methodNameTransforms[service](service, resource, operationId, tag);
-        } else if ('allServices' in providerData.methodNameTransforms) {
-            debug ? logger.debug(`No specific transform found for ${service} in ${providerName}`): null;
-            return providerData.methodNameTransforms['allServices'](service, resource, operationId, tag);
-        }
+    debug ? logger.debug(`[${logPrefix}] checking for stackQL method name for service [${service}], operationId [${operationId}] in provider [${providerName}]...`) : null;
 
-        // 3. Check for final provider name overrides
-        if (service in providerData.methodNameMap && resource in providerData.methodNameMap[service] && operationId in providerData.methodNameMap[service][resource]) {
-            return providerData.methodNameMap[service][resource][operationId];
-        }
-    }
-    return operationId; // Default to operationId if no specific method name is found
+    // Access the provider's stackqlMethodNameMap if it exists
+    const provider = typedProviders[providerName];
+    const methodName = provider?.stackqlMethodNameMap?.[service]?.[operationId] ?? false;
+
+    if (methodName) {
+        debug ? logger.debug(`[${logPrefix}] found method name: ${methodName} for operationId: ${operationId} in service: ${service}`): null;
+        return methodName;
+    } 
+
+    return false;
 }
 
-export function getObjectKeyforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string, _debug: boolean): string | false {
-    if (providerName in typedProviders) {
-        const providerObjectKeysAndSqlVerbs = typedProviders[providerName].objectKeysAndSqlVerbs;
+// OBJECT_KEY
+export function getObjectKeyforProvider(
+    providerName: string, 
+    service: string, 
+    resource: string, 
+    stackQLMethodName: string, 
+    debug: boolean,
+    logger: any,
+    ): string | false {
 
-        const getObjectKey = () => {
-			// have an extact match, return it
-            if (service in providerObjectKeysAndSqlVerbs) {
-                if (resource in providerObjectKeysAndSqlVerbs[service]) {
-                    if (stackQLMethodName in providerObjectKeysAndSqlVerbs[service][resource]) {
-                        return providerObjectKeysAndSqlVerbs[service][resource][stackQLMethodName]['objectKey'];
-                    }
-                }
-            }
+    const logPrefix = 'OBJECT_KEY';
 
-			// have an expression, use it if it returns something
-            if ('_objectKeyExpression' in providerObjectKeysAndSqlVerbs) {
-				if(providerObjectKeysAndSqlVerbs['_objectKeyExpression'](service, resource, stackQLMethodName)){
-					return providerObjectKeysAndSqlVerbs['_objectKeyExpression'](service, resource, stackQLMethodName);
-				}
-            }
+    debug ? logger.debug(`[${logPrefix}] checking for object key for provider [${providerName}], service [${service}], method [${stackQLMethodName}]...`): null;
 
-			// provider default declared, use this
-            if ('_defaultObjectKey' in providerObjectKeysAndSqlVerbs) {
-                return providerObjectKeysAndSqlVerbs['_defaultObjectKey'];
-            }
-
-            return false;
-        };
-
-        const objectKey = getObjectKey();
-
+    const provider = typedProviders[providerName];
+    const objectKey = provider?.objectKeysAndSqlVerbsMap?.[service]?.[resource]?.[stackQLMethodName]?.objectKey ?? false;
+    
+    if (objectKey) {
+        debug ? logger.debug(`[${logPrefix}] found objectKey: ${objectKey} for method: ${stackQLMethodName} in service: ${service}`): null;
         return objectKey;
-    }
+    } 
+
     return false;
 }
 
-export function getSqlVerbforProvider(operationId: string, _verbKey: string, providerName: string, service: string, resource: string): string | false {
-    if (providerName in typedProviders) {
-        if (service in typedProviders[providerName].objectKeysAndSqlVerbs) {
-            if (resource in typedProviders[providerName].objectKeysAndSqlVerbs[service]) {
-                if (operationId in typedProviders[providerName].objectKeysAndSqlVerbs[service][resource]) {
-                    if ('sqlVerb' in typedProviders[providerName].objectKeysAndSqlVerbs[service][resource][operationId]){
-                        return typedProviders[providerName].objectKeysAndSqlVerbs[service][resource][operationId]['sqlVerb'];
-                    }
-                }
-            }
-        }
-    }
+// SQL_VERB
+export function getSqlVerbforProvider(
+    providerName: string, 
+    service: string, 
+    resource: string, 
+    stackQLMethodName: string, 
+    debug: boolean,
+    logger: any, 
+    ): string | false {
+
+    const logPrefix = 'SQL_VERB';
+
+    debug ? logger.debug(`[${logPrefix}] checking for sqlverb for provider [${providerName}], service [${service}], resource [${resource}], method [${stackQLMethodName}]...`): null;
+
+    const provider = typedProviders[providerName];
+
+    const sqlVerb = provider?.objectKeysAndSqlVerbsMap?.[service]?.[resource]?.[stackQLMethodName]?.sqlVerb ?? false;
+    
+    if (sqlVerb) {
+        debug ? logger.debug(`[${logPrefix}] found sqlVerb: ${sqlVerb} for method: ${stackQLMethodName} in service: ${service}, resource: ${resource}`): null;
+        return sqlVerb;
+    } 
+
     return false;
+
 }
-
-// export function getStackQLMethodNameforProviderByOpId(providerName: string, service: string, operationId: string): string | undefined {
-//     if (providerName in typedProviders) {
-//         if (service in typedProviders[providerName].methodNameByOpIdMap) {
-//             if (operationId in typedProviders[providerName].methodNameByOpIdMap[service]) {
-//                 return typedProviders[providerName].methodNameByOpIdMap[service][operationId];
-//             }
-//         }
-//     }
-//     return undefined;
-// }
-
-// export function updateStackQLMethodNameforProvider(providerName: string, service: string, resource: string, stackQLMethodName: string): string {
-//     if (providerName in typedProviders) {
-//         if (service in typedProviders[providerName].methodNameMap) {
-//             if (resource in typedProviders[providerName].methodNameMap[service]) {
-//                 if (stackQLMethodName in typedProviders[providerName].methodNameMap[service][resource]) {
-//                         return typedProviders[providerName].methodNameMap[service][resource][stackQLMethodName];
-//                 }
-//             }
-//         }
-//     }
-//     return stackQLMethodName;
-// }
-
-// export function performMethodNameTransformsforProvider(providerName: string, service: string, operationId: string): string {
-//     if (providerName in typedProviders) {
-//         const providerTransforms = typedProviders[providerName].methodNameTransforms;
-
-//         // Check if a specific service transform is defined
-//         if (service in providerTransforms) {
-//             return providerTransforms[service](operationId);
-//         } 
-//         // Check if a general transform for all services is defined
-//         else if ('allServices' in providerTransforms) {
-//             return providerTransforms['allServices'](operationId);
-//         }
-//     }
-//     return operationId; // return operationId if no specific transform is found
-// }
