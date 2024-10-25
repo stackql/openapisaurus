@@ -8,4 +8,5 @@ stackql*.sh
 *.env
 /creds
 *.csv
+*.xlsx
 nohup.out
