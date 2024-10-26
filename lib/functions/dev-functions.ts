@@ -562,9 +562,6 @@ function deriveSQLVerb(verbKey: string, stackQLMethodName: string, op: any): str
   // SELECT operations
   if ((verbKey === 'get' || verbKey === 'post') && startsOrEndsWith(stackQLMethodName, selectMethods)) {
     
-    console.log('selectMethods', selectMethods);
-    console.log('stackQLMethodName', stackQLMethodName);
-
     // Get the response code using the helper function
     const respCode = getResponseCode(op.responses);
 

@@ -12,17 +12,42 @@ Add the provider specific exceptions object to the provider TypeScript file.  Us
 ```typescript
 export const servicesMap = {}
 
-export const resourcesMap = {}
-
-export const stackqlMethodNameMap = {
-    methodNameByOpIdMap: {},
-    methodNameTransforms: {},
-    methodNameMap: {},
+export const resourcesMap = {
+    assistants: {
+        submitToolOuputsToRun: 'runs',
+        createThreadAndRun: 'threads',
+    },
+    fine_tuning: {
+        listPaginatedFineTuningJobs: 'jobs',
+    },
 }
 
-export const objectKeysAndSqlVerbs = {}
-```
+export const stackqlMethodNameMap = {}
 
+export const objectKeysAndSqlVerbsMap = {
+    assistants: {
+        threads: {
+            create_thread_and_run: {
+                sqlVerb: 'exec',
+            },
+        },
+    },
+    chat: {
+        completions: {
+            create_chat_completion: {
+                sqlVerb: 'select',
+            },
+        },
+    },
+    models: {
+        models: {
+            list_models: {
+                objectKey: '$.data',
+            },
+        },    
+    }
+}
+```
 
 The provider specific exceptions object structure is as follows:
 
@@ -35,51 +60,22 @@ export const servicesMap = {
     service_to_be_renamed: 'new_service_name',
 }
 
+//
+// assign an operationId to a resource
+//
 export const resourcesMap = {
-    service: {
-        nameMap: {
-            resource_name_to_be_changed: 'new_resource_name',
-            resource_name_to_be_skipped: 'skip_this_resource',
-        },
-        opIdMap: {
-            an_operation_id: 'resource_name',
-            an_operation_id_to_be_skipped: 'skip_this_resource',
-        },
+    a_service: {
+        an_operation_id: 'a_resource',
     },
 }
 
 //
-// get or update the stackql method name for an operation
+// assign an operationId to a stackql method name
 //
 export const stackqlMethodNameMap = {
-
-    // 1. return a method name if found for a service and operation id
-    methodNameByOpIdMap: {
-        a_service: {
-            an_operation_id: 'a_method_name',
-            // ...
-        }
+    a_service: {
+        an_operation_id: 'a_method_name',
     },
-
-    // 2. return a method name if found for a service using a transform function
-    methodNameTransforms: {
-        a_service: (operationId: string) => {
-            return `transformed_${operationId}`;
-        },
-        allServices: (operationId: string) => {
-            return `general_transformed_${operationId}`;
-        },
-    },
-    
-    // 3. rename a method name if found for a service and resource
-    methodNameMap: {
-        a_service: {
-            a_resource: {
-                a_stackql_method_name: 'a_new_stackql_method_name',
-                // ...
-            }
-        }
-    }
 }
 
 //

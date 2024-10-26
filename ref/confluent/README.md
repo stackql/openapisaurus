@@ -187,7 +187,14 @@ dev \
         "updateKafkaMirrorTopicsResume": "mirror_topics",
         "updateKafkaMirrorTopicsReverseAndPauseMirror": "mirror_topics",
         "updateKafkaMirrorTopicsReverseAndStartMirror": "mirror_topics",
-        "updateKafkaMirrorTopicsTruncateAndRestoreMirror": "mirror_topics"
+        "updateKafkaMirrorTopicsTruncateAndRestoreMirror": "mirror_topics",
+        "listSrcmV2Clusters": "clusters_v2",
+        "createSrcmV2Cluster": "clusters_v2",
+        "getSrcmV2Cluster": "clusters_v2",
+        "updateSrcmV2Cluster": "clusters_v2",
+        "deleteSrcmV2Cluster": "clusters_v2",
+        "listSrcmV3Clusters": "clusters_v3",
+        "getSrcmV3Cluster": "clusters_v3",
     };
     
     // If the operationId matches a specific mapping, return it
