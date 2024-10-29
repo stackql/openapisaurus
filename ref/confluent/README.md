@@ -87,7 +87,7 @@ ref/confluent/openapi.json \
 ./openapisaurus dev \
 dev \
 --providerName=confluent \
---providerConfig='{ "auth": { "type": "bearer", "credentialsenvvar": "CONFLUENT_API_KEY" }}' \
+--providerConfig='{ "auth": { "type": "basic", "username_var": "CONFLUENT_CLOUD_API_KEY", "password_var": "CONFLUENT_CLOUD_API_SECRET" }}' \
 --resDiscriminator='"operationId", "tags[0]" | (operationId, tag) => {
     const specificMappings = {
         "getClusterConfig": "cluster_config",
@@ -195,6 +195,11 @@ dev \
         "deleteSrcmV2Cluster": "clusters_v2",
         "listSrcmV3Clusters": "clusters_v3",
         "getSrcmV3Cluster": "clusters_v3",
+        "getOrgV2Organization": "organizations_by_id",
+        "updateOrgV2Organization": "organizations_by_id",
+        "getOrgV2Environment": "environments_by_id",
+        "updateOrgV2Environment": "environments_by_id",
+        "deleteOrgV2Environment": "environments_by_id",
     };
     
     // If the operationId matches a specific mapping, return it
@@ -250,18 +255,60 @@ dev \
 ### Test locally
 
 ```
-export OPENAI_API_KEY=sk-proj-xxx
+export CONFLUENT_CLOUD_API_KEY=YOURKEY
+export CONFLUENT_CLOUD_API_SECRET=yoursecret
 PROVIDER_REGISTRY_ROOT_DIR="$(pwd)"
 REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${PROVIDER_REGISTRY_ROOT_DIR}'", "verifyConfig": {"nopVerify": true}}'
 ./stackql shell --registry="${REG_STR}"
 ```
 
 ```
-select * from openai.models.models;
+show services in confluent;
+show resources in confluent.org;
 
-select choices from openai.chat.completions
-where data__model = 'gpt-4o'
-and data__messages = '[{"role": "system", "content": "what is stackql?"}]';
+select id, display_name, resource_name, created_at from confluent.org.vw_organizations;
+
+select id, display_name, resource_name, created_at from 
+confluent.org.vw_organizations_by_id
+where id = '73ea43f0-1685-4a78-bc90-fa63ef8102fe';
+
+show methods in confluent.org.environments;
+
+select id, display_name, resource_name, stream_governance_package from confluent.org.vw_environments;
+
+select display_name, resource_name, stream_governance_package from confluent.org.vw_environments_by_id
+where id = 'env-216dqo';
+
+show methods in confluent.managed_kafka_clusters.clusters;
+
+
+select 
+_data,
+json_extract(json_each.value, '$.id') as id,
+json_extract(json_each.value, '$.metadata.created_at') as created_at,
+json_extract(json_each.value, '$.metadata.resource_name') as resource_name,
+json_extract(json_each.value, '$.metadata.self') as self,
+json_extract(json_each.value, '$.metadata.updated_at') as updated_at,
+json_extract(json_each.value, '$.spec.api_endpoint') as api_endpoint,
+json_extract(json_each.value, '$.spec.availability') as availability,
+json_extract(json_each.value, '$.spec.cloud') as cloud,
+json_extract(json_each.value, '$.spec.config.kind') as cluster_kind,
+json_extract(json_each.value, '$.spec.display_name') as display_name,
+json_extract(json_each.value, '$.spec.environment.id') as environment_id,
+json_extract(json_each.value, '$.spec.environment.related') as environment_link,
+json_extract(json_each.value, '$.spec.environment.resource_name') as environment_resource_name,
+json_extract(json_each.value, '$.spec.http_endpoint') as http_endpoint,
+json_extract(json_each.value, '$.spec.kafka_bootstrap_endpoint') as kafka_bootstrap_endpoint,
+json_extract(json_each.value, '$.spec.region') as region,
+json_extract(json_each.value, '$.status.phase') as status_phase,
+api_version,
+kind,
+json_extract(metadata, '$.first') as first,
+json_extract(metadata, '$.total_size') as total_size
+from confluent.managed_kafka_clusters.clusters, json_each(data)
+where environment = 'env-216dqo';
+
+
 ```
 
 ### Run Test Suite
@@ -271,7 +318,7 @@ from the `stackql-provider-tests` directory:
 ```
 cd ../../stackql-provider-tests
 sh test-provider.sh \
-openai \
+confluent \
 false \
 /mnt/c/LocalGitRepos/stackql/openapi-conversion/openapisaurus \
 true

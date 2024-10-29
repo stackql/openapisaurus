@@ -338,6 +338,12 @@ export function updateProviderData(
 function cleanResourceName(serviceName: string, resourceName: string, debug: boolean, logger: any): string {
   const logPrefix = 'RESOURCE_NAME';
 
+  // if resourceName ends with _by_id just return it
+  if (resourceName.endsWith('_by_id')) {
+    debug ? logger.debug(`[${logPrefix}] resource name ends with _by_id, returning ${resourceName}`) : null;
+    return resourceName;
+  }
+
   // 1. Convert resourceName to snake case
   const snakeCaseResourceName = camelToSnake(resourceName);
 
