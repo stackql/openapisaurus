@@ -133,6 +133,8 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 const refTokens = new Set(); // Set to store unique ref last tokens
             
                 // Iterate through sqlVerbs
+                // console.info('input', xStackQLResources[xStackQLResKey]['sqlVerbs']);
+
                 Object.keys(xStackQLResources[xStackQLResKey]['sqlVerbs']).forEach((sqlVerb) => {
                     debug ? logger.debug(`processing ${service}/${xStackQLResKey}/${sqlVerb}`) : null;
                   
@@ -172,6 +174,8 @@ export async function buildDocs(buildArgs: types.buildArgs): Promise<boolean> {
                 });                
             
                 xStackQLResources[xStackQLResKey]['sqlVerbs'] = newSqlVerbs;
+
+                // console.info('output', newSqlVerbs);
             });
 
 

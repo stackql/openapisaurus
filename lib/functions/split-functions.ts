@@ -15,18 +15,6 @@ import {
 } from "./providers.ts";
 import { logger } from "../util/logging.ts";
 
-// function findDescription(thisSvc: string, tags: types.Tag[]): string {
-//   // Search for a tag with the matching name
-//   const foundTag = tags.find(tag => tag.name === thisSvc);
-  
-//   // If found, return the description; otherwise, return thisSvc
-//   console.log(`tags: ${JSON.stringify(tags)}`)
-//   console.log(`foundTag: ${foundTag}`) // prints `undefined`
-//   console.log(`thisSvc: ${thisSvc}`) // this is a string as expected
-  
-//   return foundTag ? foundTag.description : thisSvc; // why would this be a list?
-// }
-
 function findDescription(thisSvc, tags) {
   // Convert thisSvc to a string, safely handling null or undefined
   thisSvc = thisSvc != null ? String(thisSvc) : '';
@@ -41,11 +29,9 @@ function findDescription(thisSvc, tags) {
       }
   }
 
-  console.log("No matching tag found.");
+  console.log(`INFO: No matching tag found for ${thisSvc}.`);
   return thisSvc; // Return thisSvc if no tags match
 }
-
-
 
 export function isOperationExcluded(exOption: any, operation: any, discriminator: string): boolean {
   if (exOption) {

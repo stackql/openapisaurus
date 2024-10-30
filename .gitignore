@@ -3,8 +3,10 @@ stackql_linux_amd64/
 /.vscode
 stackql
 stackql-zip
+stackql*.sh
 *.log
 *.env
 /creds
 *.csv
+*.xlsx
 nohup.out

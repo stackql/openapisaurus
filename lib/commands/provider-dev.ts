@@ -99,11 +99,26 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                     if(opItem){
                         if (operations.includes(verbKey)){
                             try {
+
+                                //
+                                // get unique operation id
+                                //
+                                let thisOperationId = (opItem as any)[operationIdKey];
+                                
+                                if (!thisOperationId){
+                                    logger.warning(`operationIdKey (${operationIdKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
+                                }
+                                
+                                debug ? logger.debug(`processing operationId : ${thisOperationId}...`) : null;
+
+                                //
                                 // get resource name
+                                //
                                 const [resource, resTokens] = getResourceName(
                                                                 providerName, 
                                                                 opItem, 
-                                                                service, 
+                                                                service,
+                                                                thisOperationId, 
                                                                 resDiscriminator, 
                                                                 pathKey, 
                                                                 debug, 
@@ -115,40 +130,39 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                     logger.info(`processing resource: ${resource}`);
         
                                     if (!Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], resource)){
+                                        //
                                         // first occurrence of the resource, init resource
+                                        //
                                         resData = addResource(resData, 
                                                                 providerName, 
                                                                 service, 
                                                                 resource, 
                                                                 resTokens);
                                     }
-                                                            
-                                    // const existingMethodNames = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
-            
-                                    // get unique operation id, convert to stackQL method name 
-                                    let thisOperationId = (opItem as any)[operationIdKey];
-                                    
-                                    if (!thisOperationId){
-                                        logger.warning(`operationIdKey (${operationIdKey}) not found for ${pathKey}:${verbKey}, defaulting to ${verbKey}`);
-                                    }
-                                    
-                                    debug ? logger.debug(`processing operationId : ${thisOperationId}...`) : null;
-            
-                                    const stackQLMethodName = getStackQLMethodName(apiPaths, 
-                                                                        pathKey, 
-                                                                        verbKey, 
-                                                                        // existingMethodNames, 
+
+                                    //
+                                    // get stackQL method name
+                                    //
+                                    const stackQLMethodName = getStackQLMethodName(opItem, 
                                                                         thisOperationId, 
                                                                         providerName, 
-                                                                        service, 
-                                                                        resource,
+                                                                        service,
+                                                                        debug, 
                                                                         logger,
-                                                                        debug
                                                                     );
                                   
                                     debug ? logger.debug(`stackQL method name : ${stackQLMethodName}...`) : null;
-            
+
+                                    // check if method already exists
+                                    const existingMethodNames = Object.keys(resData['components']['x-stackQL-resources'][resource]['methods']);
+                                    if (existingMethodNames.includes(stackQLMethodName)){
+                                        logger.error(`method ${stackQLMethodName} already exists for ${resource}`);
+                                        throw 'Break';
+                                    }
+                                    
+                                    //
                                     // add operation to resource
+                                    //
                                     resData = addOperation(resData, 
                                                             service, 
                                                             resource, 
@@ -159,9 +173,12 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                                             verbKey, 
                                                             providerName, 
                                                             thisOperationId, 
-                                                            debug);
-                
+                                                            debug,
+                                                            logger,
+                                                        );
+                                    //    
                                     // map sqlVerbs for operation
+                                    //
                                     resData = addSqlVerb(opItem, 
                                                         resData, 
                                                         stackQLMethodName, 
@@ -171,7 +188,9 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                                         verbKey, 
                                                         providerName, 
                                                         thisOperationId, 
-                                                        debug);
+                                                        debug,
+                                                        logger,
+                                                    );
                                 }
                             } catch (e) {
                                 if (e !== 'Break') throw e
@@ -183,34 +202,34 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
         });   
         
         // rehome lifecycle operations into parent resource
-        // Object.keys(resData['components']['x-stackQL-resources']).forEach(resource => {
-        //     debug ? logger.debug(`checking operation ${resource} for orphaned methods...`) : null;
-        //     let hasSqlVerbs = false;
-        //     const sqlVerbs = resData['components']['x-stackQL-resources'][resource]['sqlVerbs'];
-        //     Object.keys(sqlVerbs).forEach(sqlVerb => {
-        //         if (sqlVerbs[sqlVerb].length > 0){
-        //             hasSqlVerbs = true;
-        //         }
-        //     });
-        //     if (!hasSqlVerbs){
-        //         // no sqlVerbs, move lifecycle operations to parent resource
-        //         const resTokens = resData['components']['x-stackQL-resources'][resource]['resTokens']
-        //         const parentResource = resTokens.slice(0, resTokens.length - 1).join('_');
-        //         // check if parent resource exists
-        //         if (Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], parentResource)){
-        //             debug ? logger.debug(`reassigning all methods from ${resource} to ${parentResource}...`) : null;
-        //             // reassign all methods to parent resource
-        //             const methods = resData['components']['x-stackQL-resources'][resource]['methods'];
-        //             Object.keys(methods).forEach(method => {
-        //                 resData['components']['x-stackQL-resources'][parentResource]['methods'][method] = methods[method];
-        //             });
-        //             // delete resource
-        //             delete resData['components']['x-stackQL-resources'][resource];
-        //         } else {
-        //             debug ? logger.debug(`cannot reassign methods for ${resource} (${parentResource} does not exist)`) : null;
-        //         }
-        //     }
-        // });
+        Object.keys(resData['components']['x-stackQL-resources']).forEach(resource => {
+            debug ? logger.debug(`checking operation ${resource} for orphaned methods...`) : null;
+            let hasSqlVerbs = false;
+            const sqlVerbs = resData['components']['x-stackQL-resources'][resource]['sqlVerbs'];
+            Object.keys(sqlVerbs).forEach(sqlVerb => {
+                if (sqlVerbs[sqlVerb].length > 0){
+                    hasSqlVerbs = true;
+                }
+            });
+            if (!hasSqlVerbs){
+                // no sqlVerbs, move lifecycle operations to parent resource
+                const resTokens = resData['components']['x-stackQL-resources'][resource]['resTokens']
+                const parentResource = resTokens.slice(0, resTokens.length - 1).join('_');
+                // check if parent resource exists
+                if (Object.prototype.hasOwnProperty.call(resData['components']['x-stackQL-resources'], parentResource)){
+                    debug ? logger.debug(`reassigning all methods from ${resource} to ${parentResource}...`) : null;
+                    // reassign all methods to parent resource
+                    const methods = resData['components']['x-stackQL-resources'][resource]['methods'];
+                    Object.keys(methods).forEach(method => {
+                        resData['components']['x-stackQL-resources'][parentResource]['methods'][method] = methods[method];
+                    });
+                    // delete resource
+                    delete resData['components']['x-stackQL-resources'][resource];
+                } else {
+                    debug ? logger.debug(`cannot reassign methods for ${resource} (${parentResource} does not exist)`) : null;
+                }
+            }
+        });
 
         if (existsSync(resDoc) && !overwrite) {
             logger.error(`${resDoc} exists and overwrite is false`);
