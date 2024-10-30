@@ -89,118 +89,7 @@ dev \
 --providerName=confluent \
 --providerConfig='{ "auth": { "type": "basic", "username_var": "CONFLUENT_CLOUD_API_KEY", "password_var": "CONFLUENT_CLOUD_API_SECRET" }}' \
 --resDiscriminator='"operationId", "tags[0]" | (operationId, tag) => {
-    const specificMappings = {
-        "getClusterConfig": "cluster_config",
-        "createBusinessMetadata": "business_metadata",
-        "updateBusinessMetadata": "business_metadata",
-        "getBusinessMetadata": "business_metadata",
-        "deleteBusinessMetadata": "business_metadata",
-        "createBusinessMetadataDefs": "business_metadata_defs",
-        "getAllBusinessMetadataDefs": "business_metadata_defs",
-        "updateBusinessMetadataDefs": "business_metadata_defs",
-        "deleteBusinessMetadataDef": "business_metadata_defs",
-        "getBusinessMetadataDefByName": "business_metadata_defs",
-        "partialEntityUpdate": "entities",
-        "getByUniqueAttributes": "entities",
-        "createTagDefs": "tag_defs",
-        "getAllTagDefs": "tag_defs",
-        "updateTagDefs": "tag_defs",
-        "deleteTagDef": "tag_defs",
-        "getTagDefByName": "tag_defs",
-        "createTags": "tags",
-        "updateTags": "tags",
-        "getTags": "tags",
-        "deleteTag": "tags",
-        "createOrUpdateConnectv1ConnectorConfig": "connector_config",
-        "getConnectv1ConnectorConfig": "connector_config",
-        "getConnectv1ConnectorOffsets": "connector_offsets",
-        "getConnectv1ConnectorOffsetsRequestStatus": "connector_offsets_request_status",
-        "alterConnectv1ConnectorOffsetsRequest": "connector_offsets_requests",
-        "readConnectv1ConnectorStatus": "connector_status",
-        "listConnectv1ConnectorTasks": "connector_tasks",
-        "pauseConnectv1Connector": "connectors",
-        "resumeConnectv1Connector": "connectors",
-        "listConnectv1ConnectorsWithExpansions": "connectors_with_expansions",
-        "getDekVersions": "dek_versions",
-        "deleteDekVersion": "dek_versions",
-        "getDekByVersion": "dek_versions",
-        "undeleteDekVersion": "dek_versions",
-        "deleteSubjectConfig": "subject_level_config",
-        "getSubjectLevelConfig": "subject_level_config",
-        "updateSubjectLevelConfig": "subject_level_config",
-        "signup": "signups",
-        "activateSignup": "signups",
-        "signupPartnerV2Link": "signups",
-        "deleteTopLevelConfig": "top_level_config",
-        "getTopLevelConfig": "top_level_config",
-        "updateTopLevelConfig": "top_level_config",
-        "getSchemaTypes": "types",
-        "getVersions": "versions",
-        "listVersions": "versions",
-        "listKafkaAllTopicConfigs": "topic_configs",
-        "listKafkaTopicConfigs": "topic_configs",
-        "deleteKafkaTopicConfig": "topic_configs",
-        "getKafkaTopicConfig": "topic_configs",
-        "updateKafkaTopicConfig": "topic_configs",
-        "updateKafkaTopicConfigBatch": "topic_configs",
-        "listKafkaPartitions": "topic_partitions",
-        "getKafkaPartition": "topic_partitions",
-        "createKafkaTopic": "topics",
-        "listKafkaTopics": "topics",
-        "deleteKafkaTopic": "topics",
-        "getKafkaTopic": "topics",
-        "updatePartitionCountKafkaTopic": "topics",
-        "createKafkaAcls": "acls",
-        "deleteKafkaAcls": "acls",
-        "getKafkaAcls": "acls",
-        "batchCreateKafkaAcls": "acls",
-        "listKafkaLinkConfigs": "cluster_link_configs",
-        "deleteKafkaLinkConfig": "cluster_link_configs",
-        "getKafkaLinkConfigs": "cluster_link_configs",
-        "updateKafkaLinkConfig": "cluster_link_configs",
-        "updateKafkaLinkConfigBatch": "cluster_link_configs",
-        "createKafkaLink": "cluster_links",
-        "listKafkaLinks": "cluster_links",
-        "deleteKafkaLink": "cluster_links",
-        "getKafkaLink": "cluster_links",
-        "getKafkaCluster": "clusters",
-        "listKafkaClusterConfigs": "cluster_configs",
-        "deleteKafkaClusterConfig": "cluster_configs",
-        "getKafkaClusterConfig": "cluster_configs",
-        "updateKafkaClusterConfig": "cluster_configs",
-        "updateKafkaClusterConfigs": "cluster_configs",
-        "listKafkaConsumerGroups": "consumer_groups",
-        "getKafkaConsumerGroup": "consumer_groups",
-        "listKafkaConsumers": "consumers",
-        "getKafkaConsumer": "consumers",
-        "getKafkaConsumerGroupLagSummary": "consumers_lag_summary",
-        "listKafkaConsumerLags": "consumers_lags",
-        "getKafkaConsumerLag": "consumers_lags",
-        "listKafkaDefaultTopicConfigs": "default_topic_configs",
-        "listKafkaMirrorTopicsUnderLink": "mirror_topics",
-        "listKafkaMirrorTopics": "mirror_topics",
-        "createKafkaMirrorTopic": "mirror_topics",
-        "readKafkaMirrorTopic": "mirror_topics",
-        "updateKafkaMirrorTopicsFailover": "mirror_topics",
-        "updateKafkaMirrorTopicsPause": "mirror_topics",
-        "updateKafkaMirrorTopicsPromote": "mirror_topics",
-        "updateKafkaMirrorTopicsResume": "mirror_topics",
-        "updateKafkaMirrorTopicsReverseAndPauseMirror": "mirror_topics",
-        "updateKafkaMirrorTopicsReverseAndStartMirror": "mirror_topics",
-        "updateKafkaMirrorTopicsTruncateAndRestoreMirror": "mirror_topics",
-        "listSrcmV2Clusters": "clusters_v2",
-        "createSrcmV2Cluster": "clusters_v2",
-        "getSrcmV2Cluster": "clusters_v2",
-        "updateSrcmV2Cluster": "clusters_v2",
-        "deleteSrcmV2Cluster": "clusters_v2",
-        "listSrcmV3Clusters": "clusters_v3",
-        "getSrcmV3Cluster": "clusters_v3",
-        "getOrgV2Organization": "organizations_by_id",
-        "updateOrgV2Organization": "organizations_by_id",
-        "getOrgV2Environment": "environments_by_id",
-        "updateOrgV2Environment": "environments_by_id",
-        "deleteOrgV2Environment": "environments_by_id",
-    };
+    const specificMappings = {};
     
     // If the operationId matches a specific mapping, return it
     if (specificMappings[operationId]) {
@@ -308,6 +197,28 @@ json_extract(metadata, '$.total_size') as total_size
 from confluent.managed_kafka_clusters.clusters, json_each(data)
 where environment = 'env-216dqo';
 
+select *
+from confluent.managed_kafka_clusters.clusters
+where environment = 'env-216dqo';
+
+
+
+select * from confluent.org.organizations;
+list => $.data
+
+select * from 
+confluent.org.organizations
+where id = '73ea43f0-1685-4a78-bc90-fa63ef8102fe';
+
+select * from confluent.org.environments;
+
+select * from confluent.org.environments
+where id = 'env-216dqo';
+
+select *
+from confluent.managed_kafka_clusters.clusters
+where environment = 'env-216dqo';
+
 
 ```
 
@@ -321,5 +232,5 @@ sh test-provider.sh \
 confluent \
 false \
 /mnt/c/LocalGitRepos/stackql/openapi-conversion/openapisaurus \
-true
+true > confluent.txt
 ```
