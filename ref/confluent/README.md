@@ -154,57 +154,9 @@ REG_STR='{"url": "file://'${PROVIDER_REGISTRY_ROOT_DIR}'", "localDocRoot": "'${P
 ```
 show services in confluent;
 show resources in confluent.org;
-
-select id, display_name, resource_name, created_at from confluent.org.vw_organizations;
-
-select id, display_name, resource_name, created_at from 
-confluent.org.vw_organizations_by_id
-where id = '73ea43f0-1685-4a78-bc90-fa63ef8102fe';
-
 show methods in confluent.org.environments;
 
-select id, display_name, resource_name, stream_governance_package from confluent.org.vw_environments;
-
-select display_name, resource_name, stream_governance_package from confluent.org.vw_environments_by_id
-where id = 'env-216dqo';
-
-show methods in confluent.managed_kafka_clusters.clusters;
-
-
-select 
-_data,
-json_extract(json_each.value, '$.id') as id,
-json_extract(json_each.value, '$.metadata.created_at') as created_at,
-json_extract(json_each.value, '$.metadata.resource_name') as resource_name,
-json_extract(json_each.value, '$.metadata.self') as self,
-json_extract(json_each.value, '$.metadata.updated_at') as updated_at,
-json_extract(json_each.value, '$.spec.api_endpoint') as api_endpoint,
-json_extract(json_each.value, '$.spec.availability') as availability,
-json_extract(json_each.value, '$.spec.cloud') as cloud,
-json_extract(json_each.value, '$.spec.config.kind') as cluster_kind,
-json_extract(json_each.value, '$.spec.display_name') as display_name,
-json_extract(json_each.value, '$.spec.environment.id') as environment_id,
-json_extract(json_each.value, '$.spec.environment.related') as environment_link,
-json_extract(json_each.value, '$.spec.environment.resource_name') as environment_resource_name,
-json_extract(json_each.value, '$.spec.http_endpoint') as http_endpoint,
-json_extract(json_each.value, '$.spec.kafka_bootstrap_endpoint') as kafka_bootstrap_endpoint,
-json_extract(json_each.value, '$.spec.region') as region,
-json_extract(json_each.value, '$.status.phase') as status_phase,
-api_version,
-kind,
-json_extract(metadata, '$.first') as first,
-json_extract(metadata, '$.total_size') as total_size
-from confluent.managed_kafka_clusters.clusters, json_each(data)
-where environment = 'env-216dqo';
-
-select *
-from confluent.managed_kafka_clusters.clusters
-where environment = 'env-216dqo';
-
-
-
 select * from confluent.org.organizations;
-list => $.data
 
 select * from 
 confluent.org.organizations
@@ -219,7 +171,10 @@ select *
 from confluent.managed_kafka_clusters.clusters
 where environment = 'env-216dqo';
 
-
+select *
+from confluent.managed_kafka_clusters.clusters
+where environment = 'env-216dqo'
+and id = 'lkc-ov720o';
 ```
 
 ### Run Test Suite
@@ -232,5 +187,5 @@ sh test-provider.sh \
 confluent \
 false \
 /mnt/c/LocalGitRepos/stackql/openapi-conversion/openapisaurus \
-true > confluent.txt
+true
 ```
