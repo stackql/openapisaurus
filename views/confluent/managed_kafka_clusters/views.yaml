@@ -8,6 +8,7 @@ vw_clusters:
         ddl: |-
           select 
           id,
+          environment,
           json_extract(spec, '$.display_name') as display_name,
           json_extract(status, '$.phase') as status_phase,
           json_extract(metadata, '$.resource_name') as resource_name,
@@ -33,6 +34,7 @@ vw_clusters:
           ddl: |-
             select 
             id,
+            environment,
             json_extract_path_text(spec, 'display_name') as display_name,
             json_extract_path_text(status, 'phase') as status_phase,
             json_extract_path_text(metadata, 'resource_name') as resource_name,

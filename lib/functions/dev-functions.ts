@@ -247,11 +247,10 @@ export function addSqlVerb(
           {
             '$ref': `#/components/x-stackQL-resources/${resource}/methods/${stackQLMethodName}`,
             'path': pathKey,
-            'numTokens': matches.length, // (pathKey.match(pattern) || []).length,
-            'tokens': matches.join(',').replace(/[{}]/g, ''), // (pathKey.match(pattern) || []).join(','),
-            'enabled': getRespSchemaName(op, service).length > 0 ? true : false,
+            'numTokens': matches.length,
+            'tokens': matches.join(',').replace(/[{}]/g, ''),
+            'enabled': true,  
             'operationId': operationId ? operationId : 'not found',
-            'respSchema': getRespSchemaName(op, service).length > 0 ? getRespSchemaName(op, service) : null,
           }
         );
       break;
@@ -384,20 +383,24 @@ function getResponseSchemaRef(apiOperation: any, respCode: string, mediaType: st
   // Check if the response code exists in the apiOperation responses
   const response = apiOperation?.[respCode];
 
-  // If the response exists, try to access the schema $ref
-  if (response && response.content && response.content[mediaType] && response.content[mediaType].schema) {
-      const schema = response.content[mediaType].schema;
+  // If there is a $ref directly under the response code, return the reference name
+  if (response?.$ref && response.$ref.startsWith('#/components/responses')) {
+    return response.$ref;
+  }
 
-      // Return the $ref if it exists
-      if (schema.$ref) {
-          return schema.$ref;
-      }
+  // If the response exists, try to access the schema $ref under 'content'
+  if (response?.content && response.content[mediaType]?.schema) {
+    const schema = response.content[mediaType].schema;
+
+    // Return the $ref if it exists
+    if (schema.$ref) {
+      return schema.$ref;
+    }
   }
 
   // Return null if no $ref is found
   return null;
 }
-
 
 function getMediaType(content: any) {
   if (!content) {
@@ -409,11 +412,15 @@ function getMediaType(content: any) {
     // Check if the key starts with 'application/json'
     if (key.startsWith('application/json')) {
       return key;
+    } 
+    // Check if the key matches the pattern 'application/*anything*+json'
+    else if (/^application\/[a-zA-Z0-9.-]+\+json$/.test(key)) {
+      return key;
     }
   }
 
-  // Fallback to a default value if no matching media type is found
-  return 'application/json';
+  // Default return if no match is found
+  return null;
 }
 
 function getOperationRef(service: string, pathKey: string, verbKey: string): string {
@@ -481,15 +488,6 @@ function getObjectKey(
 
   debug ? logger.debug(`[${logPrefix}] no object key determined for operation: ${stackQLMethodName} with schema: ${schemaName}`) : null;
   return null;
-}
-
-function getRespSchemaName(op: any, service: string): any[] {
-  for (const respCode in op.responses) {
-    if (respCode.startsWith('2')) {
-        return getAllValuesForKey(service, op.responses[respCode], "$ref", ['examples', 'description', 'headers']);
-      }
-    }
-    return [];
 }
 
 // SQL_VERB
@@ -570,7 +568,7 @@ function deriveSQLVerb(verbKey: string, stackQLMethodName: string, op: any): str
 
     // Determine if the response is meaningful and returns data
     const response = op.responses[respCode];
-    const returnsData = mediaType && response?.content?.[mediaType]?.schema;
+    const returnsData = (mediaType && response?.content?.[mediaType]?.schema) || response?.$ref;
 
     // Check if the response code is a 2XX and returns meaningful data
     if (respCode.startsWith('2') && returnsData) {

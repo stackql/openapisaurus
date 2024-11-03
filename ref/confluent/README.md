@@ -157,14 +157,23 @@ show resources in confluent.org;
 show methods in confluent.org.environments;
 
 select * from confluent.org.organizations;
+select * from confluent.org.vw_organizations;
 
 select * from 
 confluent.org.organizations
 where id = '73ea43f0-1685-4a78-bc90-fa63ef8102fe';
 
+select * from 
+confluent.org.vw_organizations
+where id = '73ea43f0-1685-4a78-bc90-fa63ef8102fe';
+
 select * from confluent.org.environments;
+select * from confluent.org.vw_environments;
 
 select * from confluent.org.environments
+where id = 'env-216dqo';
+
+select * from confluent.org.vw_environments
 where id = 'env-216dqo';
 
 select *
@@ -172,7 +181,16 @@ from confluent.managed_kafka_clusters.clusters
 where environment = 'env-216dqo';
 
 select *
+from confluent.managed_kafka_clusters.vw_clusters
+where environment = 'env-216dqo';
+
+select *
 from confluent.managed_kafka_clusters.clusters
+where environment = 'env-216dqo'
+and id = 'lkc-ov720o';
+
+select *
+from confluent.managed_kafka_clusters.vw_clusters
 where environment = 'env-216dqo'
 and id = 'lkc-ov720o';
 ```
