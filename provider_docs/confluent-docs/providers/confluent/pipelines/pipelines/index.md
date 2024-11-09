@@ -94,7 +94,7 @@ Use the following StackQL query and manifest file to create a new <code>pipeline
 ```sql
 /*+ create */
 INSERT INTO confluent.pipelines.pipelines (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

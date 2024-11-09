@@ -93,10 +93,10 @@ data__connector.class,
 data__kafka.api.key,
 data__kafka.api.secret,
 data__name,
-connector.class,
-name,
-kafka.api.key,
-kafka.api.secret
+data__connector.class,
+data__name,
+data__kafka.api.key,
+data__kafka.api.secret
 )
 SELECT 
 '{{ connector_name }}',

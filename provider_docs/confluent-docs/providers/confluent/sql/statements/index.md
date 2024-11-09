@@ -108,7 +108,7 @@ Use the following StackQL query and manifest file to create a new <code>statemen
 INSERT INTO confluent.sql.statements (
 environment_id,
 organization_id,
-spec
+data__spec
 )
 SELECT 
 '{{ environment_id }}',

@@ -104,13 +104,13 @@ data__permission,
 data__principal,
 data__resource_name,
 data__resource_type,
-resource_type,
-resource_name,
-pattern_type,
-principal,
-host,
-operation,
-permission
+data__resource_type,
+data__resource_name,
+data__pattern_type,
+data__principal,
+data__host,
+data__operation,
+data__permission
 )
 SELECT 
 '{{ cluster_id }}',

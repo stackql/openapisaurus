@@ -120,12 +120,12 @@ data__display_name,
 data__environment,
 data__region,
 data__upload_source,
-cloud,
-region,
-environment,
-display_name,
-class,
-upload_source
+data__cloud,
+data__region,
+data__environment,
+data__display_name,
+data__class,
+data__upload_source
 )
 SELECT 
 '{{ cloud }}',

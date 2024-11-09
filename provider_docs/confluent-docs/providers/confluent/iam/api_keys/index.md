@@ -99,7 +99,7 @@ Use the following StackQL query and manifest file to create a new <code>api_keys
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.api_keys (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

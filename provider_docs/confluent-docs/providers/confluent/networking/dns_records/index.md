@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>dns_reco
 ```sql
 /*+ create */
 INSERT INTO confluent.networking.dns_records (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

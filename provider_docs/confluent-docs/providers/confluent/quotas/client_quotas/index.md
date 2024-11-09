@@ -91,7 +91,7 @@ Use the following StackQL query and manifest file to create a new <code>client_q
 ```sql
 /*+ create */
 INSERT INTO confluent.quotas.client_quotas (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

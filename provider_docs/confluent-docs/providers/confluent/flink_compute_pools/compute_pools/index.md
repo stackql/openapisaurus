@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>compute_
 ```sql
 /*+ create */
 INSERT INTO confluent.flink_compute_pools.compute_pools (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

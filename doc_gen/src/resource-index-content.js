@@ -209,54 +209,6 @@ Creates, updates, deletes, gets or lists a <code>${resourceName}</code> resource
 }
 
 // Helper functions to generate examples for each SQL verb
-// function getSchemaManifest(schema, allSchemas, maxDepth = 10) {
-//     function getFieldSchema(field) {
-//         // Try to find schema that contains this field definition
-//         for (const [_, schema] of Object.entries(allSchemas)) {
-//             if (schema.properties?.[field]) {
-//                 return schema.properties[field];
-//             }
-//         }
-//         return null;
-//     }
-
-//     function processProperties(properties) {
-//         if (!properties) return [];
-        
-//         return Object.entries(properties).map(([key, value]) => ({
-//             name: key,
-//             value: value.required?.map(field => {
-//                 const fieldSchema = getFieldSchema(field);
-//                 if (fieldSchema?.type === 'object' && fieldSchema.properties) {
-//                     return {
-//                         name: field,
-//                         value: processProperties({ [field]: fieldSchema })
-//                     };
-//                 }
-//                 if (fieldSchema?.oneOf) {
-//                     const firstSchema = fieldSchema.oneOf[0].$ref ? 
-//                         allSchemas[fieldSchema.oneOf[0].$ref.replace('#/components/schemas/', '')] :
-//                         fieldSchema.oneOf[0];
-//                     return {
-//                         name: field,
-//                         value: processProperties({ [field]: firstSchema })
-//                     };
-//                 }
-//                 return {
-//                     name: field,
-//                     value: fieldSchema?.type || 'string'
-//                 };
-//             }) || []
-//         }));
-//     }
-
-//     return [{
-//         name: "your_resource_model_name",
-//         props: processProperties(schema?.properties)
-//     }];
-// }
-
-// Helper functions to generate examples for each SQL verb
 function getSchemaManifest(schema, allSchemas, maxDepth = 10) {
     function getFieldSchema(field) {
         // Try to find schema that contains this field definition
@@ -429,58 +381,68 @@ const readOnlyPropertyNames = [
 //             return property;
 //         }
 
-//         function getSpecFields(schema) {
-//             let properties = {};
+//         function getRequiredFields(schema) {
+//             let result = {
+//                 requiredFields: new Set(),
+//                 fieldProperties: {}
+//             };
 
-//             if (schema.allOf) {
-//                 schema.allOf.forEach(subSchema => {
-//                     if (subSchema.$ref) {
-//                         const resolved = resolveSchemaRef(subSchema.$ref);
-//                         if (resolved?.properties?.spec?.$ref) {
-//                             const specSchema = resolveSchemaRef(resolved.properties.spec.$ref);
-//                             if (specSchema?.properties) {
-//                                 // For each property, resolve any oneOf references if not readonly
-//                                 Object.entries(specSchema.properties).forEach(([key, value]) => {
-//                                     if (!value.readOnly) {
-//                                         properties[key] = resolveOneOf(value);
-//                                     }
-//                                 });
+//             function processSchema(subSchema) {
+//                 if (!subSchema) return;
+
+//                 if (subSchema.$ref) {
+//                     const resolved = resolveSchemaRef(subSchema.$ref);
+//                     processSchema(resolved);
+//                     return;
+//                 }
+
+//                 if (subSchema.required) {
+//                     subSchema.required.forEach(field => {
+//                         let property = subSchema.properties?.[field];
+//                         if (property && !property.readOnly) {
+//                             result.requiredFields.add(field);
+//                             // If property is a reference, resolve it
+//                             if (property.$ref) {
+//                                 property = resolveSchemaRef(property.$ref);
 //                             }
+//                             // If property has oneOf, resolve it
+//                             property = resolveOneOf(property);
+//                             // Store full property definition for nested structures
+//                             result.fieldProperties[field] = property;
 //                         }
-//                     }
-                    
-//                     // Also check direct properties in subSchema
-//                     if (subSchema.properties?.spec?.properties) {
-//                         Object.entries(subSchema.properties.spec.properties).forEach(([key, value]) => {
-//                             if (!value.readOnly) {
-//                                 properties[key] = resolveOneOf(value);
-//                             }
-//                         });
-//                     }
-//                 });
-//             }
-
-//             return { properties };
-//         }
-
-//         // Get schema and spec fields
-//         const rawSchema = getRequestBodySchema();
-//         const { properties } = getSpecFields(rawSchema);
-
-//         // Create schema that only includes spec and its non-readonly fields
-//         const processedSchema = {
-//             type: 'object',
-//             required: ['spec'],
-//             properties: {
-//                 spec: {
-//                     type: 'object',
-//                     properties
+//                     });
 //                 }
 //             }
+
+//             if (schema.allOf) {
+//                 schema.allOf.forEach(processSchema);
+//             } else {
+//                 processSchema(schema);
+//             }
+
+//             return result;
+//         }
+
+//         // Get schema and find required non-readonly fields
+//         const rawSchema = getRequestBodySchema();
+//         const { requiredFields, fieldProperties } = getRequiredFields(rawSchema);
+
+//         // Create schema preserving the full structure of required fields
+//         const processedSchema = {
+//             type: 'object',
+//             properties: Object.fromEntries(
+//                 Array.from(requiredFields).map(field => [
+//                     field,
+//                     fieldProperties[field]
+//                 ])
+//             )
 //         };
 
-//         // For SQL generation - only need spec field
-//         const schemaFields = [{ name: 'spec', type: 'object' }];
+//         // For SQL generation
+//         const schemaFields = Array.from(requiredFields).map(field => ({
+//             name: field,
+//             type: fieldProperties[field]?.type || 'object'
+//         }));
 
 //         // Combine required params and schema fields
 //         const allFields = [
@@ -539,7 +501,6 @@ const readOnlyPropertyNames = [
 //         return '';
 //     }
 // }
-
 function generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, method) {
     try {
         const requiredParams = method.RequiredParams
@@ -642,15 +603,16 @@ function generateInsertExample(providerName, serviceName, resourceName, resource
             )
         };
 
-        // For SQL generation
+        // For SQL generation - prefix request body fields with data__
         const schemaFields = Array.from(requiredFields).map(field => ({
-            name: field,
+            name: `data__${field}`,
+            originalName: field,
             type: fieldProperties[field]?.type || 'object'
         }));
 
         // Combine required params and schema fields
         const allFields = [
-            ...requiredParams.map(param => ({ name: param, type: 'string' })),
+            ...requiredParams.map(param => ({ name: param, originalName: param, type: 'string' })),
             ...schemaFields
         ];
 
@@ -659,7 +621,7 @@ function generateInsertExample(providerName, serviceName, resourceName, resource
             : '';
 
         const selectValues = allFields.length > 0
-            ? allFields.map(field => `'{{ ${field.name} }}'`).join(',\n')
+            ? allFields.map(field => `'{{ ${field.originalName} }}'`).join(',\n')
             : '';
 
         // Pass the processed schema to getSchemaManifest

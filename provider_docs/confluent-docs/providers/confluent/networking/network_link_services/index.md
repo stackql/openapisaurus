@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>network_
 ```sql
 /*+ create */
 INSERT INTO confluent.networking.network_link_services (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

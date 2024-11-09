@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>v2_clust
 ```sql
 /*+ create */
 INSERT INTO confluent.schema_registry_clusters.v2_clusters (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

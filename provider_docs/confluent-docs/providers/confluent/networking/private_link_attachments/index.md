@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>private_
 ```sql
 /*+ create */
 INSERT INTO confluent.networking.private_link_attachments (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

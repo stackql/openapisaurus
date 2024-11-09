@@ -105,7 +105,7 @@ INSERT INTO confluent.kafka.mirror_topics (
 cluster_id,
 link_name,
 data__source_topic_name,
-source_topic_name
+data__source_topic_name
 )
 SELECT 
 '{{ cluster_id }}',

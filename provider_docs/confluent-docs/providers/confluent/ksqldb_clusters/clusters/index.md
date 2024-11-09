@@ -90,7 +90,7 @@ Use the following StackQL query and manifest file to create a new <code>clusters
 ```sql
 /*+ create */
 INSERT INTO confluent.ksqldb_clusters.clusters (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'

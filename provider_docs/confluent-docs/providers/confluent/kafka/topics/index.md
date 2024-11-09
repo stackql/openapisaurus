@@ -106,7 +106,7 @@ Use the following StackQL query and manifest file to create a new <code>topics</
 INSERT INTO confluent.kafka.topics (
 cluster_id,
 data__topic_name,
-topic_name
+data__topic_name
 )
 SELECT 
 '{{ cluster_id }}',

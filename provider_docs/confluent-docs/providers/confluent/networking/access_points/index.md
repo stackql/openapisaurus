@@ -93,7 +93,7 @@ Use the following StackQL query and manifest file to create a new <code>access_p
 ```sql
 /*+ create */
 INSERT INTO confluent.networking.access_points (
-spec
+data__spec
 )
 SELECT 
 '{{ spec }}'
