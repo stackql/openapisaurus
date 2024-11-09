@@ -124,7 +124,7 @@ export async function generateDevDocs(devArgs: types.devArgs): Promise<boolean> 
                                                                 debug, 
                                                                 logger);
 
-                                if (resource === 'skip_this_resource') {
+                                if (resource === 'skip_this_resource' || resource === 'skip_this_resources') {
                                     logger.info(`skipping resource: ${resource}`);
                                 } else {
                                     logger.info(`processing resource: ${resource}`);

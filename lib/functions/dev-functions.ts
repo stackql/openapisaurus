@@ -89,7 +89,8 @@ export function getResourceName(
         let pathTokens: string[] = [];
         pathTokens = getMeaningfulPathTokens(pathKey);
         pathTokens.forEach(token => {
-          if (token != service && token.length > 0 && !token.startsWith('$')){
+          // if (token != service && token.length > 0 && !token.startsWith('$')){
+          if (token != service && token.length > 0){
             resTokens.push(token);
           }       
         });
@@ -100,6 +101,8 @@ export function getResourceName(
           resourceName = resTokens.length > 0 ? resTokens[resTokens.length - 1] : service;
           debug ? logger.debug(`[${logPrefix}] last_path_token specified, initial resource name : ${resourceName}`) : null;          
         }
+        // remove $ from resource name
+        resourceName = resourceName.replace('$', '');
         break;
       default:
         // resource discriminator provided

@@ -70,7 +70,7 @@ export function retServiceNameAndDesc(providerName: string, operation: any, path
     const { searchResults, transformString } = parseDSL(discriminator, operation); 
 
     debug ? logger.debug(`searchResults : ${searchResults}`) : null; 
-    debug ? logger.debug(`transformString : ${transformString}`) : null; 
+    // debug ? logger.debug(`transformString : ${transformString}`) : null; 
 
     if (transformString !== undefined) {
       thisSvc = applyTransformations(searchResults.every(item => Array.isArray(item)) ? searchResults.flat() : searchResults, transformString);
