@@ -123,7 +123,6 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                         }
         
                         // get internal refs for deeply nested schemas
-        
                         const schemaMaxRefDepth = 10;
                         for (let i = 0; i < schemaMaxRefDepth; i++){
                             let intRefs = getAllRefs(services[service]['components']);
@@ -165,6 +164,37 @@ export async function splitApiDoc(splitArgs: types.splitArgs): Promise<boolean> 
                         }
                     }
                 }
+            });
+        }
+    });
+
+    // update path param names
+    Object.keys(services).forEach(service => {
+        if (services[service]['paths']) {
+            Object.keys(services[service]['paths']).forEach(pathKey => {
+                debug ? logger.debug(`renaming path params in ${service} for path ${pathKey}`) : null;
+    
+                // Replace hyphens with underscores in the path parameter names within {}
+                const updatedPathKey = pathKey.replace(/(?<=\{)([^}]+?)-([^}]+?)(?=\})/g, "$1_$2");
+                if (updatedPathKey !== pathKey) {
+                    debug ? logger.debug(`Updated path key from ${pathKey} to ${updatedPathKey}`) : null;
+                    services[service]['paths'][updatedPathKey] = services[service]['paths'][pathKey]; // Add new key with updated path
+                    delete services[service]['paths'][pathKey]; // Remove original key
+                }
+    
+                Object.keys(services[service]['paths'][updatedPathKey]).forEach(verbKey => {
+                    const operation = services[service]['paths'][updatedPathKey][verbKey];
+                    if (operation.parameters) {
+                        operation.parameters = operation.parameters.map(param => {
+                            if (param.in === "path" && param.name.includes("-")) {
+                                const originalName = param.name;
+                                param.name = param.name.replace(/-/g, "_"); // Replace hyphens with underscores
+                                debug ? logger.debug(`Updated parameter name from ${originalName} to ${param.name} in path ${updatedPathKey}`) : null;
+                            }
+                            return param;
+                        });
+                    }
+                });
             });
         }
     });

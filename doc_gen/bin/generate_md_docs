@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+// Dynamically import the entrypoint in ESM format
+(async () => {
+    const { main } = await import('../src/entrypoint.js');
+    main(process.argv);
+})();

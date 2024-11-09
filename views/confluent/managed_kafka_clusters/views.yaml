@@ -1,0 +1,57 @@
+vw_clusters:
+  name: vw_clusters
+  id: confluent.managed_kafka_clusters.vw_clusters
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          select 
+          id,
+          environment,
+          json_extract(spec, '$.display_name') as display_name,
+          json_extract(status, '$.phase') as status_phase,
+          json_extract(metadata, '$.resource_name') as resource_name,
+          json_extract(spec, '$.api_endpoint') as api_endpoint,
+          json_extract(spec, '$.availability') as availability,
+          json_extract(spec, '$.cloud') as cloud,
+          json_extract(spec, '$.config.kind') as config_kind,
+          json_extract(spec, '$.environment.id') as environment_id,
+          json_extract(spec, '$.environment.related') as environment_related,
+          json_extract(spec, '$.environment.resource_name') as environment_resource_name,
+          json_extract(spec, '$.http_endpoint') as http_endpoint,
+          json_extract(spec, '$.kafka_bootstrap_endpoint') as kafka_bootstrap_endpoint,
+          json_extract(spec, '$.region') as region,
+          json_extract(metadata, '$.created_at') as created_at,
+          json_extract(metadata, '$.updated_at') as updated_at,
+          json_extract(metadata, '$.self') as self,
+          api_version,
+          kind
+          from confluent.managed_kafka_clusters.clusters
+          where environment = 'env-000000'
+        fallback:
+          predicate: sqlDialect == "postgres"
+          ddl: |-
+            select 
+            id,
+            environment,
+            json_extract_path_text(spec, 'display_name') as display_name,
+            json_extract_path_text(status, 'phase') as status_phase,
+            json_extract_path_text(metadata, 'resource_name') as resource_name,
+            json_extract_path_text(spec, 'api_endpoint') as api_endpoint,
+            json_extract_path_text(spec, 'availability') as availability,
+            json_extract_path_text(spec, 'cloud') as cloud,
+            json_extract_path_text(spec, 'config' , 'kind') as config_kind,
+            json_extract_path_text(spec, 'environment', 'id') as environment_id,
+            json_extract_path_text(spec, 'environment', 'related') as environment_related,
+            json_extract_path_text(spec, 'environment', 'resource_name') as environment_resource_name,
+            json_extract_path_text(spec, 'http_endpoint') as http_endpoint,
+            json_extract_path_text(spec, 'kafka_bootstrap_endpoint') as kafka_bootstrap_endpoint,
+            json_extract_path_text(spec, 'region') as region,
+            json_extract_path_text(metadata, 'created_at') as created_at,
+            json_extract_path_text(metadata, 'updated_at') as updated_at,
+            json_extract_path_text(metadata, 'self') as self,
+            api_version,
+            kind
+            from confluent.managed_kafka_clusters.clusters
+            where environment = 'env-000000'

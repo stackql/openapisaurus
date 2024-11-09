@@ -1,0 +1,68 @@
+vw_organizations:
+  name: vw_organizations
+  id: confluent.org.vw_organizations
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          select 
+          id,
+          display_name, 
+          json_extract(metadata, '$.resource_name') as resource_name,
+          json_extract(metadata, '$.created_at') as created_at,
+          json_extract(metadata, '$.updated_at') as updated_at,
+          jit_enabled,
+          api_version,
+          kind
+          from 
+          confluent.org.organizations
+        fallback:
+          predicate: sqlDialect == "postgres"
+          ddl: |-
+            select 
+            id,
+            display_name, 
+            json_extract_path_text(metadata, 'resource_name') as resource_name,
+            json_extract_path_text(metadata, 'created_at') as created_at,
+            json_extract_path_text(metadata, 'updated_at') as updated_at,
+            jit_enabled,
+            api_version,
+            kind
+            from 
+            confluent.org.organizations
+vw_environments:
+  name: vw_environments
+  id: confluent.org.vw_environments
+  config:
+    views:
+      select:
+        predicate: sqlDialect == "sqlite3"
+        ddl: |-
+          select 
+          id,
+          display_name,
+          json_extract(stream_governance_config, '$.package') as stream_governance_package,
+          json_extract(metadata, '$.resource_name') as resource_name,
+          json_extract(metadata, '$.created_at') as created_at,
+          json_extract(metadata, '$.updated_at') as updated_at,
+          json_extract(metadata, '$.self') as self,
+          api_version,
+          kind
+          from
+          confluent.org.environments
+        fallback:
+          predicate: sqlDialect == "postgres"
+          ddl: |-
+            select 
+            id,
+            display_name,
+            json_extract_path_text(stream_governance_config, 'package') as stream_governance_package,
+            json_extract_path_text(metadata, 'resource_name') as resource_name,
+            json_extract_path_text(metadata, 'created_at') as created_at,
+            json_extract_path_text(metadata, 'updated_at') as updated_at,
+            json_extract_path_text(metadata, 'self') as self,
+            api_version,
+            kind
+            from
+            confluent.org.environments

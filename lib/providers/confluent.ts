@@ -12,6 +12,10 @@ export const resourcesMap = {
         getSchemaTypes: "types",
         getVersions: "versions",
         listVersions: "versions",
+        getSubjects: "schema_subjects",
+        getExporterConfigByName: "exporter_configs",
+        updateExporterConfigByName: "exporter_configs",
+        getExporterStatusByName: "exporter_status",
     },
     catalog: {
         createBusinessMetadata: "business_metadata",
@@ -39,7 +43,7 @@ export const resourcesMap = {
         createOrUpdateConnectv1ConnectorConfig: "connector_config",
         getConnectv1ConnectorConfig: "connector_config",
         getConnectv1ConnectorOffsets: "connector_offsets",
-        getConnectv1ConnectorOffsetsRequestStatus: "connector_offsets_request_status",
+        getConnectv1ConnectorOffsetsRequestStatus: "connector_offsets_requests",
         alterConnectv1ConnectorOffsetsRequest: "connector_offsets_requests",
         readConnectv1ConnectorStatus: "connector_status",
         listConnectv1ConnectorTasks: "connector_tasks",
@@ -296,6 +300,11 @@ export const objectKeysAndSqlVerbsMap = {
         },        
     },
     kafka: {
+        acls: {
+            get_kafka_acls: {
+                objectKey: '$.data',
+            },
+        },
         mirror_topics: {
             update_kafka_mirror_topics_promote: {
                 sqlVerb: 'exec',
@@ -454,5 +463,24 @@ export const objectKeysAndSqlVerbsMap = {
             }
         },                                                                                                
     },
+    schema_registry: {
+        schemas: {
+            get_schema_only: {
+                sqlVerb: 'exec',
+            }
+        },
+        subjects: {
+            get_schema_only_1: {
+                sqlVerb: 'exec',
+            },
+            get_referenced_by: {
+                sqlVerb: 'exec',
+            },
+        },
+        exporters: {
+            list_exporters: {
+                sqlVerb: 'exec',
+            },
+        }
+    },
 }
-

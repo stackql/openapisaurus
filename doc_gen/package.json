@@ -1,0 +1,19 @@
+{
+  "name": "doc_gen",
+  "version": "1.0.0",
+  "description": "generate_md_docs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "@stackql/pgwire-lite": "^1.0.1",
+    "arg": "^5.0.2",
+    "js-yaml": "^4.1.0",
+    "pluralize": "^8.0.0"
+  }
+}
