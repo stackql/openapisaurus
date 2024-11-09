@@ -112,56 +112,76 @@ Use the following StackQL query and manifest file to create a new <code>flink_ar
 ```sql
 /*+ create */
 INSERT INTO confluent.flink_artifacts.flink_artifacts (
-cloud,
-region,
-data__class,
 data__cloud,
-data__display_name,
-data__environment,
 data__region,
+data__environment,
+data__display_name,
+data__class,
 data__upload_source,
-data__cloud,
-data__region,
-data__environment,
-data__display_name,
-data__class,
-data__upload_source
+cloud,
+region
 )
 SELECT 
-'{{ cloud }}',
-'{{ region }}',
-'{{ data__class }}',
-'{{ data__cloud }}',
-'{{ data__display_name }}',
-'{{ data__environment }}',
-'{{ data__region }}',
-'{{ data__upload_source }}',
 '{{ cloud }}',
 '{{ region }}',
 '{{ environment }}',
 '{{ display_name }}',
 '{{ class }}',
-'{{ upload_source }}'
+'{{ upload_source }}',
+'{{ data__class }}',
+'{{ data__cloud }}',
+'{{ data__display_name }}',
+'{{ data__environment }}',
+'{{ data__region }}',
+'{{ data__upload_source }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: flink_artifacts
   props:
     - name: cloud
-      value: []
+      value: string
     - name: region
-      value: []
+      value: string
+    - name: data__class
+      value: string
+    - name: data__cloud
+      value: string
+    - name: data__display_name
+      value: string
+    - name: data__environment
+      value: string
+    - name: data__region
+      value: string
+    - name: data__upload_source
+      value: string
+    - name: cloud
+      value: string
+    - name: region
+      value: string
     - name: environment
-      value: []
+      value: string
     - name: display_name
-      value: []
+      value: string
     - name: class
-      value: []
+      value: string
+    - name: content_format
+      value: string
+    - name: description
+      value: string
+    - name: documentation_link
+      value: string
+    - name: runtime_language
+      value: string
     - name: upload_source
-      value: []
+      props:
+        - name: location
+          value: string
+        - name: upload_id
+          value: string
 
 ```
 </TabItem>

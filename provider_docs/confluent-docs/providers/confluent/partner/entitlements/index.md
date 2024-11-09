@@ -96,18 +96,42 @@ Use the following StackQL query and manifest file to create a new <code>entitlem
 ```sql
 /*+ create */
 INSERT INTO confluent.partner.entitlements (
-
+data__external_id,
+data__name,
+data__plan_id,
+data__product_id
 )
 SELECT 
-
+'{{ external_id }}',
+'{{ name }}',
+'{{ plan_id }}',
+'{{ product_id }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: entitlements
+  props:
+    - name: external_id
+      value: string
+    - name: name
+      value: string
+    - name: plan_id
+      value: string
+    - name: product_id
+      value: string
+    - name: usage_reporting_id
+      value: string
+    - name: resource_id
+      value: string
+    - name: organization
+      props:
+        - name: id
+          value: string
+        - name: environment
+          value: string
 
 ```
 </TabItem>

@@ -94,18 +94,31 @@ Use the following StackQL query and manifest file to create a new <code>ip_filte
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.ip_filters (
-
+data__filter_name,
+data__resource_group,
+data__ip_groups
 )
 SELECT 
-
+'{{ filter_name }}',
+'{{ resource_group }}',
+'{{ ip_groups }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: ip_filters
+  props:
+    - name: filter_name
+      value: string
+    - name: resource_group
+      value: string
+    - name: ip_groups
+      value: array
+      props:
+        - name: id
+          value: string
 
 ```
 </TabItem>

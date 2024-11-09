@@ -94,34 +94,32 @@ Use the following StackQL query and manifest file to create a new <code>connecti
 ```sql
 /*+ create */
 INSERT INTO confluent.sql.connections (
+data__spec,
+data__name,
 environment_id,
-organization_id,
-data__spec
+organization_id
 )
 SELECT 
+'{{ spec }}',
+'{{ name }}',
 '{{ environment_id }}',
-'{{ organization_id }}',
-'{{ spec }}'
+'{{ organization_id }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: connections
   props:
+    - name: environment_id
+      value: string
+    - name: organization_id
+      value: string
+    - name: name
+      value: string
     - name: spec
-      value:
-        - name: endpoint
-          value: string
-        - name: connection_type
-          value: string
-        - name: auth_data
-          value:
-            - name: kind
-              value: string
-            - name: data
-              value: string
+      value: object
 
 ```
 </TabItem>

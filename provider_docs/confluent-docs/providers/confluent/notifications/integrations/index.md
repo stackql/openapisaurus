@@ -97,18 +97,30 @@ Use the following StackQL query and manifest file to create a new <code>integrat
 ```sql
 /*+ create */
 INSERT INTO confluent.notifications.integrations (
-
+data__display_name,
+data__target
 )
 SELECT 
-
+'{{ display_name }}',
+'{{ target }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: integrations
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: target
+      props:
+        - name: kind
+          value: string
+        - name: webhook_url
+          value: string
 
 ```
 </TabItem>

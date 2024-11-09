@@ -104,18 +104,32 @@ Use the following StackQL query and manifest file to create a new <code>identity
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.identity_providers (
-
+data__display_name,
+data__description,
+data__issuer,
+data__jwks_uri
 )
 SELECT 
-
+'{{ display_name }}',
+'{{ description }}',
+'{{ issuer }}',
+'{{ jwks_uri }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: identity_providers
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: issuer
+      value: string
+    - name: jwks_uri
+      value: string
 
 ```
 </TabItem>

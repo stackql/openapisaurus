@@ -108,18 +108,30 @@ Use the following StackQL query and manifest file to create a new <code>invitati
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.invitations (
-
+data__email
 )
 SELECT 
-
+'{{ email }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: invitations
+  props:
+    - name: email
+      value: string
+    - name: auth_type
+      value: string
+    - name: user
+      props:
+        - name: id
+          value: string
+    - name: creator
+      props:
+        - name: id
+          value: string
 
 ```
 </TabItem>

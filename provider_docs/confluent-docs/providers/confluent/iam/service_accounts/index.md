@@ -94,18 +94,22 @@ Use the following StackQL query and manifest file to create a new <code>service_
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.service_accounts (
-
+data__display_name
 )
 SELECT 
-
+'{{ display_name }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: service_accounts
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
 
 ```
 </TabItem>

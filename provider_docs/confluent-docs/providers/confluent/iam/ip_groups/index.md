@@ -92,18 +92,24 @@ Use the following StackQL query and manifest file to create a new <code>ip_group
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.ip_groups (
-
+data__group_name,
+data__cidr_blocks
 )
 SELECT 
-
+'{{ group_name }}',
+'{{ cidr_blocks }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: ip_groups
+  props:
+    - name: group_name
+      value: string
+    - name: cidr_blocks
+      value: array
 
 ```
 </TabItem>

@@ -90,18 +90,28 @@ Use the following StackQL query and manifest file to create a new <code>role_bin
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.role_bindings (
-
+data__principal,
+data__role_name,
+data__crn_pattern
 )
 SELECT 
-
+'{{ principal }}',
+'{{ role_name }}',
+'{{ crn_pattern }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: role_bindings
+  props:
+    - name: principal
+      value: string
+    - name: role_name
+      value: string
+    - name: crn_pattern
+      value: string
 
 ```
 </TabItem>

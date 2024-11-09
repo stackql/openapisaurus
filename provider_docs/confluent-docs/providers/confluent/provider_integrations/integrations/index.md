@@ -100,18 +100,32 @@ Use the following StackQL query and manifest file to create a new <code>integrat
 ```sql
 /*+ create */
 INSERT INTO confluent.provider_integrations.integrations (
-
+data__config,
+data__environment
 )
 SELECT 
-
+'{{ config }}',
+'{{ environment }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: integrations
+  props:
+    - name: display_name
+      value: string
+    - name: provider
+      value: string
+    - name: config
+      props:
+        - name: customer_iam_role_arn
+          value: string
+        - name: kind
+          value: string
+    - name: environment
+      value: string
 
 ```
 </TabItem>

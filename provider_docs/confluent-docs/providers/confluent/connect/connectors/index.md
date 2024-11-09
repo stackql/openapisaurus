@@ -120,8 +120,39 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: connectors
+  props:
+    - name: environment_id
+      value: string
+    - name: kafka_cluster_id
+      value: string
+    - name: name
+      value: string
+    - name: config
+      props:
+        - name: connector.class
+          value: string
+        - name: name
+          value: string
+        - name: kafka.api.key
+          value: string
+        - name: kafka.api.secret
+          value: string
+        - name: confluent.connector.type
+          value: string
+        - name: confluent.custom.plugin.id
+          value: string
+        - name: confluent.custom.connection.endpoints
+          value: string
+        - name: confluent.custom.schema.registry.auto
+          value: string
+    - name: offsets
+      value: array
+      props:
+        - name: partition
+          value: object
+        - name: offset
+          value: object
 
 ```
 </TabItem>

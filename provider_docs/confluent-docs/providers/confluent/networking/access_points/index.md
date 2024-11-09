@@ -103,16 +103,10 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: access_points
   props:
     - name: spec
-      value:
-        - name: config
-          value:
-            - name: kind
-              value: string
-            - name: region
-              value: string
+      props:
         - name: environment
           value: string
         - name: gateway

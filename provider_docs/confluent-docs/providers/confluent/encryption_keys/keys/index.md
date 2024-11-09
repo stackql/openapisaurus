@@ -98,18 +98,24 @@ Use the following StackQL query and manifest file to create a new <code>keys</co
 ```sql
 /*+ create */
 INSERT INTO confluent.encryption_keys.keys (
-
+data__key
 )
 SELECT 
-
+'{{ key }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: keys
+  props:
+    - name: key
+      props:
+        - name: key_arn
+          value: string
+        - name: kind
+          value: string
 
 ```
 </TabItem>

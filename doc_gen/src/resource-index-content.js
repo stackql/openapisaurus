@@ -57,7 +57,17 @@ function cleanDescription(description) {
     return description.trim();
 }
 
-export async function createResourceIndexContent(providerName, serviceName, resourceName, vwResourceName, resourceData, paths, componentsSchemas, componentsRequestBodies) {
+export async function createResourceIndexContent(
+    providerName, 
+    serviceName, 
+    resourceName, 
+    vwResourceName, 
+    resourceData, 
+    paths, 
+    componentsSchemas, 
+    componentsRequestBodies,
+    dereferencedAPI
+) {
     
     const fieldsSql = `DESCRIBE EXTENDED ${providerName}.${serviceName}.${resourceName}`;
     const fields = await executeSQL(connectionOptions, fieldsSql) || [];
@@ -189,7 +199,7 @@ Creates, updates, deletes, gets or lists a <code>${resourceName}</code> resource
                 content += generateSelectExample(providerName, serviceName, resourceName, vwResourceName, exampleMethod, fields, vwFields);
                 break;
             case 'INSERT':
-                content += generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, exampleMethod);
+                content += generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, dereferencedAPI, exampleMethod);
                 break;
             case 'UPDATE':
                 content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, exampleMethod);
@@ -206,62 +216,6 @@ Creates, updates, deletes, gets or lists a <code>${resourceName}</code> resource
     // Write the content to a file
     return content;
 
-}
-
-// Helper functions to generate examples for each SQL verb
-function getSchemaManifest(schema, allSchemas, maxDepth = 10) {
-    function getFieldSchema(field) {
-        // Try to find schema that contains this field definition
-        for (const [_, schema] of Object.entries(allSchemas)) {
-            if (schema.properties?.[field]) {
-                return schema.properties[field];
-            }
-        }
-        return null;
-    }
-
-    function processProperties(properties) {
-        if (!properties) return [];
-        
-        return Object.entries(properties).map(([key, value]) => ({
-            name: key,
-            value: value.required?.map(field => {
-                const fieldSchema = getFieldSchema(field);
-                if (fieldSchema?.oneOf) {
-                    // Get the first schema from oneOf
-                    const refSchema = fieldSchema.oneOf[0].$ref ?
-                        allSchemas[fieldSchema.oneOf[0].$ref.replace('#/components/schemas/', '')] :
-                        fieldSchema.oneOf[0];
-                    
-                    return {
-                        name: field,
-                        value: Object.entries(refSchema.properties || {}).map(([propName, propValue]) => ({
-                            name: propName,
-                            value: propValue.type || 'string'
-                        }))
-                    };
-                }
-                if (fieldSchema?.type === 'object' && fieldSchema.properties) {
-                    return {
-                        name: field,
-                        value: Object.entries(fieldSchema.properties).map(([propName, propValue]) => ({
-                            name: propName,
-                            value: propValue.type || 'string'
-                        }))
-                    };
-                }
-                return {
-                    name: field,
-                    value: fieldSchema?.type || 'string'
-                };
-            }) || []
-        }));
-    }
-
-    return [{
-        name: "your_resource_model_name",
-        props: processProperties(schema?.properties)
-    }];
 }
 
 function generateSelectExample(providerName, serviceName, resourceName, vwResourceName, method, fields, vwFields) {
@@ -336,173 +290,195 @@ ${codeBlockEnd}`;
 const readOnlyPropertyNames = [
 ];
 
-// function generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, method) {
-//     try {
-//         const requiredParams = method.RequiredParams
-//             ? method.RequiredParams.split(', ').map(param => param.trim())
-//             : [];
+function getSchemaManifest(resourceName, requiredParams, requestBodySchema) {
+    const allProps = [];
 
-//         // Get operation reference and path
-//         const operationRef = resourceData.methods[method.MethodName].operation.$ref;
-//         const operationPathParts = operationRef.replace('#/paths/', '').replace(/~1/g, '/').split('/');
-//         const operationVerb = operationPathParts.pop();
-//         const operationPath = operationPathParts.join('/');
+    // Helper function to recursively process properties in the schema
+    function processProperties(properties) {
+        const result = [];
 
-//         function getRequestBodySchema() {
-//             const operation = paths?.[operationPath]?.[operationVerb];
-//             if (!operation?.requestBody) return null;
+        Object.entries(properties).forEach(([key, prop]) => {
+            // Handle `allOf` by merging properties
+            if (prop.allOf) {
+                prop = prop.allOf.reduce((acc, item) => ({
+                    ...acc,
+                    ...item,
+                    properties: {
+                        ...acc.properties,
+                        ...item.properties
+                    },
+                    required: Array.from(new Set([...(acc.required || []), ...(item.required || [])]))
+                }), {});
+            }
 
-//             let requestBody = operation.requestBody;
-            
-//             if (requestBody.$ref) {
-//                 const refName = requestBody.$ref.split('/').pop();
-//                 requestBody = componentsRequestBodies?.[refName] || null;
-//                 if (!requestBody) return null;
-//             }
+            // Exclude readOnly properties
+            if (prop.readOnly) return;
 
-//             const jsonContent = requestBody?.content?.['application/json'];
-//             if (!jsonContent?.schema) return null;
+            // Determine the property type or default to "string"
+            const type = prop.type || "string";
 
-//             return jsonContent.schema;
-//         }
+            // Handle nested objects recursively
+            if (type === "object" && prop.properties) {
+                result.push({
+                    name: key,
+                    props: processProperties(prop.properties)
+                });
+            } else if (type === "array" && prop.items && prop.items.type === "object" && prop.items.properties) {
+                // If array of objects, process items properties as nested props
+                result.push({
+                    name: key,
+                    value: "array",
+                    props: processProperties(prop.items.properties)
+                });
+            } else {
+                // Simple property or array of non-objects
+                result.push({
+                    name: key,
+                    value: type
+                });
+            }
+        });
 
-//         function resolveSchemaRef(ref) {
-//             return componentsSchemas[ref.split('/').pop()];
-//         }
+        return result;
+    }
 
-//         function resolveOneOf(property) {
-//             if (property.oneOf && property.oneOf.length > 0) {
-//                 // Get first oneOf reference
-//                 const firstRef = property.oneOf[0].$ref;
-//                 if (firstRef) {
-//                     return resolveSchemaRef(firstRef);
-//                 }
-//             }
-//             return property;
-//         }
+    // Add requiredParams as simple properties
+    requiredParams.forEach(param => {
+        allProps.push({
+            name: param,
+            value: "string"
+        });
+    });
 
-//         function getRequiredFields(schema) {
-//             let result = {
-//                 requiredFields: new Set(),
-//                 fieldProperties: {}
-//             };
+    // Process requestBodySchema properties and add to allProps
+    if (requestBodySchema?.properties) {
+        allProps.push(...processProperties(requestBodySchema.properties));
+    }
 
-//             function processSchema(subSchema) {
-//                 if (!subSchema) return;
+    return [{
+        name: resourceName,
+        props: allProps
+    }];
+}
 
-//                 if (subSchema.$ref) {
-//                     const resolved = resolveSchemaRef(subSchema.$ref);
-//                     processSchema(resolved);
-//                     return;
-//                 }
+function replaceAllOf(schema) {
+    if (!schema || typeof schema !== 'object') return schema;
 
-//                 if (subSchema.required) {
-//                     subSchema.required.forEach(field => {
-//                         let property = subSchema.properties?.[field];
-//                         if (property && !property.readOnly) {
-//                             result.requiredFields.add(field);
-//                             // If property is a reference, resolve it
-//                             if (property.$ref) {
-//                                 property = resolveSchemaRef(property.$ref);
-//                             }
-//                             // If property has oneOf, resolve it
-//                             property = resolveOneOf(property);
-//                             // Store full property definition for nested structures
-//                             result.fieldProperties[field] = property;
-//                         }
-//                     });
-//                 }
-//             }
+    // If schema contains `allOf`, merge all elements within it
+    if (schema.allOf) {
+        schema = schema.allOf.reduce((acc, item) => {
+            // Recurse to replace any nested `allOf` within each item
+            const mergedItem = replaceAllOf(item);
+            return {
+                ...acc,
+                ...mergedItem,
+                properties: {
+                    ...acc.properties,
+                    ...mergedItem.properties
+                },
+                required: Array.from(new Set([...(acc.required || []), ...(mergedItem.required || [])]))
+            };
+        }, {});
+    }
 
-//             if (schema.allOf) {
-//                 schema.allOf.forEach(processSchema);
-//             } else {
-//                 processSchema(schema);
-//             }
+    // Recursively apply to properties and other nested schemas
+    if (schema.properties) {
+        for (const key in schema.properties) {
+            schema.properties[key] = replaceAllOf(schema.properties[key]);
+        }
+    }
 
-//             return result;
-//         }
+    if (schema.items) {
+        schema.items = Array.isArray(schema.items)
+            ? schema.items.map(replaceAllOf)
+            : replaceAllOf(schema.items);
+    }
 
-//         // Get schema and find required non-readonly fields
-//         const rawSchema = getRequestBodySchema();
-//         const { requiredFields, fieldProperties } = getRequiredFields(rawSchema);
+    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        schema.additionalProperties = replaceAllOf(schema.additionalProperties);
+    }
 
-//         // Create schema preserving the full structure of required fields
-//         const processedSchema = {
-//             type: 'object',
-//             properties: Object.fromEntries(
-//                 Array.from(requiredFields).map(field => [
-//                     field,
-//                     fieldProperties[field]
-//                 ])
-//             )
-//         };
+    return schema;
+}
 
-//         // For SQL generation
-//         const schemaFields = Array.from(requiredFields).map(field => ({
-//             name: field,
-//             type: fieldProperties[field]?.type || 'object'
-//         }));
+function replaceAnyOfOneOf(schema) {
+    if (!schema || typeof schema !== 'object') return schema;
 
-//         // Combine required params and schema fields
-//         const allFields = [
-//             ...requiredParams.map(param => ({ name: param, type: 'string' })),
-//             ...schemaFields
-//         ];
+    // Handle `anyOf` by replacing with the first element
+    if (schema.anyOf) {
+        schema = replaceAnyOfOneOf(schema.anyOf[0]);  // Recursively process the chosen schema
+    }
 
-//         const insertFields = allFields.length > 0
-//             ? allFields.map(field => field.name).join(',\n')
-//             : '';
+    // Handle `oneOf` by replacing with the first element
+    if (schema.oneOf) {
+        schema = replaceAnyOfOneOf(schema.oneOf[0]);  // Recursively process the chosen schema
+    }
 
-//         const selectValues = allFields.length > 0
-//             ? allFields.map(field => `'{{ ${field.name} }}'`).join(',\n')
-//             : '';
+    // Recursively apply to properties and other nested schemas
+    if (schema.properties) {
+        for (const key in schema.properties) {
+            schema.properties[key] = replaceAnyOfOneOf(schema.properties[key]);
+        }
+    }
 
-//         // Pass the processed schema to getSchemaManifest
-//         const yamlManifest = yaml.dump(
-//             getSchemaManifest(processedSchema, componentsSchemas),
-//             { quotingType: "'", lineWidth: -1, noRefs: true, skipInvalid: true }
-//         );
+    if (schema.items) {
+        schema.items = Array.isArray(schema.items)
+            ? schema.items.map(replaceAnyOfOneOf)
+            : replaceAnyOfOneOf(schema.items);
+    }
 
-//         return `
-// ## ${mdCodeAnchor}INSERT${mdCodeAnchor} example
+    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        schema.additionalProperties = replaceAnyOfOneOf(schema.additionalProperties);
+    }
 
-// Use the following StackQL query and manifest file to create a new <code>${resourceName}</code> resource.
+    return schema;
+}
 
-// <Tabs
-//     defaultValue="all"
-//     values={[
-//         { label: 'All Properties', value: 'all', },
-//         { label: 'Manifest', value: 'manifest', },
-//     ]
-// }>
-// <TabItem value="all">
+function removeReadOnlyProperties(schema) {
+    if (!schema || typeof schema !== 'object') return schema;
 
-// ${sqlCodeBlockStart}
-// /*+ create */
-// INSERT INTO ${providerName}.${serviceName}.${resourceName} (
-// ${insertFields}
-// )
-// SELECT 
-// ${selectValues}
-// ;
-// ${codeBlockEnd}
-// </TabItem>
-// <TabItem value="manifest">
+    // Check for and remove `readOnly` properties within `properties`
+    if (schema.properties) {
+        for (const key in schema.properties) {
+            const property = schema.properties[key];
+            if (property.readOnly) {
+                delete schema.properties[key];
+            } else {
+                // Recursively process nested properties
+                schema.properties[key] = removeReadOnlyProperties(property);
+            }
+        }
+    }
 
-// ${yamlCodeBlockStart}
-// ${yamlManifest}
-// ${codeBlockEnd}
-// </TabItem>
-// </Tabs>
-// `;
-//     } catch (error) {
-//         console.log('Error generating INSERT example:', error);
-//         return '';
-//     }
-// }
-function generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, method) {
+    // Recursively process `items` if it's an array schema or contains objects
+    if (schema.items) {
+        schema.items = Array.isArray(schema.items)
+            ? schema.items.map(removeReadOnlyProperties)
+            : removeReadOnlyProperties(schema.items);
+    }
+
+    // Recursively process `additionalProperties` if it’s an object schema
+    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        schema.additionalProperties = removeReadOnlyProperties(schema.additionalProperties);
+    }
+
+    return schema;
+}
+
+function generateInsertExample(
+    providerName, 
+    serviceName, 
+    resourceName, 
+    resourceData, 
+    paths, 
+    componentsSchemas, 
+    componentsRequestBodies, 
+    dereferencedAPI, 
+    method) {
     try {
+
+        console.log(`processing insert for ${resourceName}...`);
+
         const requiredParams = method.RequiredParams
             ? method.RequiredParams.split(', ').map(param => param.trim())
             : [];
@@ -512,121 +488,44 @@ function generateInsertExample(providerName, serviceName, resourceName, resource
         const operationPathParts = operationRef.replace('#/paths/', '').replace(/~1/g, '/').split('/');
         const operationVerb = operationPathParts.pop();
         const operationPath = operationPathParts.join('/');
+        let requestBodySchema;
 
-        function getRequestBodySchema() {
-            const operation = paths?.[operationPath]?.[operationVerb];
-            if (!operation?.requestBody) return null;
+        // Try to access the path directly
+        let pathObj = dereferencedAPI.paths[operationPath];
 
-            let requestBody = operation.requestBody;
-            
-            if (requestBody.$ref) {
-                const refName = requestBody.$ref.split('/').pop();
-                requestBody = componentsRequestBodies?.[refName] || null;
-                if (!requestBody) return null;
-            }
-
-            const jsonContent = requestBody?.content?.['application/json'];
-            if (!jsonContent?.schema) return null;
-
-            return jsonContent.schema;
+        // If the path isn't found directly, iterate to look for a match
+        if (!pathObj) {
+            pathObj = Object.entries(dereferencedAPI.paths).find(([key]) => key === operationPath)?.[1];
         }
 
-        function resolveSchemaRef(ref) {
-            return componentsSchemas[ref.split('/').pop()];
+        // let originalSchema;
+
+        // Ensure the path and operation (e.g., POST) exist and contain a requestBody
+        if (pathObj && pathObj[operationVerb] && pathObj[operationVerb].requestBody) {
+            requestBodySchema = pathObj[operationVerb].requestBody.content?.['application/json']?.schema;
+
+            requestBodySchema = replaceAllOf(requestBodySchema);
+
+            requestBodySchema = replaceAnyOfOneOf(requestBodySchema);
+
+            requestBodySchema = removeReadOnlyProperties(requestBodySchema);
+
+            // console.info("Request Body Schema:", requestBodySchema);
+        } else {
+            console.log("path, operation, or requestBody not found for:", operationPath);
         }
 
-        function resolveOneOf(property) {
-            if (property.oneOf && property.oneOf.length > 0) {
-                // Get first oneOf reference
-                const firstRef = property.oneOf[0].$ref;
-                if (firstRef) {
-                    return resolveSchemaRef(firstRef);
-                }
-            }
-            return property;
-        }
+        // INSERT column list
+        const reqBodyRequiredFieldsColList = (requestBodySchema?.required || []).map(field => `data__${field}`);
+        const insertFields = Array.from(new Set([...reqBodyRequiredFieldsColList, ...requiredParams]));
 
-        function getRequiredFields(schema) {
-            let result = {
-                requiredFields: new Set(),
-                fieldProperties: {}
-            };
-
-            function processSchema(subSchema) {
-                if (!subSchema) return;
-
-                if (subSchema.$ref) {
-                    const resolved = resolveSchemaRef(subSchema.$ref);
-                    processSchema(resolved);
-                    return;
-                }
-
-                if (subSchema.required) {
-                    subSchema.required.forEach(field => {
-                        let property = subSchema.properties?.[field];
-                        if (property && !property.readOnly) {
-                            result.requiredFields.add(field);
-                            // If property is a reference, resolve it
-                            if (property.$ref) {
-                                property = resolveSchemaRef(property.$ref);
-                            }
-                            // If property has oneOf, resolve it
-                            property = resolveOneOf(property);
-                            // Store full property definition for nested structures
-                            result.fieldProperties[field] = property;
-                        }
-                    });
-                }
-            }
-
-            if (schema.allOf) {
-                schema.allOf.forEach(processSchema);
-            } else {
-                processSchema(schema);
-            }
-
-            return result;
-        }
-
-        // Get schema and find required non-readonly fields
-        const rawSchema = getRequestBodySchema();
-        const { requiredFields, fieldProperties } = getRequiredFields(rawSchema);
-
-        // Create schema preserving the full structure of required fields
-        const processedSchema = {
-            type: 'object',
-            properties: Object.fromEntries(
-                Array.from(requiredFields).map(field => [
-                    field,
-                    fieldProperties[field]
-                ])
-            )
-        };
-
-        // For SQL generation - prefix request body fields with data__
-        const schemaFields = Array.from(requiredFields).map(field => ({
-            name: `data__${field}`,
-            originalName: field,
-            type: fieldProperties[field]?.type || 'object'
-        }));
-
-        // Combine required params and schema fields
-        const allFields = [
-            ...requiredParams.map(param => ({ name: param, originalName: param, type: 'string' })),
-            ...schemaFields
-        ];
-
-        const insertFields = allFields.length > 0
-            ? allFields.map(field => field.name).join(',\n')
-            : '';
-
-        const selectValues = allFields.length > 0
-            ? allFields.map(field => `'{{ ${field.originalName} }}'`).join(',\n')
-            : '';
+       // INSERT select values
+       const reqBodyRequiredFieldsSelectVals = (requestBodySchema?.required || []).map(field => `'{{ ${field} }}'`);
+       const selectValues = Array.from(new Set([...reqBodyRequiredFieldsSelectVals, ...requiredParams.map(field => `'{{ ${field} }}'`)]));
 
         // Pass the processed schema to getSchemaManifest
         const yamlManifest = yaml.dump(
-            getSchemaManifest(processedSchema, componentsSchemas),
+            getSchemaManifest(resourceName, requiredParams, requestBodySchema),
             { quotingType: "'", lineWidth: -1, noRefs: true, skipInvalid: true }
         );
 
@@ -647,10 +546,10 @@ Use the following StackQL query and manifest file to create a new <code>${resour
 ${sqlCodeBlockStart}
 /*+ create */
 INSERT INTO ${providerName}.${serviceName}.${resourceName} (
-${insertFields}
+${insertFields.join(',\n')}
 )
 SELECT 
-${selectValues}
+${selectValues.join(',\n')}
 ;
 ${codeBlockEnd}
 </TabItem>

@@ -90,49 +90,6 @@ FROM confluent.sql.statements
 WHERE environment_id = '{{ environment_id }}'
 AND organization_id = '{{ organization_id }}';
 ```
-## `INSERT` example
-
-Use the following StackQL query and manifest file to create a new <code>statements</code> resource.
-
-<Tabs
-    defaultValue="all"
-    values={[
-        { label: 'All Properties', value: 'all', },
-        { label: 'Manifest', value: 'manifest', },
-    ]
-}>
-<TabItem value="all">
-
-```sql
-/*+ create */
-INSERT INTO confluent.sql.statements (
-environment_id,
-organization_id,
-data__spec
-)
-SELECT 
-'{{ environment_id }}',
-'{{ organization_id }}',
-'{{ spec }}'
-;
-```
-</TabItem>
-<TabItem value="manifest">
-
-```yaml
-- name: your_resource_model_name
-  props:
-    - name: spec
-      value:
-        - name: statement
-          value: string
-        - name: compute_pool_id
-          value: string
-
-```
-</TabItem>
-</Tabs>
-
 ## `UPDATE` example
 
 Updates a <code>statements</code> resource.

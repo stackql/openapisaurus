@@ -97,18 +97,28 @@ Use the following StackQL query and manifest file to create a new <code>group_ma
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.group_mappings (
-
+data__display_name,
+data__description,
+data__filter
 )
 SELECT 
-
+'{{ display_name }}',
+'{{ description }}',
+'{{ filter }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: group_mappings
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: filter
+      value: string
 
 ```
 </TabItem>

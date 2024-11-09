@@ -119,8 +119,20 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: certificate_authorities
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: certificate_chain
+      value: string
+    - name: certificate_chain_filename
+      value: string
+    - name: crl_url
+      value: string
+    - name: crl_chain
+      value: string
 
 ```
 </TabItem>

@@ -93,8 +93,20 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: data_encryption_keys
+  props:
+    - name: name
+      value: string
+    - name: subject
+      value: string
+    - name: version
+      value: integer
+    - name: algorithm
+      value: string
+    - name: encryptedKeyMaterial
+      value: string
+    - name: deleted
+      value: boolean
 
 ```
 </TabItem>

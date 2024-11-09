@@ -96,18 +96,31 @@ Use the following StackQL query and manifest file to create a new <code>subscrip
 ```sql
 /*+ create */
 INSERT INTO confluent.notifications.subscriptions (
-
+data__notification_type,
+data__integrations
 )
 SELECT 
-
+'{{ notification_type }}',
+'{{ integrations }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: subscriptions
+  props:
+    - name: current_state
+      value: string
+    - name: notification_type
+      props:
+        - name: id
+          value: string
+    - name: integrations
+      value: array
+      props:
+        - name: id
+          value: string
 
 ```
 </TabItem>

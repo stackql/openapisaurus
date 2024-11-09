@@ -104,12 +104,10 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: pipelines
   props:
     - name: spec
-      value:
-        - name: display_name
-          value: string
+      props:
         - name: environment
           value: string
         - name: kafka_cluster

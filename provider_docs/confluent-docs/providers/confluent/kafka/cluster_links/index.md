@@ -111,8 +111,20 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: cluster_links
+  props:
+    - name: cluster_id
+      value: string
+    - name: source_cluster_id
+      value: string
+    - name: destination_cluster_id
+      value: string
+    - name: remote_cluster_id
+      value: string
+    - name: cluster_link_id
+      value: string
+    - name: configs
+      value: array
 
 ```
 </TabItem>

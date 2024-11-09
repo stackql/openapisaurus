@@ -102,26 +102,37 @@ Use the following StackQL query and manifest file to create a new <code>mirror_t
 ```sql
 /*+ create */
 INSERT INTO confluent.kafka.mirror_topics (
-cluster_id,
-link_name,
 data__source_topic_name,
-data__source_topic_name
+cluster_id,
+link_name
 )
 SELECT 
+'{{ source_topic_name }}',
 '{{ cluster_id }}',
 '{{ link_name }}',
-'{{ data__source_topic_name }}',
-'{{ source_topic_name }}'
+'{{ data__source_topic_name }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: mirror_topics
   props:
+    - name: cluster_id
+      value: string
+    - name: link_name
+      value: string
+    - name: data__source_topic_name
+      value: string
     - name: source_topic_name
-      value: []
+      value: string
+    - name: mirror_topic_name
+      value: string
+    - name: replication_factor
+      value: integer
+    - name: configs
+      value: array
 
 ```
 </TabItem>

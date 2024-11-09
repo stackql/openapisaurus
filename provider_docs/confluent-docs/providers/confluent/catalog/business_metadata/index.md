@@ -99,7 +99,7 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: business_metadata
   props: []
 
 ```

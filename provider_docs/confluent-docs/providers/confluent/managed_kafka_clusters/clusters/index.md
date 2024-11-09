@@ -178,10 +178,10 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: clusters
   props:
     - name: spec
-      value:
+      props:
         - name: display_name
           value: string
         - name: availability
@@ -191,11 +191,25 @@ SELECT
         - name: region
           value: string
         - name: config
-          value:
+          props:
             - name: kind
               value: string
         - name: environment
-          value: string
+          props:
+            - name: id
+              value: string
+            - name: environment
+              value: string
+        - name: network
+          props:
+            - name: id
+              value: string
+            - name: environment
+              value: string
+        - name: byok
+          props:
+            - name: id
+              value: string
 
 ```
 </TabItem>

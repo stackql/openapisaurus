@@ -100,14 +100,10 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: clusters
   props:
     - name: spec
-      value:
-        - name: display_name
-          value: string
-        - name: csu
-          value: integer
+      props:
         - name: kafka_cluster
           value: string
         - name: credential_identity

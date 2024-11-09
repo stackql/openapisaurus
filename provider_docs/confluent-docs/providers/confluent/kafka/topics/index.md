@@ -104,24 +104,40 @@ Use the following StackQL query and manifest file to create a new <code>topics</
 ```sql
 /*+ create */
 INSERT INTO confluent.kafka.topics (
-cluster_id,
 data__topic_name,
-data__topic_name
+cluster_id
 )
 SELECT 
+'{{ topic_name }}',
 '{{ cluster_id }}',
-'{{ data__topic_name }}',
-'{{ topic_name }}'
+'{{ data__topic_name }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: topics
   props:
+    - name: cluster_id
+      value: string
+    - name: data__topic_name
+      value: string
     - name: topic_name
-      value: []
+      value: string
+    - name: partitions_count
+      value: integer
+    - name: replication_factor
+      value: integer
+    - name: configs
+      value: array
+      props:
+        - name: name
+          value: string
+        - name: value
+          value: string
+    - name: validate_only
+      value: boolean
 
 ```
 </TabItem>

@@ -115,18 +115,32 @@ Use the following StackQL query and manifest file to create a new <code>provider
 ```sql
 /*+ create */
 INSERT INTO confluent.stream_sharing.provider_shares (
-
+data__delivery_method,
+data__consumer_restriction,
+data__resources
 )
 SELECT 
-
+'{{ delivery_method }}',
+'{{ consumer_restriction }}',
+'{{ resources }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: provider_shares
+  props:
+    - name: delivery_method
+      value: string
+    - name: consumer_restriction
+      props:
+        - name: kind
+          value: string
+        - name: email
+          value: string
+    - name: resources
+      value: array
 
 ```
 </TabItem>

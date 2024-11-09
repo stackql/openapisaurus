@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 import { createResourceIndexContent } from './resource-index-content.js';
+import SwaggerParser from '@apidevtools/swagger-parser';
 
 //
 // main doc function
@@ -125,6 +126,10 @@ async function createDocsForService(yamlFilePath, providerName, serviceName, ser
 
     const data = yaml.load(fs.readFileSync(yamlFilePath, 'utf8'));
 
+    // Create a new SwaggerParser instance
+    let parser = new SwaggerParser();
+    let dereferencedAPI = await parser.dereference(yamlFilePath);
+
     // Create service directory
     if (!fs.existsSync(serviceFolder)) {
         fs.mkdirSync(serviceFolder, { recursive: true });
@@ -161,7 +166,8 @@ async function createDocsForService(yamlFilePath, providerName, serviceName, ser
             resourceData,
             paths,
             componentsSchemas,
-            componentsRequestBodies
+            componentsRequestBodies,
+            dereferencedAPI
         });
     }    
 
@@ -190,13 +196,25 @@ async function createDocsForService(yamlFilePath, providerName, serviceName, ser
 
 // new
 async function processResource(providerName, serviceFolder, serviceName, resource) {
+    console.log(`Processing resource: ${resource.name}`);
+    
     const resourceFolder = path.join(serviceFolder, resource.name);
     if (!fs.existsSync(resourceFolder)) {
         fs.mkdirSync(resourceFolder, { recursive: true });
     }
 
     const resourceIndexPath = path.join(resourceFolder, 'index.md');
-    const resourceIndexContent = await createResourceIndexContent(providerName, serviceName, resource.name, resource.vwResourceName, resource.resourceData, resource.paths, resource.componentsSchemas, resource.componentsRequestBodies);
+    const resourceIndexContent = await createResourceIndexContent(
+        providerName, 
+        serviceName, 
+        resource.name, 
+        resource.vwResourceName, 
+        resource.resourceData, 
+        resource.paths, 
+        resource.componentsSchemas, 
+        resource.componentsRequestBodies,
+        resource.dereferencedAPI
+    );
     fs.writeFileSync(resourceIndexPath, resourceIndexContent);
 
     // After writing the file, force garbage collection if available (optional)

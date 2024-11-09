@@ -109,18 +109,44 @@ Use the following StackQL query and manifest file to create a new <code>custom_c
 ```sql
 /*+ create */
 INSERT INTO confluent.connect.custom_connector_plugins (
-
+data__display_name,
+data__connector_class,
+data__connector_type,
+data__upload_source
 )
 SELECT 
-
+'{{ display_name }}',
+'{{ connector_class }}',
+'{{ connector_type }}',
+'{{ upload_source }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: custom_connector_plugins
+  props:
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: documentation_link
+      value: string
+    - name: connector_class
+      value: string
+    - name: connector_type
+      value: string
+    - name: cloud
+      value: string
+    - name: sensitive_config_properties
+      value: array
+    - name: upload_source
+      props:
+        - name: location
+          value: string
+        - name: upload_id
+          value: string
 
 ```
 </TabItem>

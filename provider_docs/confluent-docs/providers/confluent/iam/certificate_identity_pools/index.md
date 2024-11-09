@@ -100,9 +100,17 @@ Use the following StackQL query and manifest file to create a new <code>certific
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.certificate_identity_pools (
+data__display_name,
+data__description,
+data__external_identifier,
+data__filter,
 certificate_authority_id
 )
 SELECT 
+'{{ display_name }}',
+'{{ description }}',
+'{{ external_identifier }}',
+'{{ filter }}',
 '{{ certificate_authority_id }}'
 ;
 ```
@@ -110,8 +118,18 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: certificate_identity_pools
+  props:
+    - name: certificate_authority_id
+      value: string
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: external_identifier
+      value: string
+    - name: filter
+      value: string
 
 ```
 </TabItem>

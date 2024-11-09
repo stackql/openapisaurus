@@ -102,9 +102,17 @@ Use the following StackQL query and manifest file to create a new <code>identity
 ```sql
 /*+ create */
 INSERT INTO confluent.iam.identity_pools (
+data__display_name,
+data__description,
+data__identity_claim,
+data__filter,
 provider_id
 )
 SELECT 
+'{{ display_name }}',
+'{{ description }}',
+'{{ identity_claim }}',
+'{{ filter }}',
 '{{ provider_id }}'
 ;
 ```
@@ -112,8 +120,18 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: identity_pools
+  props:
+    - name: provider_id
+      value: string
+    - name: display_name
+      value: string
+    - name: description
+      value: string
+    - name: identity_claim
+      value: string
+    - name: filter
+      value: string
 
 ```
 </TabItem>

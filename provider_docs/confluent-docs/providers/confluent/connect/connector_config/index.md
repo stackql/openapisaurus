@@ -86,46 +86,64 @@ Use the following StackQL query and manifest file to create a new <code>connecto
 ```sql
 /*+ create */
 INSERT INTO confluent.connect.connector_config (
-connector_name,
-environment_id,
-kafka_cluster_id,
 data__connector.class,
+data__name,
 data__kafka.api.key,
 data__kafka.api.secret,
-data__name,
-data__connector.class,
-data__name,
-data__kafka.api.key,
-data__kafka.api.secret
+connector_name,
+environment_id,
+kafka_cluster_id
 )
 SELECT 
+'{{ connector.class }}',
+'{{ name }}',
+'{{ kafka.api.key }}',
+'{{ kafka.api.secret }}',
 '{{ connector_name }}',
 '{{ environment_id }}',
 '{{ kafka_cluster_id }}',
 '{{ data__connector.class }}',
 '{{ data__kafka.api.key }}',
 '{{ data__kafka.api.secret }}',
-'{{ data__name }}',
-'{{ connector.class }}',
-'{{ name }}',
-'{{ kafka.api.key }}',
-'{{ kafka.api.secret }}'
+'{{ data__name }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: connector_config
   props:
+    - name: connector_name
+      value: string
+    - name: environment_id
+      value: string
+    - name: kafka_cluster_id
+      value: string
+    - name: data__connector.class
+      value: string
+    - name: data__kafka.api.key
+      value: string
+    - name: data__kafka.api.secret
+      value: string
+    - name: data__name
+      value: string
     - name: connector.class
-      value: []
+      value: string
     - name: name
-      value: []
+      value: string
     - name: kafka.api.key
-      value: []
+      value: string
     - name: kafka.api.secret
-      value: []
+      value: string
+    - name: confluent.connector.type
+      value: string
+    - name: confluent.custom.plugin.id
+      value: string
+    - name: confluent.custom.connection.endpoints
+      value: string
+    - name: confluent.custom.schema.registry.auto
+      value: string
 
 ```
 </TabItem>

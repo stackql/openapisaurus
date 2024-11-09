@@ -147,18 +147,24 @@ Use the following StackQL query and manifest file to create a new <code>environm
 ```sql
 /*+ create */
 INSERT INTO confluent.org.environments (
-
+data__display_name
 )
 SELECT 
-
+'{{ display_name }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: environments
+  props:
+    - name: display_name
+      value: string
+    - name: stream_governance_config
+      props:
+        - name: package
+          value: string
 
 ```
 </TabItem>

@@ -94,8 +94,22 @@ SELECT
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
-  props: []
+- name: key_encryption_keys
+  props:
+    - name: name
+      value: string
+    - name: kmsType
+      value: string
+    - name: kmsKeyId
+      value: string
+    - name: kmsProps
+      value: object
+    - name: doc
+      value: string
+    - name: shared
+      value: boolean
+    - name: deleted
+      value: boolean
 
 ```
 </TabItem>

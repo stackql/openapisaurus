@@ -96,23 +96,23 @@ Use the following StackQL query and manifest file to create a new <code>acls</co
 ```sql
 /*+ create */
 INSERT INTO confluent.kafka.acls (
-cluster_id,
+data__resource_type,
+data__resource_name,
+data__pattern_type,
+data__principal,
 data__host,
 data__operation,
-data__pattern_type,
 data__permission,
-data__principal,
-data__resource_name,
-data__resource_type,
-data__resource_type,
-data__resource_name,
-data__pattern_type,
-data__principal,
-data__host,
-data__operation,
-data__permission
+cluster_id
 )
 SELECT 
+'{{ resource_type }}',
+'{{ resource_name }}',
+'{{ pattern_type }}',
+'{{ principal }}',
+'{{ host }}',
+'{{ operation }}',
+'{{ permission }}',
 '{{ cluster_id }}',
 '{{ data__host }}',
 '{{ data__operation }}',
@@ -120,36 +120,45 @@ SELECT
 '{{ data__permission }}',
 '{{ data__principal }}',
 '{{ data__resource_name }}',
-'{{ data__resource_type }}',
-'{{ resource_type }}',
-'{{ resource_name }}',
-'{{ pattern_type }}',
-'{{ principal }}',
-'{{ host }}',
-'{{ operation }}',
-'{{ permission }}'
+'{{ data__resource_type }}'
 ;
 ```
 </TabItem>
 <TabItem value="manifest">
 
 ```yaml
-- name: your_resource_model_name
+- name: acls
   props:
+    - name: cluster_id
+      value: string
+    - name: data__host
+      value: string
+    - name: data__operation
+      value: string
+    - name: data__pattern_type
+      value: string
+    - name: data__permission
+      value: string
+    - name: data__principal
+      value: string
+    - name: data__resource_name
+      value: string
+    - name: data__resource_type
+      value: string
     - name: resource_type
-      value: []
+      value: string
     - name: resource_name
-      value: []
+      value: string
     - name: pattern_type
-      value: []
+      value: string
     - name: principal
-      value: []
+      value: string
     - name: host
-      value: []
+      value: string
     - name: operation
-      value: []
+      value: string
     - name: permission
-      value: []
+      value: string
 
 ```
 </TabItem>
