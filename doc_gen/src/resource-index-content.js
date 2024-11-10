@@ -28,33 +28,32 @@ function cleanDescription(description) {
     // Replace <a> tags with markdown equivalent
     description = description.replace(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"(?:[^>]*?)>(.*?)<\/a>/gi, '[$2]($1)');
 
-    // Remove <p> tags
-    description = description.replace(/<\/?p>/gi, '');
+    // Remove <p> tags and replace them with a single space
+    description = description.replace(/<\/?p>/gi, ' ');
 
-    // Remove <br> tags
-    description = description.replace(/<br>/g, ' ');
-    description = description.replace(/<\/br>/g, ' ');
+    // Replace <br> tags with a single space
+    description = description.replace(/<br\s*\/?>/gi, ' ');
 
     // Replace <code> and <pre> tags with markdown code blocks
     description = description.replace(/<(code|pre)>(.*?)<\/\1>/gi, '`$2`');
 
-    // Replace <ul> and <li> tags with comma-delimited list
+    // Convert <ul> and <li> tags into a comma-separated list
     description = description.replace(/<\/?ul>/gi, '');
-    description = description.replace(/<li>(.*?)<\/li>/gi, '$1,');
+    description = description.replace(/<li>(.*?)<\/li>/gi, '$1, ');
 
     // Remove <name>, <td>, <tr>, and <table> tags
-    description = description.replace(/<name>/g, 'name');
-    description = description.replace(/<\/?td>/gi, '');
-    description = description.replace(/<\/?tr>/gi, '');
-    description = description.replace(/<\/?table>/gi, '');
+    description = description.replace(/<\/?(name|td|tr|table)>/gi, '');
 
-    // Trim any trailing commas and whitespace
-    description = description.replace(/,\s*$/, '');
+    // Replace multiple spaces with a single space
+    description = description.replace(/\s+/g, ' ');
 
     // Escape pipe characters to prevent breaking markdown tables
     description = description.replace(/\|/g, '\\|');
 
-    return description.trim();
+    // Remove any trailing commas, spaces, and line breaks
+    description = description.replace(/,\s*$/, '').trim();
+
+    return description;
 }
 
 export async function createResourceIndexContent(
@@ -93,7 +92,7 @@ export async function createResourceIndexContent(
                     type: vwField.type || matchingField.type || 'text',
                     description: vwField.description || 
                                 matchingField.description || 
-                                'field from the `properties` object',
+                                'field from the parent object',
                 };
             });
         };
@@ -115,14 +114,13 @@ hide_table_of_contents: false
 keywords:
   - ${resourceName}
   - ${serviceName}
-  - azure
-  - microsoft azure
+  - ${providerName}
   - infrastructure-as-code
   - configuration-as-data
   - cloud inventory
-description: Query, deploy and manage Microsoft Azure infrastructure and resources using SQL
+description: Query, deploy and manage ${providerName} resources using SQL
 custom_edit_url: null
-image: /img/providers/azure/stackql-azure-provider-featured-image.png
+image: /img/providers/${providerName}/stackql-${providerName}-provider-featured-image.png
 ---
 
 import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
@@ -202,10 +200,10 @@ Creates, updates, deletes, gets or lists a <code>${resourceName}</code> resource
                 content += generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, dereferencedAPI, exampleMethod);
                 break;
             case 'UPDATE':
-                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, exampleMethod);
+                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, exampleMethod);
                 break;
             case 'REPLACE':
-                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, exampleMethod, true);
+                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, exampleMethod, true);                
                 break;
             case 'DELETE':
                 content += generateDeleteExample(providerName, serviceName, resourceName, exampleMethod);
@@ -361,14 +359,28 @@ function getSchemaManifest(resourceName, requiredParams, requestBodySchema) {
     }];
 }
 
-function replaceAllOf(schema) {
+function replaceAllOf(schema, visited = new Set(), depth = 0) {
     if (!schema || typeof schema !== 'object') return schema;
+    
+    // Prevent excessive recursion by setting a max depth limit
+    const MAX_DEPTH = 20;
+    if (depth > MAX_DEPTH) {
+        console.warn('Max depth reached, stopping recursion.');
+        return schema;
+    }
+
+    // Track objects already visited to prevent circular references
+    if (visited.has(schema)) {
+        console.warn('Circular reference detected, skipping.');
+        return schema;
+    }
+    visited.add(schema);
 
     // If schema contains `allOf`, merge all elements within it
     if (schema.allOf) {
         schema = schema.allOf.reduce((acc, item) => {
-            // Recurse to replace any nested `allOf` within each item
-            const mergedItem = replaceAllOf(item);
+            // Recurse into each `allOf` item with depth tracking and visited nodes
+            const mergedItem = replaceAllOf(item, visited, depth + 1);
             return {
                 ...acc,
                 ...mergedItem,
@@ -384,58 +396,92 @@ function replaceAllOf(schema) {
     // Recursively apply to properties and other nested schemas
     if (schema.properties) {
         for (const key in schema.properties) {
-            schema.properties[key] = replaceAllOf(schema.properties[key]);
+            schema.properties[key] = replaceAllOf(schema.properties[key], visited, depth + 1);
         }
     }
 
     if (schema.items) {
         schema.items = Array.isArray(schema.items)
-            ? schema.items.map(replaceAllOf)
-            : replaceAllOf(schema.items);
+            ? schema.items.map(item => replaceAllOf(item, visited, depth + 1))
+            : replaceAllOf(schema.items, visited, depth + 1);
     }
 
     if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-        schema.additionalProperties = replaceAllOf(schema.additionalProperties);
+        schema.additionalProperties = replaceAllOf(schema.additionalProperties, visited, depth + 1);
     }
+
+    // After processing, remove the schema from the visited set to allow re-processing in a different branch
+    visited.delete(schema);
 
     return schema;
 }
 
-function replaceAnyOfOneOf(schema) {
+function replaceAnyOfOneOf(schema, visited = new Set(), depth = 0) {
     if (!schema || typeof schema !== 'object') return schema;
+
+    // Define a maximum depth to prevent excessive recursion
+    const MAX_DEPTH = 20;
+    if (depth > MAX_DEPTH) {
+        console.warn('Max depth reached, stopping recursion.');
+        return schema;
+    }
+
+    // Check for circular references using a Set of visited nodes
+    if (visited.has(schema)) {
+        console.warn('Circular reference detected, skipping.');
+        return schema;
+    }
+    visited.add(schema);
 
     // Handle `anyOf` by replacing with the first element
     if (schema.anyOf) {
-        schema = replaceAnyOfOneOf(schema.anyOf[0]);  // Recursively process the chosen schema
+        schema = replaceAnyOfOneOf(schema.anyOf[0], visited, depth + 1); // Recursively process the first option
     }
 
     // Handle `oneOf` by replacing with the first element
     if (schema.oneOf) {
-        schema = replaceAnyOfOneOf(schema.oneOf[0]);  // Recursively process the chosen schema
+        schema = replaceAnyOfOneOf(schema.oneOf[0], visited, depth + 1); // Recursively process the first option
     }
 
     // Recursively apply to properties and other nested schemas
     if (schema.properties) {
         for (const key in schema.properties) {
-            schema.properties[key] = replaceAnyOfOneOf(schema.properties[key]);
+            schema.properties[key] = replaceAnyOfOneOf(schema.properties[key], visited, depth + 1);
         }
     }
 
     if (schema.items) {
         schema.items = Array.isArray(schema.items)
-            ? schema.items.map(replaceAnyOfOneOf)
-            : replaceAnyOfOneOf(schema.items);
+            ? schema.items.map(item => replaceAnyOfOneOf(item, visited, depth + 1))
+            : replaceAnyOfOneOf(schema.items, visited, depth + 1);
     }
 
     if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-        schema.additionalProperties = replaceAnyOfOneOf(schema.additionalProperties);
+        schema.additionalProperties = replaceAnyOfOneOf(schema.additionalProperties, visited, depth + 1);
     }
+
+    // Remove schema from visited set after processing
+    visited.delete(schema);
 
     return schema;
 }
 
-function removeReadOnlyProperties(schema) {
+function removeReadOnlyProperties(schema, visited = new Set(), depth = 0) {
     if (!schema || typeof schema !== 'object') return schema;
+
+    // Define a maximum depth to prevent excessive recursion
+    const MAX_DEPTH = 20;
+    if (depth > MAX_DEPTH) {
+        console.warn('Max depth reached, stopping recursion.');
+        return schema;
+    }
+
+    // Check for circular references using a Set of visited nodes
+    if (visited.has(schema)) {
+        console.warn('Circular reference detected, skipping.');
+        return schema;
+    }
+    visited.add(schema);
 
     // Check for and remove `readOnly` properties within `properties`
     if (schema.properties) {
@@ -445,7 +491,7 @@ function removeReadOnlyProperties(schema) {
                 delete schema.properties[key];
             } else {
                 // Recursively process nested properties
-                schema.properties[key] = removeReadOnlyProperties(property);
+                schema.properties[key] = removeReadOnlyProperties(property, visited, depth + 1);
             }
         }
     }
@@ -453,14 +499,17 @@ function removeReadOnlyProperties(schema) {
     // Recursively process `items` if it's an array schema or contains objects
     if (schema.items) {
         schema.items = Array.isArray(schema.items)
-            ? schema.items.map(removeReadOnlyProperties)
-            : removeReadOnlyProperties(schema.items);
+            ? schema.items.map(item => removeReadOnlyProperties(item, visited, depth + 1))
+            : removeReadOnlyProperties(schema.items, visited, depth + 1);
     }
 
     // Recursively process `additionalProperties` if it’s an object schema
     if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-        schema.additionalProperties = removeReadOnlyProperties(schema.additionalProperties);
+        schema.additionalProperties = removeReadOnlyProperties(schema.additionalProperties, visited, depth + 1);
     }
+
+    // Remove schema from visited set after processing
+    visited.delete(schema);
 
     return schema;
 }
@@ -497,8 +546,6 @@ function generateInsertExample(
         if (!pathObj) {
             pathObj = Object.entries(dereferencedAPI.paths).find(([key]) => key === operationPath)?.[1];
         }
-
-        // let originalSchema;
 
         // Ensure the path and operation (e.g., POST) exist and contain a requestBody
         if (pathObj && pathObj[operationVerb] && pathObj[operationVerb].requestBody) {
@@ -567,71 +614,82 @@ ${codeBlockEnd}
     }
 }
 
-function generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, method, isReplace = false) {
+function generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, method, isReplace = false) {
     try {
-        const requiredParams = method.RequiredParams.split(', ').map(param => param.trim()); // Splitting required params into an array
+        console.log(`processing update for ${resourceName}...`);
 
-        // Safely retrieve schemaRef and schema properties
+        // Get required parameters from the method
+        const requiredParams = method.RequiredParams
+            ? method.RequiredParams.split(', ').map(param => param.trim())
+            : [];
+
+        // Get operation reference and path
         const operationRef = resourceData.methods[method.MethodName].operation.$ref;
         const operationPathParts = operationRef.replace('#/paths/', '').replace(/~1/g, '/').split('/');
         const operationVerb = operationPathParts.pop();
         const operationPath = operationPathParts.join('/');
-        const schemaRef = paths?.[operationPath]?.[operationVerb]?.requestBody?.content?.['application/json']?.schema?.$ref || null;
 
-        let schema = {};
-        if (schemaRef) {
-            schema = componentsSchemas[schemaRef.split('/').pop()] || {};
+        // Access the path in the dereferenced API schema
+        let pathObj = dereferencedAPI.paths[operationPath];
+        if (!pathObj) {
+            pathObj = Object.entries(dereferencedAPI.paths).find(([key]) => key === operationPath)?.[1];
         }
 
-        // Extract field names and data types from the schema
-        const schemaFields = schema.properties
-            ? Object.entries(schema.properties)
-                .filter(([key, value]) => !value.readOnly && !readOnlyPropertyNames.includes(key))  // Filter out properties with readOnly: true or matching readOnlyPropertyNames
-                .map(([key, value]) => ({
-                    name: key,
-                    type: value.type
-                }))
-            : [];
+        // Retrieve and process requestBodySchema
+        let requestBodySchema;
+        if (pathObj && pathObj[operationVerb] && pathObj[operationVerb].requestBody) {
+            requestBodySchema = pathObj[operationVerb].requestBody.content?.['application/json']?.schema;
 
-        // Generate the field names and corresponding values for the SET clause
-        const setParams = schemaFields.map(field => {
-            if (field.type === 'string') {
-                return `${field.name} = '{{ ${field.name} }}'`; // For strings, use '{{ fieldName }}'
-            } else if (field.type === 'boolean') {
-                return `${field.name} = true|false`; // Assuming boolean is true for this example
-            } else if (field.type === 'number') {
-                return `${field.name} = number`; // Assuming number is 0 for this example
+            requestBodySchema = replaceAllOf(requestBodySchema);
+            requestBodySchema = replaceAnyOfOneOf(requestBodySchema);
+            requestBodySchema = removeReadOnlyProperties(requestBodySchema);
+        } else {
+            console.log("Path, operation, or requestBody not found for:", operationPath);
+        }
+
+        // Generate SET clause: required fields from requestBodySchema
+        const reqBodyRequiredFieldsSetParams = (requestBodySchema?.required || []).map(field => {
+            const fieldType = requestBodySchema.properties?.[field]?.type || 'string';
+            if (fieldType === 'string') {
+                return `${field} = '{{ ${field} }}'`;
+            } else if (fieldType === 'boolean') {
+                return `${field} = true|false`;
+            } else if (fieldType === 'number') {
+                return `${field} = number`;
             } else {
-                return `${field.name} = '{{ ${field.name} }}'`; // Fallback to string template
+                return `${field} = '{{ ${field} }}'`;
             }
         }).join(',\n');
 
-        // Generate the WHERE clause for the required params
+        // Generate WHERE clause: requiredParams only
         const whereClause = requiredParams.map(param => `${param} = '{{ ${param} }}'`).join('\nAND ');
 
-        let sqlDescription = `Updates a <code>${resourceName}</code> resource.`
-        if(isReplace) {
+        // Description based on operation type
+        let sqlDescription = `Updates a <code>${resourceName}</code> resource.`;
+        if (isReplace) {
             sqlDescription = `Replaces all fields in the specified <code>${resourceName}</code> resource.`;
         }
 
         return `
-## ${mdCodeAnchor}${isReplace ? 'REPLACE': 'UPDATE'}${mdCodeAnchor} example
+## ${mdCodeAnchor}${isReplace ? 'REPLACE' : 'UPDATE'}${mdCodeAnchor} example
 
 ${sqlDescription}
 
 ${sqlCodeBlockStart}
 /*+ update */
-${isReplace ? 'REPLACE': 'UPDATE'} ${providerName}.${serviceName}.${resourceName}
+${isReplace ? 'REPLACE' : 'UPDATE'} ${providerName}.${serviceName}.${resourceName}
 SET 
-${setParams}
+${reqBodyRequiredFieldsSetParams}
 WHERE 
 ${whereClause};
 ${codeBlockEnd}
 `;
     } catch (error) {
         console.log('Error generating UPDATE example:', error);
+        return '';
     }
 }
+
 
 function generateDeleteExample(providerName, serviceName, resourceName, method) {
     return `

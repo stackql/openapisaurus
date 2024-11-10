@@ -5,14 +5,13 @@ hide_table_of_contents: false
 keywords:
   - key_encryption_keys
   - encryption_keys
-  - azure
-  - microsoft azure
+  - confluent
   - infrastructure-as-code
   - configuration-as-data
   - cloud inventory
-description: Query, deploy and manage Microsoft Azure infrastructure and resources using SQL
+description: Query, deploy and manage confluent resources using SQL
 custom_edit_url: null
-image: /img/providers/azure/stackql-azure-provider-featured-image.png
+image: /img/providers/confluent/stackql-confluent-provider-featured-image.png
 ---
 
 import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
@@ -123,9 +122,7 @@ Replaces all fields in the specified <code>key_encryption_keys</code> resource.
 /*+ update */
 REPLACE confluent.encryption_keys.key_encryption_keys
 SET 
-kmsProps = '{{ kmsProps }}',
-doc = '{{ doc }}',
-shared = true|false
+
 WHERE 
 name = '{{ name }}';
 ```

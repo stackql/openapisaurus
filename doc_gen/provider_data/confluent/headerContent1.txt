@@ -1,22 +1,22 @@
 ---
-title: azure
+title: confluent
 hide_title: false
 hide_table_of_contents: false
 keywords:
-  - azure
-  - microsoft azure
+  - confluent
+  - kafka
   - stackql
   - infrastructure-as-code
   - configuration-as-data
   - cloud inventory
-description: Query, deploy and manage Microsoft Azure resources using SQL
+description: Query, deploy and manage Confluent Cloud resources using SQL
 custom_edit_url: null
-image: /img/providers/azure/stackql-azure-provider-featured-image.png
-id: azure-doc
-slug: /providers/azure
+image: /img/providers/confluent/stackql-confluent-provider-featured-image.png
+id: confluent-doc
+slug: /providers/confluent
 
 ---
 
 import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
 
-Core cloud services from Microsoft Azure.
+Confluent Cloud for managing Kafka clusters, topics, and streaming services in a scalable cloud environment.
