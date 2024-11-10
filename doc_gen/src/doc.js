@@ -119,6 +119,10 @@ ${servicesToMarkdown(providerName, secondColumnServices)}
 
     console.log(`Index file created at ${indexPath}`);
 
+    fs.copyFileSync(`doc_gen/provider_data/${providerName}/stackql-provider-registry.mdx`, `provider_docs/${providerName}-docs/stackql-provider-registry.mdx`);
+    
+    console.log(`MDX file copied`);
+
 }
 
 // Process each service sequentially
@@ -194,7 +198,6 @@ async function createDocsForService(yamlFilePath, providerName, serviceName, ser
     console.log(`Generated documentation for ${serviceName}`);
 }
 
-// new
 async function processResource(providerName, serviceFolder, serviceName, resource) {
     console.log(`Processing resource: ${resource.name}`);
     
@@ -247,15 +250,14 @@ hide_title: false
 hide_table_of_contents: false
 keywords:
   - ${serviceName}
-  - azure
-  - microsoft azure
+  - ${providerName}
   - stackql
   - infrastructure-as-code
   - configuration-as-data
   - cloud inventory
-description: Query, deploy and manage Microsoft Azure resources using SQL
+description: Query, deploy and manage ${providerName} resources using SQL
 custom_edit_url: null
-image: /img/providers/azure/stackql-azure-provider-featured-image.png
+image: /img/providers/${providerName}/stackql-${providerName}-provider-featured-image.png
 ---
 
 ${serviceName} service documentation.
