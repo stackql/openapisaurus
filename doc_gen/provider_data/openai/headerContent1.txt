@@ -1,0 +1,20 @@
+---
+title: openai
+hide_title: false
+hide_table_of_contents: false
+keywords:
+  - openai
+  - stackql
+  - infrastructure-as-code
+  - configuration-as-data
+  - cloud inventory
+description: Query, deploy, and manage OpenAI and ChatGPT resources using SQL.
+custom_edit_url: null
+image: /img/providers/openai/stackql-openai-provider-featured-image.png
+id: openai-doc
+slug: /providers/openai
+---
+
+import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
+
+AI models for natural language processing and content generation.

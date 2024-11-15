@@ -3,6 +3,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import { createResourceIndexContent } from './resource-index-content.js';
 import SwaggerParser from '@apidevtools/swagger-parser';
+import * as deno_openapi_dereferencer from "@stackql/deno-openapi-dereferencer";
 
 //
 // main doc function
@@ -132,7 +133,16 @@ async function createDocsForService(yamlFilePath, providerName, serviceName, ser
 
     // Create a new SwaggerParser instance
     let parser = new SwaggerParser();
-    let dereferencedAPI = await parser.dereference(yamlFilePath);
+    const api = await parser.parse(yamlFilePath); 
+    const ignorePaths = ["$.components.x-stackQL-resources"];
+    let dereferencedAPI;
+
+    try {
+        dereferencedAPI = await deno_openapi_dereferencer.dereferenceApi(api, "$", ignorePaths);
+        dereferencedAPI = await deno_openapi_dereferencer.flattenAllOf(dereferencedAPI);
+      } catch (error) {
+        console.error("error in dereferencing or flattening:", error);
+      }
 
     // Create service directory
     if (!fs.existsSync(serviceFolder)) {

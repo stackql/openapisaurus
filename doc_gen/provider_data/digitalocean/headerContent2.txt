@@ -1,0 +1,42 @@
+See also:   
+[[` SHOW `]](https://stackql.io/docs/language-spec/show) [[` DESCRIBE `]](https://stackql.io/docs/language-spec/describe)  [[` REGISTRY `]](https://stackql.io/docs/language-spec/registry)
+* * * 
+
+## Installation
+
+To pull the latest version of the `digitalocean` provider, run the following command:  
+
+```bash
+REGISTRY PULL digitalocean;
+```
+> To view previous provider versions or to pull a specific provider version, see [here](https://stackql.io/docs/language-spec/registry).  
+
+## Authentication
+
+The following system environment variables are used for authentication by default:  
+
+- <CopyableCode code="DIGITALOCEAN_ACCESS_TOKEN" /> - DigitalOcean API token (see <a href="https://docs.digitalocean.com/reference/api/create-personal-access-token/">How to Create a Personal Access Token</a>)
+  
+These variables are sourced at runtime (from the local machine or as CI variables/secrets).  
+
+<details>
+
+<summary>Using different environment variables</summary>
+
+To use different environment variables (instead of the defaults), use the `--auth` flag of the `stackql` program.  For example:  
+
+```bash
+
+AUTH='{ "digitalocean": { "type": "bearer",  "credentialsenvvar": "YOUR_DIGITALOCEAN_TOKEN_VAR" }}'
+stackql shell --auth="${AUTH}"
+
+```
+or using PowerShell:  
+
+```powershell
+
+$Auth = "{ 'digitalocean': { 'type': 'bearer',  'credentialsenvvar': 'YOUR_DIGITALOCEAN_TOKEN_VAR' }}"
+stackql.exe shell --auth=$Auth
+
+```
+</details>

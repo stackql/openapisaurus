@@ -2,14 +2,50 @@
 import { search } from "https://deno.land/x/jmespath@v0.2.2/index.ts";
 import { logger } from "../util/logging.ts";
 
-export function camelToSnake(inStr: string): string {
+// export function camelToSnake(inStr: string): string {
 
+//   let convertedInStr = String(inStr);
+
+//   // Step : Replace exceptions in the input string
+//   const exceptions = {
+//     "AuthN": "authn",
+//     "IdP": "idp",
+//     "IPs": "Ips",
+//     "VPCs": "Vpcs",
+//   };
+
+//   // Replace exceptions in the input string
+//   Object.keys(exceptions).forEach(key => {
+//     convertedInStr = convertedInStr.replace(new RegExp(key, 'g'), exceptions[key]);
+//   });
+
+//   // Step 1: Replace hyphens with underscores and special characters with underscores
+//   let processedStr = convertedInStr.replace(/-/g, '_').replace(/ /g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
+
+//   // Step 2: Insert underscore before a group of uppercase letters followed by a lowercase letter
+//   processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
+
+//   // Step 3: Insert underscore before a lowercase letter followed by an uppercase letter
+//   processedStr = processedStr.replace(/([a-z])([A-Z])/g, '$1_$2');
+
+//   // Step 4: Lowercase the entire string
+//   processedStr = processedStr.toLowerCase();
+
+//   // Step 5: Replace multiple underscores with a single one and trim edges again
+//   processedStr = processedStr.replace(/_{2,}/g, '_').replace(/^_+|_+$/g, '');
+
+//   return processedStr;
+// }
+
+export function camelToSnake(inStr: string): string {
   let convertedInStr = String(inStr);
 
-  // Step : Replace exceptions in the input string
+  // Step: Replace exceptions in the input string
   const exceptions = {
     "AuthN": "authn",
     "IdP": "idp",
+    "IPs": "Ips",
+    "VPCs": "Vpcs",
   };
 
   // Replace exceptions in the input string
@@ -17,11 +53,19 @@ export function camelToSnake(inStr: string): string {
     convertedInStr = convertedInStr.replace(new RegExp(key, 'g'), exceptions[key]);
   });
 
-  // Step 1: Replace hyphens with underscores and special characters with underscores
-  let processedStr = convertedInStr.replace(/-/g, '_').replace(/ /g, '_').replace(/[\(\)\$\%]/g, '_').replace(/^_+|_+$/g, '');
+  // Step 1: Replace dots, hyphens, and special characters
+  // - Replace dots at the start or end with empty string
+  // - Replace other dots with underscores
+  convertedInStr = convertedInStr
+    .replace(/^\./, '')           // Remove dot at the start
+    .replace(/\.$/, '')           // Remove dot at the end
+    .replace(/\./g, '_')          // Replace remaining dots with underscores
+    .replace(/-/g, '_')           // Replace hyphens with underscores
+    .replace(/ /g, '_')           // Replace spaces with underscores
+    .replace(/[\(\)\$\%]/g, '_'); // Replace special characters with underscores
 
   // Step 2: Insert underscore before a group of uppercase letters followed by a lowercase letter
-  processedStr = processedStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
+  let processedStr = convertedInStr.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
 
   // Step 3: Insert underscore before a lowercase letter followed by an uppercase letter
   processedStr = processedStr.replace(/([a-z])([A-Z])/g, '$1_$2');
@@ -34,6 +78,7 @@ export function camelToSnake(inStr: string): string {
 
   return processedStr;
 }
+
 
 export function isMeaningfulToken(token: string, excludeParams = true): boolean {
   if (excludeParams && token.startsWith('{')) {
@@ -134,9 +179,10 @@ export function applyTransformations(inputs: string[], transformString: string):
   return applyStringManipulation(inputs, transformString);
 }
 
-export function startsOrEndsWith(str: string, arr: string[]): boolean {
+export function startsOrEndsWithOrIncludes(str: string, arr: string[]): boolean {
   for (let i = 0; i < arr.length; i++) {
-    if (str.startsWith(arr[i]) || str.endsWith(arr[i])) {
+    const pattern = new RegExp(`(^|_)${arr[i]}(_|$)`);
+    if (str.startsWith(arr[i]) || str.endsWith(arr[i]) || pattern.test(str)) {
       return true;
     }
   }

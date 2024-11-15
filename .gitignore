@@ -10,3 +10,5 @@ stackql*.sh
 *.csv
 *.xlsx
 nohup.out
+doc_gen/node_modules/
+provider_docs/

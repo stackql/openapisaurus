@@ -197,13 +197,13 @@ Creates, updates, deletes, gets or lists a <code>${resourceName}</code> resource
                 content += generateSelectExample(providerName, serviceName, resourceName, vwResourceName, exampleMethod, fields, vwFields);
                 break;
             case 'INSERT':
-                content += generateInsertExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, componentsRequestBodies, dereferencedAPI, exampleMethod);
+                content += generateInsertExample(providerName, serviceName, resourceName, resourceData, dereferencedAPI, exampleMethod);
                 break;
             case 'UPDATE':
-                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, exampleMethod);
+                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, dereferencedAPI, exampleMethod);
                 break;
             case 'REPLACE':
-                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, exampleMethod, true);                
+                content += generateUpdateExample(providerName, serviceName, resourceName, resourceData, dereferencedAPI, exampleMethod, true);                
                 break;
             case 'DELETE':
                 content += generateDeleteExample(providerName, serviceName, resourceName, exampleMethod);
@@ -519,9 +519,6 @@ function generateInsertExample(
     serviceName, 
     resourceName, 
     resourceData, 
-    paths, 
-    componentsSchemas, 
-    componentsRequestBodies, 
     dereferencedAPI, 
     method) {
     try {
@@ -562,13 +559,27 @@ function generateInsertExample(
             console.log("path, operation, or requestBody not found for:", operationPath);
         }
 
+        // Remove "data__" prefix from requiredParams if it exists
+        const normalizedRequiredParams = requiredParams.map(field =>
+            field.startsWith("data__") ? field.slice("data__".length) : field
+        );
+
         // INSERT column list
         const reqBodyRequiredFieldsColList = (requestBodySchema?.required || []).map(field => `data__${field}`);
-        const insertFields = Array.from(new Set([...reqBodyRequiredFieldsColList, ...requiredParams]));
+        const reqBodyAllFieldsColList = Object.keys(requestBodySchema?.properties || {}).map(field => `data__${field}`);
+        
+        const requiredInsertFields = Array.from(new Set([...reqBodyRequiredFieldsColList, ...requiredParams]));
+        const allInsertFields = Array.from(new Set([...reqBodyAllFieldsColList, ...requiredParams]));
 
-       // INSERT select values
-       const reqBodyRequiredFieldsSelectVals = (requestBodySchema?.required || []).map(field => `'{{ ${field} }}'`);
-       const selectValues = Array.from(new Set([...reqBodyRequiredFieldsSelectVals, ...requiredParams.map(field => `'{{ ${field} }}'`)]));
+        // INSERT select values
+        const reqBodyRequiredFieldsSelectVals = (requestBodySchema?.required || []).map(field => `'{{ ${field} }}'`);
+        const reqBodyAllFieldsSelectVals = Object.keys(requestBodySchema?.properties || {}).map(field => `'{{ ${field} }}'`);
+        
+        const requiredSelectValues = Array.from(new Set([...reqBodyRequiredFieldsSelectVals, ...normalizedRequiredParams.map(field => `'{{ ${field} }}'`)]));
+        const allSelectValues = Array.from(new Set([...reqBodyAllFieldsSelectVals, ...normalizedRequiredParams.map(field => `'{{ ${field} }}'`)]));
+
+        // Check if 'Required Properties' tab should be added
+        const shouldAddRequiredTab = requiredInsertFields.length > 0 && requiredInsertFields.length !== allInsertFields.length;
 
         // Pass the processed schema to getSchemaManifest
         const yamlManifest = yaml.dump(
@@ -584,6 +595,7 @@ Use the following StackQL query and manifest file to create a new <code>${resour
 <Tabs
     defaultValue="all"
     values={[
+        ${shouldAddRequiredTab ? "{ label: 'Required Properties', value: 'required' }," : ""}
         { label: 'All Properties', value: 'all', },
         { label: 'Manifest', value: 'manifest', },
     ]
@@ -593,13 +605,27 @@ Use the following StackQL query and manifest file to create a new <code>${resour
 ${sqlCodeBlockStart}
 /*+ create */
 INSERT INTO ${providerName}.${serviceName}.${resourceName} (
-${insertFields.join(',\n')}
+${allInsertFields.join(',\n')}
 )
 SELECT 
-${selectValues.join(',\n')}
+${allSelectValues.join(',\n')}
 ;
 ${codeBlockEnd}
 </TabItem>
+${shouldAddRequiredTab ? `
+<TabItem value="required">
+
+${sqlCodeBlockStart}
+/*+ create */
+INSERT INTO ${providerName}.${serviceName}.${resourceName} (
+${requiredInsertFields.join(',\n')}
+)
+SELECT 
+${requiredSelectValues.join(',\n')}
+;
+${codeBlockEnd}
+</TabItem>
+` : ""}
 <TabItem value="manifest">
 
 ${yamlCodeBlockStart}
@@ -614,7 +640,7 @@ ${codeBlockEnd}
     }
 }
 
-function generateUpdateExample(providerName, serviceName, resourceName, resourceData, paths, componentsSchemas, dereferencedAPI, method, isReplace = false) {
+function generateUpdateExample(providerName, serviceName, resourceName, resourceData, dereferencedAPI, method, isReplace = false) {
     try {
         console.log(`processing update for ${resourceName}...`);
 
@@ -648,7 +674,7 @@ function generateUpdateExample(providerName, serviceName, resourceName, resource
         }
 
         // Generate SET clause: required fields from requestBodySchema
-        const reqBodyRequiredFieldsSetParams = (requestBodySchema?.required || []).map(field => {
+        const reqBodyRequiredFieldsSetParams = Object.keys(requestBodySchema?.properties || {}).map(field => {            
             const fieldType = requestBodySchema.properties?.[field]?.type || 'string';
             if (fieldType === 'string') {
                 return `${field} = '{{ ${field} }}'`;

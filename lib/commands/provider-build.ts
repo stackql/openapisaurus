@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { readSync } from "https://deno.land/x/openapi@0.1.0/mod.ts";
-import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import * as yaml from "npm:js-yaml@4.1.0";
 import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
 import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";

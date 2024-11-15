@@ -106,6 +106,9 @@ export const usage = {
     outputFileName [REQUIRED] Output filename for formatted spec.
 
   Flags:
+    --deref             [OPTIONAL] Dereference document. (defaults to false)
+    --derefStartAt      [OPTIONAL] Starting point (JSON Path) to dereference from. (defaults to '$', ignored if --deref is false)
+    --flatten           [OPTIONAL] Flatten allOf arrays in document. (defaults to false, ignored if --deref is false)
     --overwrite         [OPTIONAL] Overwrite existing files. (defaults to false)
     --verbose           [OPTIONAL] Verbose output (defaults to false).
   `,

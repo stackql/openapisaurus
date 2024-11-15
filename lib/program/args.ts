@@ -17,12 +17,22 @@ export function parseFormatArgs(args: any): types.formatArgs | false {
 
   const apiDoc = args._[1];
   const outputFileName = args._[2];
-  
+
+  // optional named args
+  const verbose: boolean = args.verbose || false;
+  const overwrite: boolean = args.overwrite || false;
+  const deref: boolean = args.deref || false;
+  const derefStartAt: string | false = args.derefStartAt || false;
+  const flatten: boolean = args.flatten || false;
+
   const formatArgs: types.formatArgs = {
     apiDoc: apiDoc,
     outputFileName: outputFileName,
-    overwrite: true,
-    verbose: true,
+    deref: deref,
+    derefStartAt: derefStartAt,
+    flatten: flatten,
+    overwrite: overwrite,
+    verbose: verbose,
   };
 
   return formatArgs;

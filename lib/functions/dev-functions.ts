@@ -2,6 +2,9 @@
 import { 
   plural, 
 } from "https://deno.land/x/deno_plural/mod.ts";
+
+import { dereferenceApi, flattenAllOf } from "jsr:@stackql/deno-openapi-dereferencer";
+
 import {
   getMeaningfulPathTokens,
   snakeToTitleCase,
@@ -10,7 +13,7 @@ import {
   camelToSnake,
   parseDSL,
   applyTransformations,
-  startsOrEndsWith,
+  startsOrEndsWithOrIncludes,
   includes,  
 } from "./shared.ts";
 import {
@@ -18,6 +21,7 @@ import {
   getStackQLMethodNameforProvider,
   getObjectKeyforProvider,
   getSqlVerbforProvider,
+  getNonDataFieldsForProvider,
 } from "./providers.ts";
 import * as types from "../types/types.ts";
 
@@ -177,34 +181,51 @@ export function getStackQLMethodName(
 
 }
 
-export function addOperation(
+export async function addOperation(
     resData: any,
     service: string,
     resource: string,
     stackQLMethodName: string,
+    apiDoc: any,
     apiPaths: any,
     componentsSchemas: any,
+    componentsResponses: any,
     pathKey: string,
     verbKey: string,
     providerName: string,
     operationId: string,
     debug: boolean,
     logger: any
-  ): any {
+  ): Promise<any> {
+
+    const dereferencedDoc = await dereferenceApi(apiDoc);
 
     const respCode = getResponseCode(apiPaths[pathKey][verbKey]?.responses);
 
-    const mediaType = getMediaType(apiPaths[pathKey][verbKey]?.responses[respCode]?.content);
+    const resp = apiPaths[pathKey][verbKey]?.responses[respCode];
+    
+    const mediaType = getMediaType(dereferencedDoc.paths[pathKey][verbKey]?.responses[respCode]?.content);
 
-    const respSchemaRef = getResponseSchemaRef(apiPaths[pathKey][verbKey]?.responses, respCode, mediaType);
+    const respSchemaRef = getResponseSchemaRef(resp, mediaType);
 
-    // get objectKey if exists
+    const hasData = !!(mediaType && dereferencedDoc.paths[pathKey][verbKey]?.responses[respCode]?.content?.[mediaType]?.schema);
+    
     let objectKey: string | null = null;
 
-    if(apiPaths[pathKey][verbKey]['x-stackQL-objectKey']){
-      objectKey = apiPaths[pathKey][verbKey]['x-stackQL-objectKey'];
+    if (hasData && (verbKey === 'get' || verbKey === 'post')) {
+      debug ? logger.debug(`[${stackQLMethodName}] returns data`) : null;
+
+      // get objectKey if exists
+
+      if(apiPaths[pathKey][verbKey]['x-stackQL-objectKey']){
+        objectKey = apiPaths[pathKey][verbKey]['x-stackQL-objectKey'];
+        debug ? logger.debug(`objectKey found in x-stackQL-objectKey: ${objectKey}`) : null;
+      } else {
+        objectKey = getObjectKey(providerName, service, resource, stackQLMethodName, dereferencedDoc, pathKey, verbKey, respCode, mediaType, debug, logger);
+      }
+
     } else {
-      objectKey = getObjectKey(providerName, service, resource, stackQLMethodName, respSchemaRef, componentsSchemas, debug, logger);
+      debug ? logger.debug(`[${stackQLMethodName}] does not return data`) : null;
     }
 
     const opRef = getOperationRef(service, pathKey, verbKey);
@@ -382,36 +403,42 @@ function getResponseCode(responses: any): string {
   return '200';
 }
 
-function getResponseSchemaRef(apiOperation: any, respCode: string, mediaType: string): string | null {
-  // Check if the response code exists in the apiOperation responses
-  const response = apiOperation?.[respCode];
+function getResponseSchemaRef(resp: any, mediaType: string | null): string | null {
+  // Check for content type and schema ref
+  if (resp?.content && mediaType && resp.content[mediaType]?.schema) {
+    const schema = resp.content[mediaType].schema;
 
-  // If there is a $ref directly under the response code, return the reference name
-  if (response?.$ref && response.$ref.startsWith('#/components/responses')) {
-    return response.$ref;
-  }
-
-  // If the response exists, try to access the schema $ref under 'content'
-  if (response?.content && response.content[mediaType]?.schema) {
-    const schema = response.content[mediaType].schema;
-
-    // Return the $ref if it exists
+    // Handle $ref directly
     if (schema.$ref) {
       return schema.$ref;
     }
+
+    // Handle allOf, anyOf, oneOf cases
+    if (schema.allOf || schema.anyOf || schema.oneOf) {
+      const type = schema.allOf ? 'allOf' : schema.anyOf ? 'anyOf' : 'oneOf';
+      const refs = schema[type].map((item: any) => item.$ref).filter((ref: string | undefined) => ref);
+      return refs.length > 0 ? `${type}: ${refs.join(', ')}` : null;
+    }
   }
 
-  // Return null if no $ref is found
+  // Check for direct $ref in response
+  if (resp.$ref) {
+    return resp.$ref;
+  }
+
+  // If no valid $ref found, return null
   return null;
 }
 
-function getMediaType(content: any) {
+
+function getMediaType(content: any): string | null {
   if (!content) {
     return 'application/json';
   }
 
   // Iterate through the keys of the content object
   for (const key in content) {
+
     // Check if the key starts with 'application/json'
     if (key.startsWith('application/json')) {
       return key;
@@ -430,68 +457,55 @@ function getOperationRef(service: string, pathKey: string, verbKey: string): str
     return `${service}.yaml#/paths/${pathKey.replace(/\//g, '~1')}/${verbKey}`;
 }
 
-// OBJECT_KEY
+// OBJECT KEY
 function getObjectKey(
   providerName: string,
   service: string,
   resource: string,
   stackQLMethodName: string,
-  respSchemaRef: string | null,
-  componentsSchemas: any,
+  dereferencedDoc: any,
+  pathKey: string,
+  verbKey: string,
+  respCode: string,
+  mediaType: string,
   debug: boolean,
   logger: any
 ): string | null {
-
   const logPrefix = 'OBJECT_KEY';
 
-  // 1. Use provider data if defined
+  // Step 1: Use provider-specific object key if available
   const objectKeyFromProvider = getObjectKeyforProvider(providerName, service, resource, stackQLMethodName, debug, logger);
   if (objectKeyFromProvider) {
-      return objectKeyFromProvider;
+    return objectKeyFromProvider;
   }
 
-  // 2. Determine object key if necessary
-  if (!respSchemaRef) {
-      debug ? logger.debug(`[${logPrefix}] no response schema reference found for operation: ${stackQLMethodName}`) : null;
-      return null;
+  // Step 2: Retrieve non-data fields for the provider (e.g., "meta", "links")
+  const nonDataFields = getNonDataFieldsForProvider(providerName, debug, logger);
+
+  // Step 3: Access the response schema for the specific path, verb, and response code
+  const response = dereferencedDoc.paths[pathKey][verbKey]?.responses[respCode].content[mediaType]?.schema;
+
+  // If response schema is not an object, return null
+  if (response?.type !== "object" || !response.properties) {
+    return null;
   }
 
-  // Extract the schema name (e.g., 'ListAssistantsResponse') from the $ref
-  const schemaName = respSchemaRef.split('/').pop();
-  if (!schemaName) {
-      debug ? logger.debug(`[${logPrefix}] no schema name found in response schema reference: ${respSchemaRef}`) : null;
-      return null;
+  // Step 4: Filter out non-data properties
+  const dataProperties = Object.keys(response.properties).filter(
+    (property) => !nonDataFields.includes(property)
+  );
+
+  // Step 5: If exactly one property remains and it’s an array, return its JSON path
+  if (dataProperties.length === 1) {
+    const key = dataProperties[0];
+    debug ? logger.debug(`[${logPrefix}] found objectKey: ${key}`) : null;
+    return `$.${key}`;
   }
 
-  // Retrieve the schema from componentsSchemas
-  const schema = componentsSchemas?.[schemaName];
-  if (!schema || schema.type !== 'object' || !schema.properties) {
-      debug ? logger.debug(`[${logPrefix}] response schema is not an object or not defined for: ${schemaName}`) : null;
-      return null;
-  }
-
-  // Check if the schema name matches the "List" pattern
-  const listPattern = /(?:^List|List$|(?<=[a-z])List(?=[A-Z]))/;
-  if (!listPattern.test(schemaName)) {
-      debug ? logger.debug(`[${logPrefix}] schema name does not match "List" pattern: ${schemaName}`) : null;
-      return null;
-  }
-
-  // Iterate over the properties of the schema
-  for (const [key, property] of Object.entries(schema.properties)) {
-
-    // Check if 'property' is an object and has a field named 'type' with value "array"
-    const isArray = typeof property === 'object' && property !== null && property.type === 'array';
-
-    if (isArray) {
-      debug ? logger.debug(`[${logPrefix}] object key determined as: $.${key} based on schema: ${schemaName}`) : null;
-      return `$.${key}`;
-    }
-  }
-
-  debug ? logger.debug(`[${logPrefix}] no object key determined for operation: ${stackQLMethodName} with schema: ${schemaName}`) : null;
+  // No valid object key found
   return null;
 }
+
 
 // SQL_VERB
 function getSqlVerb(
@@ -534,34 +548,34 @@ function deriveSQLVerb(verbKey: string, stackQLMethodName: string, op: any): str
   // Default verb is 'exec'
   let verb = 'exec';
 
-  const deleteMethods = ['delete', 'remove'];
+  const deleteMethods = ['delete', 'remove', 'destroy'];
   const insertMethods = ['insert', 'create', 'add'];
   const updateMethods = ['update', 'patch', 'modify'];
   const replaceMethods = ['replace', 'put'];
   const selectMethods = ['list', 'get', 'select', 'read', 'describe', 'show', 'find', 'search', 'query', 'fetch', 'retrieve', 'inspect'];
 
   // DELETE operations
-  if (verbKey === 'delete' && startsOrEndsWith(stackQLMethodName, deleteMethods)) {
+  if (verbKey === 'delete' && startsOrEndsWithOrIncludes(stackQLMethodName, deleteMethods)) {
       return 'delete';
   }
 
   // INSERT operations
-  if ((verbKey === 'post' || verbKey === 'put') && startsOrEndsWith(stackQLMethodName, insertMethods)) {
+  if ((verbKey === 'post' || verbKey === 'put') && startsOrEndsWithOrIncludes(stackQLMethodName, insertMethods)) {
       return 'insert';
   }
 
   // UPDATE operations
-  if ((verbKey === 'patch' || verbKey === 'post') && startsOrEndsWith(stackQLMethodName, updateMethods)) {
+  if ((verbKey === 'patch' || verbKey === 'post') && startsOrEndsWithOrIncludes(stackQLMethodName, updateMethods)) {
       return 'update';
   }
 
   // REPLACE operations
-  if ((verbKey === 'post' || verbKey === 'put') && startsOrEndsWith(stackQLMethodName, replaceMethods)) {
+  if ((verbKey === 'post' || verbKey === 'put') && startsOrEndsWithOrIncludes(stackQLMethodName, replaceMethods)) {
       return 'replace';
   }
 
   // SELECT operations
-  if ((verbKey === 'get' || verbKey === 'post') && startsOrEndsWith(stackQLMethodName, selectMethods)) {
+  if ((verbKey === 'get' || verbKey === 'post') && startsOrEndsWithOrIncludes(stackQLMethodName, selectMethods)) {
     
     // Get the response code using the helper function
     const respCode = getResponseCode(op.responses);
