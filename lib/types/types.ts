@@ -33,6 +33,9 @@ export interface formatArgs {
   outputFileName: string;
   overwrite: boolean;
   verbose: boolean;
+  deref: boolean;
+  derefStartAt: string | false;
+  flatten: boolean;
 }
 
 export interface Service {

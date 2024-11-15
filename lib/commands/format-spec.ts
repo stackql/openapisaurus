@@ -3,12 +3,14 @@ import * as types from "../types/types.ts";
 import { logger } from "../util/logging.ts";
 import { read } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
-import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import * as yaml from "npm:js-yaml@4.1.0";
+import { dereferenceApi, flattenAllOf } from "jsr:@stackql/deno-openapi-dereferencer";
 import {
   camelToSnake,
 } from "../functions/shared.ts";
 
 function nullableTypeFix(obj: any): any {
+  
   if (obj === null || typeof obj !== 'object') return obj;
 
   const newObj = Array.isArray(obj) ? [] : {};
@@ -64,28 +66,29 @@ function fixParameterNamesInPath(spec: any): any {
   return newSpec;
 }
 
-function fixParameterNamesInOpParams(spec: any) {
-  let newSpec = JSON.parse(JSON.stringify(spec)); // Deep clone spec
+function fixParameterNamesInOpParams(spec: any): any {
+  const newSpec = JSON.parse(JSON.stringify(spec)); // Deep clone spec
 
-  Object.keys(newSpec.paths).forEach((path) => {
-    if (newSpec.paths[path].parameters) {
+  Object.keys(newSpec.paths || {}).forEach((path) => {
+    // Fix parameters at the path level
+    if (newSpec.paths[path]?.parameters) {
       newSpec.paths[path].parameters.forEach((parameter: any, index: number) => {
-      if (parameter.in === 'path') {
-        const newName = camelToSnake(parameter.name);
-        if(parameter.name !== newName) {
-          // console.log(`Fixing parameter name in path: ${path} ${parameter.name} -> ${newName}`);
-          newSpec.paths[path].parameters[index].name = newName; // Update the name field
+        if (parameter.in === 'path') {
+          const newName = camelToSnake(parameter.name);
+          if (parameter.name !== newName) {
+            newSpec.paths[path].parameters[index].name = newName; // Update the name field
+          }
         }
-      }
       });
     }
-    Object.keys(newSpec.paths[path]).forEach((method) => {
-      if (newSpec.paths[path][method].parameters) {
+
+    // Fix parameters at the method level
+    Object.keys(newSpec.paths[path] || {}).forEach((method) => {
+      if (newSpec.paths[path][method]?.parameters) {
         newSpec.paths[path][method].parameters.forEach((parameter: any, index: number) => {
           if (parameter.in === 'path') {
             const newName = camelToSnake(parameter.name);
-            if(parameter.name !== newName) {
-              // console.log(`Fixing parameter name in path: ${path} ${method} ${parameter.name} -> ${newName}`);
+            if (parameter.name !== newName) {
               newSpec.paths[path][method].parameters[index].name = newName; // Update the name field
             }
           }
@@ -107,28 +110,64 @@ function processSpec(spec: any): any {
 
 export async function formatApiSpec(formatArgs: types.formatArgs): Promise<boolean> {
   try {
-    const { apiDoc, outputFileName, overwrite, verbose } = formatArgs;
-    if (verbose) logger.debug(`formatArgs: ${JSON.stringify(formatArgs)}`);
+    const { 
+      apiDoc, 
+      outputFileName, 
+      deref,
+      derefStartAt,
+      flatten,
+      overwrite, 
+      verbose 
+    } = formatArgs;
+
+    logger.info(`formatting ${apiDoc}...`);
+    verbose ? logger.debug(`formatArgs: ${JSON.stringify(formatArgs)}`) : null;
     
     if (!existsSync(apiDoc)) {
-      throw new Error(`File ${apiDoc} does not exist.`);
+      throw new Error(`file ${apiDoc} does not exist.`);
+    } else {
+      verbose ? logger.debug(`file ${apiDoc} exists`) : null;
     }
 
-    verbose && logger.debug(`reading ${apiDoc}...`);
-    const apiData = await read(apiDoc);
+    verbose ? logger.debug(`reading ${apiDoc}...`) : null;
+    let apiData = await read(apiDoc);
     if (!apiData) {
       logger.error(`failed to parse ${apiDoc}`);
       return false;
+    } else {
+      logger.info(`successfully read ${apiDoc}`);
+    }
+
+    // dereference the document if `deref` is true
+    if (deref) {
+      // dereference
+      if (derefStartAt) {
+        logger.info(`dereferencing ${apiDoc} starting at ${derefStartAt}...`);
+        apiData = await dereferenceApi(
+          apiData,
+          derefStartAt
+        );        
+      } else {
+        logger.info(`dereferencing ${apiDoc}...`);
+        apiData = await dereferenceApi(
+          apiData
+        );        
+      }
+      // flatten allOf
+      if (flatten) {
+        logger.info(`flattening allOf in ${apiDoc}...`);
+        apiData = await flattenAllOf(apiData);
+      }
     }
 
     const processedSpec = processSpec(apiData);
 
-    verbose && logger.debug(`writing out to ${outputFileName}...`);
+    logger.info(`writing out to ${outputFileName}...`);
     if (existsSync(outputFileName) && !overwrite) {
-      throw new Error(`File ${outputFileName} already exists. Overwrite is set to false.`);
+      throw new Error(`file ${outputFileName} already exists. overwrite is set to false.`);
     }
 
-    Deno.writeTextFileSync(outputFileName, yaml.dump(processedSpec, {lineWidth: -1}));
+  Deno.writeTextFileSync(outputFileName, yaml.dump(processedSpec, { lineWidth: -1 }));
     return true;
   } catch (error) {
     logger.error(`failed to format spec : ${error}`);

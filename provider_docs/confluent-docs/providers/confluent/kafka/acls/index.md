@@ -103,14 +103,7 @@ SELECT
 '{{ host }}',
 '{{ operation }}',
 '{{ permission }}',
-'{{ cluster_id }}',
-'{{ data__host }}',
-'{{ data__operation }}',
-'{{ data__pattern_type }}',
-'{{ data__permission }}',
-'{{ data__principal }}',
-'{{ data__resource_name }}',
-'{{ data__resource_type }}'
+'{{ cluster_id }}'
 ;
 ```
 </TabItem>

@@ -1,6 +1,6 @@
 import { read } from "https://deno.land/x/openapi@0.1.0/mod.ts";
 import { ensureDirSync, existsSync } from "https://deno.land/std@0.190.0/fs/mod.ts";
-import * as yaml from "https://deno.land/x/js_yaml_port@3.14.0/js-yaml.js";
+import * as yaml from "npm:js-yaml@4.1.0";
 import * as types from "../types/types.ts";
 import { createDestDir } from "../util/fs.ts";
 import { logger } from "../util/logging.ts";

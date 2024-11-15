@@ -106,30 +106,28 @@ SELECT
 '{{ replication_factor }}',
 '{{ configs }}',
 '{{ cluster_id }}',
-'{{ link_name }}',
-'{{ data__source_topic_name }}'
+'{{ link_name }}'
 ;
 ```
 </TabItem>
 
-    <TabItem value="required">
+<TabItem value="required">
 
-    ```sql
-    /*+ create */
-    INSERT INTO confluent.kafka.mirror_topics (
-    data__source_topic_name,
+```sql
+/*+ create */
+INSERT INTO confluent.kafka.mirror_topics (
+data__source_topic_name,
 cluster_id,
 link_name
-    )
-    SELECT 
-    '{{ source_topic_name }}',
+)
+SELECT 
+'{{ source_topic_name }}',
 '{{ cluster_id }}',
-'{{ link_name }}',
-'{{ data__source_topic_name }}'
-    ;
-    ```
-    </TabItem>
-    
+'{{ link_name }}'
+;
+```
+</TabItem>
+
 <TabItem value="manifest">
 
 ```yaml

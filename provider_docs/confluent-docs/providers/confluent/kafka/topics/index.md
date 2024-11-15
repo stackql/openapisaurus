@@ -102,28 +102,26 @@ SELECT
 '{{ replication_factor }}',
 '{{ configs }}',
 '{{ validate_only }}',
-'{{ cluster_id }}',
-'{{ data__topic_name }}'
+'{{ cluster_id }}'
 ;
 ```
 </TabItem>
 
-    <TabItem value="required">
+<TabItem value="required">
 
-    ```sql
-    /*+ create */
-    INSERT INTO confluent.kafka.topics (
-    data__topic_name,
+```sql
+/*+ create */
+INSERT INTO confluent.kafka.topics (
+data__topic_name,
 cluster_id
-    )
-    SELECT 
-    '{{ topic_name }}',
-'{{ cluster_id }}',
-'{{ data__topic_name }}'
-    ;
-    ```
-    </TabItem>
-    
+)
+SELECT 
+'{{ topic_name }}',
+'{{ cluster_id }}'
+;
+```
+</TabItem>
+
 <TabItem value="manifest">
 
 ```yaml

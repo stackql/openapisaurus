@@ -7,6 +7,7 @@ interface Provider {
     resourcesMap: Record<string, any>;
     stackqlMethodNameMap: Record<string, any>;
     objectKeysAndSqlVerbsMap: Record<string, any>;
+    nonDataFields: string[];
 }
 
 const typedProviders = providers as unknown as Record<string, Provider>;
@@ -70,6 +71,18 @@ export function getStackQLMethodNameforProvider(
     } 
 
     return false;
+}
+
+// OBJECT_KEY
+export function getNonDataFieldsForProvider(
+    providerName: string,
+    debug: boolean,
+    logger: any,    
+): string[] {
+
+    const provider = typedProviders[providerName];
+    return provider?.nonDataFields ?? [];
+
 }
 
 // OBJECT_KEY

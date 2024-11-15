@@ -119,23 +119,17 @@ SELECT
 '{{ description }}',
 '{{ documentation_link }}',
 '{{ runtime_language }}',
-'{{ upload_source }}',
-'{{ data__class }}',
-'{{ data__cloud }}',
-'{{ data__display_name }}',
-'{{ data__environment }}',
-'{{ data__region }}',
-'{{ data__upload_source }}'
+'{{ upload_source }}'
 ;
 ```
 </TabItem>
 
-    <TabItem value="required">
+<TabItem value="required">
 
-    ```sql
-    /*+ create */
-    INSERT INTO confluent.flink_artifacts.flink_artifacts (
-    data__cloud,
+```sql
+/*+ create */
+INSERT INTO confluent.flink_artifacts.flink_artifacts (
+data__cloud,
 data__region,
 data__environment,
 data__display_name,
@@ -143,24 +137,18 @@ data__class,
 data__upload_source,
 cloud,
 region
-    )
-    SELECT 
-    '{{ cloud }}',
+)
+SELECT 
+'{{ cloud }}',
 '{{ region }}',
 '{{ environment }}',
 '{{ display_name }}',
 '{{ class }}',
-'{{ upload_source }}',
-'{{ data__class }}',
-'{{ data__cloud }}',
-'{{ data__display_name }}',
-'{{ data__environment }}',
-'{{ data__region }}',
-'{{ data__upload_source }}'
-    ;
-    ```
-    </TabItem>
-    
+'{{ upload_source }}'
+;
+```
+</TabItem>
+
 <TabItem value="manifest">
 
 ```yaml

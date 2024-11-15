@@ -613,19 +613,19 @@ ${allSelectValues.join(',\n')}
 ${codeBlockEnd}
 </TabItem>
 ${shouldAddRequiredTab ? `
-    <TabItem value="required">
+<TabItem value="required">
 
-    ${sqlCodeBlockStart}
-    /*+ create */
-    INSERT INTO ${providerName}.${serviceName}.${resourceName} (
-    ${requiredInsertFields.join(',\n')}
-    )
-    SELECT 
-    ${requiredSelectValues.join(',\n')}
-    ;
-    ${codeBlockEnd}
-    </TabItem>
-    ` : ""}
+${sqlCodeBlockStart}
+/*+ create */
+INSERT INTO ${providerName}.${serviceName}.${resourceName} (
+${requiredInsertFields.join(',\n')}
+)
+SELECT 
+${requiredSelectValues.join(',\n')}
+;
+${codeBlockEnd}
+</TabItem>
+` : ""}
 <TabItem value="manifest">
 
 ${yamlCodeBlockStart}
