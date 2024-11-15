@@ -1,0 +1,21 @@
+---
+title: digitalocean
+hide_title: false
+hide_table_of_contents: false
+keywords:
+  - digitalocean
+  - stackql
+  - infrastructure-as-code
+  - configuration-as-data
+  - cloud inventory
+description: Query, deploy and manage Digital Ocean resources using SQL
+custom_edit_url: null
+image: /img/providers/digitalocean/stackql-digitalocean-provider-featured-image.png
+id: digitalocean-doc
+slug: /providers/digitalocean
+
+---
+
+import CopyableCode from '@site/src/components/CopyableCode/CopyableCode';
+
+DigitalOcean for managing cloud servers, databases, networking, and storage in a simplified, developer-friendly environment.
