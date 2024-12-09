@@ -1,0 +1,812 @@
+openapi: 3.0.0
+info:
+  title: Databricks Account API - Provisioning
+  description: API for managing credential configurations in the Databricks account.
+  version: 1.0.0
+servers:
+  - url: https://accounts.cloud.databricks.com/api/2.0
+    description: Databricks Account API Server
+paths:
+  /credentials:
+    get:
+      summary: List Credential Configurations
+      description: Retrieve a list of all credential configurations in the Databricks account.
+      operationId: list-credential-configurations
+      x-stackQL-resource: credential_configurations
+      x-stackQL-method: list
+      x-stackQL-verb: select
+      responses:
+        '200':
+          description: A list of credential configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CredentialConfiguration'
+    post:
+      summary: Create Credential Configuration
+      description: Create a new credential configuration in the Databricks account.
+      operationId: create-credential-configuration
+      x-stackQL-resource: credential_configurations
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCredentialConfigurationRequest'
+      responses:
+        '201':
+          description: Credential configuration created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialConfiguration'
+  /credentials/{credential_id}:
+    get:
+      summary: Get Credential Configuration
+      description: Retrieve details of a specific credential configuration by its ID.
+      operationId: get-credential-configuration
+      x-stackQL-resource: credential_configurations
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: credential_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the credential configuration to retrieve.
+      responses:
+        '200':
+          description: Credential configuration details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialConfiguration'
+    delete:
+      summary: Delete Credential Configuration
+      description: Delete a specific credential configuration by its ID.
+      operationId: delete-credential-configuration
+      x-stackQL-resource: credential_configurations
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: credential_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the credential configuration to delete.
+      responses:
+        '204':
+          description: Credential configuration deleted successfully.
+  /encryption-keys:
+    get:
+      summary: List Encryption Key Configurations
+      description: Retrieve a list of all encryption key configurations in the Databricks account.
+      operationId: list-encryption-key-configurations
+      x-stackQL-resource: encryption_key_configurations
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of encryption key configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EncryptionKeyConfiguration'
+    post:
+      summary: Create Encryption Key Configuration
+      description: Create a new encryption key configuration in the Databricks account.
+      operationId: create-encryption-key-configuration
+      x-stackQL-resource: encryption_key_configurations
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEncryptionKeyConfigurationRequest'
+      responses:
+        '201':
+          description: Encryption key configuration created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyConfiguration'
+  /encryption-keys/{encryption_key_id}:
+    get:
+      summary: Get Encryption Key Configuration
+      description: Retrieve details of a specific encryption key configuration by its ID.
+      operationId: get-encryption-key-configuration
+      x-stackQL-resource: encryption_key_configurations
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: encryption_key_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the encryption key configuration to retrieve.
+      responses:
+        '200':
+          description: Encryption key configuration details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKeyConfiguration'
+    delete:
+      summary: Delete Encryption Key Configuration
+      description: Delete a specific encryption key configuration by its ID.
+      operationId: delete-encryption-key-configuration
+      x-stackQL-resource: encryption_key_configurations
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: encryption_key_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the encryption key configuration to delete.
+      responses:
+        '204':
+          description: Encryption key configuration deleted successfully.
+  /networks:
+    get:
+      summary: List Network Configurations
+      description: Retrieve a list of all network configurations in the Databricks account.
+      operationId: list-network-configurations
+      x-stackQL-resource: network_configurations
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of network configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NetworkConfiguration'
+    post:
+      summary: Create Network Configuration
+      description: Create a new network configuration in the Databricks account.
+      operationId: create-network-configuration
+      x-stackQL-resource: network_configurations
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNetworkConfigurationRequest'
+      responses:
+        '201':
+          description: Network configuration created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkConfiguration'
+  /networks/{network_id}:
+    get:
+      summary: Get Network Configuration
+      description: Retrieve details of a specific network configuration by its ID.
+      operationId: get-network-configuration
+      x-stackQL-resource: network_configurations
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: network_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the network configuration to retrieve.
+      responses:
+        '200':
+          description: Network configuration details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkConfiguration'
+    delete:
+      summary: Delete Network Configuration
+      description: Delete a specific network configuration by its ID.
+      operationId: delete-network-configuration
+      x-stackQL-resource: network_configurations
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: network_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the network configuration to delete.
+      responses:
+        '204':
+          description: Network configuration deleted successfully.
+  /private-access-settings:
+    get:
+      summary: List Private Access Settings
+      description: Retrieve a list of all private access settings in the Databricks account.
+      operationId: list-private-access-settings
+      x-stackQL-resource: private_access_settings
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of private access settings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateAccessSetting'
+    post:
+      summary: Create Private Access Setting
+      description: Create a new private access setting in the Databricks account.
+      operationId: create-private-access-setting
+      x-stackQL-resource: private_access_settings
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateAccessSettingRequest'
+      responses:
+        '201':
+          description: Private access setting created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateAccessSetting'
+  /private-access-settings/{private_access_setting_id}:
+    get:
+      summary: Get Private Access Setting
+      description: Retrieve details of a specific private access setting by its ID.
+      operationId: get-private-access-setting
+      x-stackQL-resource: private_access_settings
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: private_access_setting_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the private access setting to retrieve.
+      responses:
+        '200':
+          description: Private access setting details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateAccessSetting'
+    put:
+      summary: Replace Private Access Setting
+      description: Replace an existing private access setting by its ID.
+      operationId: replace-private-access-setting
+      x-stackQL-resource: private_access_settings
+      x-stackQL-method: replace
+      x-stackQL-verb: replace      
+      parameters:
+        - name: private_access_setting_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the private access setting to replace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateAccessSettingRequest'
+      responses:
+        '200':
+          description: Private access setting replaced successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateAccessSetting'
+    delete:
+      summary: Delete Private Access Setting
+      description: Delete a specific private access setting by its ID.
+      operationId: delete-private-access-setting
+      x-stackQL-resource: private_access_settings
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: private_access_setting_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the private access setting to delete.
+      responses:
+        '204':
+          description: Private access setting deleted successfully.
+  /storage-configurations:
+    get:
+      summary: List Storage Configurations
+      description: Retrieve a list of all storage configurations in the Databricks account.
+      operationId: list-storage-configurations
+      x-stackQL-resource: storage_configurations
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of storage configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageConfiguration'
+    post:
+      summary: Create Storage Configuration
+      description: Create a new storage configuration in the Databricks account.
+      operationId: create-storage-configuration
+      x-stackQL-resource: storage_configurations
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStorageConfigurationRequest'
+      responses:
+        '201':
+          description: Storage configuration created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConfiguration'
+  /storage-configurations/{storage_configuration_id}:
+    get:
+      summary: Get Storage Configuration
+      description: Retrieve details of a specific storage configuration by its ID.
+      operationId: get-storage-configuration
+      x-stackQL-resource: storage_configurations
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: storage_configuration_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the storage configuration to retrieve.
+      responses:
+        '200':
+          description: Storage configuration details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConfiguration'
+    delete:
+      summary: Delete Storage Configuration
+      description: Delete a specific storage configuration by its ID.
+      operationId: delete-storage-configuration
+      x-stackQL-resource: storage_configurations
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: storage_configuration_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the storage configuration to delete.
+      responses:
+        '204':
+          description: Storage configuration deleted successfully.
+  /vpc-endpoints:
+    get:
+      summary: List VPC Endpoints
+      description: Retrieve a list of all VPC endpoints in the Databricks account.
+      operationId: list-vpc-endpoints
+      x-stackQL-resource: vpc_endpoints
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of VPC endpoints.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VpcEndpoint'
+    post:
+      summary: Create VPC Endpoint
+      description: Create a new VPC endpoint in the Databricks account.
+      operationId: create-vpc-endpoint
+      x-stackQL-resource: vpc_endpoints
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVpcEndpointRequest'
+      responses:
+        '201':
+          description: VPC endpoint created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcEndpoint'
+  /vpc-endpoints/{vpc_endpoint_id}:
+    get:
+      summary: Get VPC Endpoint
+      description: Retrieve details of a specific VPC endpoint by its ID.
+      operationId: get-vpc-endpoint
+      x-stackQL-resource: vpc_endpoints
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: vpc_endpoint_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the VPC endpoint to retrieve.
+      responses:
+        '200':
+          description: VPC endpoint details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VpcEndpoint'
+    delete:
+      summary: Delete VPC Endpoint
+      description: Delete a specific VPC endpoint by its ID.
+      operationId: delete-vpc-endpoint
+      x-stackQL-resource: vpc_endpoints
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: vpc_endpoint_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the VPC endpoint to delete.
+      responses:
+        '204':
+          description: VPC endpoint deleted successfully.
+  /workspaces:
+    get:
+      summary: List Workspaces
+      description: Retrieve a list of all workspaces in the Databricks account.
+      operationId: list-workspaces
+      x-stackQL-resource: workspaces
+      x-stackQL-method: list
+      x-stackQL-verb: select      
+      responses:
+        '200':
+          description: A list of workspaces.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Workspace'
+    post:
+      summary: Create Workspace
+      description: Create a new workspace in the Databricks account.
+      operationId: create-workspace
+      x-stackQL-resource: workspaces
+      x-stackQL-method: create
+      x-stackQL-verb: insert      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkspaceRequest'
+      responses:
+        '201':
+          description: Workspace created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+  /workspaces/{workspace_id}:
+    get:
+      summary: Get Workspace
+      description: Retrieve details of a specific workspace by its ID.
+      operationId: get-workspace
+      x-stackQL-resource: workspaces
+      x-stackQL-method: get
+      x-stackQL-verb: select      
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the workspace to retrieve.
+      responses:
+        '200':
+          description: Workspace details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+    patch:
+      summary: Update Workspace
+      description: Update details of a specific workspace by its ID.
+      operationId: update-workspace
+      x-stackQL-resource: workspaces
+      x-stackQL-method: update
+      x-stackQL-verb: update      
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the workspace to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkspaceRequest'
+      responses:
+        '200':
+          description: Workspace updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+    delete:
+      summary: Delete Workspace
+      description: Delete a specific workspace by its ID.
+      operationId: delete-workspace
+      x-stackQL-resource: workspaces
+      x-stackQL-method: delete
+      x-stackQL-verb: delete      
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the workspace to delete.
+      responses:
+        '204':
+          description: Workspace deleted successfully.
+components:
+  schemas:
+    CredentialConfiguration:
+      type: object
+      properties:
+        credential_id:
+          type: string
+          description: Unique identifier for the credential configuration.
+        name:
+          type: string
+          description: Name of the credential configuration.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of credential creation.
+    CreateCredentialConfigurationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the credential configuration.
+        role_arn:
+          type: string
+          description: AWS IAM role ARN associated with the credential configuration.
+    EncryptionKeyConfiguration:
+      type: object
+      properties:
+        encryption_key_id:
+          type: string
+          description: Unique identifier for the encryption key configuration.
+        key_alias:
+          type: string
+          description: Alias of the encryption key in the key management system.
+        key_arn:
+          type: string
+          description: ARN of the encryption key in AWS KMS.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of encryption key configuration creation.
+    CreateEncryptionKeyConfigurationRequest:
+      type: object
+      properties:
+        key_alias:
+          type: string
+          description: Alias of the encryption key in the key management system.
+        key_arn:
+          type: string
+          description: ARN of the encryption key in AWS KMS.
+    NetworkConfiguration:
+      type: object
+      properties:
+        network_id:
+          type: string
+          description: Unique identifier for the network configuration.
+        vpc_id:
+          type: string
+          description: ID of the VPC associated with the network configuration.
+        subnet_ids:
+          type: array
+          items:
+            type: string
+          description: List of subnet IDs in the VPC.
+        security_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of security group IDs associated with the network.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of network configuration creation.
+    CreateNetworkConfigurationRequest:
+      type: object
+      properties:
+        vpc_id:
+          type: string
+          description: ID of the VPC to associate with the network configuration.
+        subnet_ids:
+          type: array
+          items:
+            type: string
+          description: List of subnet IDs to associate with the network.
+        security_group_ids:
+          type: array
+          items:
+            type: string
+          description: List of security group IDs to associate with the network.
+    PrivateAccessSetting:
+      type: object
+      properties:
+        private_access_setting_id:
+          type: string
+          description: Unique identifier for the private access setting.
+        allowed_ip_ranges:
+          type: array
+          items:
+            type: string
+          description: List of allowed IP ranges for the private access setting.
+        name:
+          type: string
+          description: Name of the private access setting.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of the private access setting creation.
+    CreatePrivateAccessSettingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the private access setting.
+        allowed_ip_ranges:
+          type: array
+          items:
+            type: string
+          description: List of allowed IP ranges for the private access setting.
+    StorageConfiguration:
+      type: object
+      properties:
+        storage_configuration_id:
+          type: string
+          description: Unique identifier for the storage configuration.
+        bucket_name:
+          type: string
+          description: Name of the storage bucket.
+        region:
+          type: string
+          description: The AWS region of the storage bucket.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of storage configuration creation.
+    CreateStorageConfigurationRequest:
+      type: object
+      properties:
+        bucket_name:
+          type: string
+          description: Name of the storage bucket.
+        region:
+          type: string
+          description: The AWS region of the storage bucket.
+    VpcEndpoint:
+      type: object
+      properties:
+        vpc_endpoint_id:
+          type: string
+          description: Unique identifier for the VPC endpoint.
+        service_name:
+          type: string
+          description: Name of the VPC endpoint service.
+        vpc_id:
+          type: string
+          description: ID of the VPC associated with the endpoint.
+        subnet_ids:
+          type: array
+          items:
+            type: string
+          description: List of subnet IDs associated with the endpoint.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of VPC endpoint creation.
+    CreateVpcEndpointRequest:
+      type: object
+      properties:
+        service_name:
+          type: string
+          description: Name of the VPC endpoint service.
+        vpc_id:
+          type: string
+          description: ID of the VPC to associate with the endpoint.
+        subnet_ids:
+          type: array
+          items:
+            type: string
+          description: List of subnet IDs to associate with the endpoint.
+    Workspace:
+      type: object
+      properties:
+        workspace_id:
+          type: string
+          description: Unique identifier for the workspace.
+        name:
+          type: string
+          description: Name of the workspace.
+        region:
+          type: string
+          description: The AWS region where the workspace is located.
+        deployment_name:
+          type: string
+          description: Deployment name of the workspace.
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp of workspace creation.
+    CreateWorkspaceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the workspace to create.
+        region:
+          type: string
+          description: The AWS region where the workspace should be located.
+        deployment_name:
+          type: string
+          description: Deployment name of the workspace.
+    UpdateWorkspaceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Updated name of the workspace.
+        deployment_name:
+          type: string
+          description: Updated deployment name of the workspace.
