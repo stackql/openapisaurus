@@ -1,0 +1,378 @@
+openapi: 3.0.1
+info:
+  title: Databricks Billing API
+  description: API for managing log delivery configurations in Databricks.
+  version: 1.0.0
+paths:
+  /api/2.0/accounts/{account_id}/log-delivery:
+    get:
+      operationId: list-log-delivery-configurations
+      x-stackQL-resource: log_delivery_configurations
+      x-stackQL-method: list
+      x-stackQL-verb: select
+      summary: List all log delivery configurations.
+      description: Retrieve all log delivery configurations for the account.
+      responses:
+        '200':
+          description: A list of log delivery configurations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogDeliveryConfigurationsListResponse'
+    post:
+      operationId: create-log-delivery-configuration
+      x-stackQL-resource: log_delivery_configurations
+      x-stackQL-method: create
+      x-stackQL-verb: insert
+      summary: Create a log delivery configuration.
+      description: Create a new log delivery configuration for the account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLogDeliveryConfigurationRequest'
+      responses:
+        '201':
+          description: Log delivery configuration created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogDeliveryConfigurationResponse'
+  /api/2.0/accounts/{account_id}/log-delivery/{log_delivery_configuration_id}:
+    get:
+      operationId: get-log-delivery-configuration
+      x-stackQL-resource: log_delivery_configurations
+      x-stackQL-method: get
+      x-stackQL-verb: select
+      summary: Get a specific log delivery configuration.
+      description: Retrieve details of a log delivery configuration by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the log delivery configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogDeliveryConfigurationResponse'
+    patch:
+      operationId: enable_disable-log-delivery-configuration
+      x-stackQL-resource: log_delivery_configurations
+      x-stackQL-method: enable_disable
+      x-stackQL-verb: exec
+      summary: Enable or disable a log delivery configuration.
+      description: Update the lifecycle state (enable/disable) of a log delivery configuration.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableDisableLogDeliveryConfigurationRequest'
+      responses:
+        '200':
+          description: Log delivery configuration lifecycle state updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogDeliveryConfigurationResponse'
+  /api/2.0/accounts/{account_id}/dashboard:
+    post:
+      operationId: create-usage-dashboard
+      x-stackQL-resource: usage_dashboards
+      x-stackQL-method: create
+      x-stackQL-verb: insert
+      summary: Create a usage dashboard.
+      description: Create a new usage dashboard for the account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsageDashboardRequest'
+      responses:
+        '201':
+          description: Usage dashboard created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageDashboardResponse'
+    get:
+      operationId: get-usage-dashboard
+      x-stackQL-resource: usage_dashboards
+      x-stackQL-method: get
+      x-stackQL-verb: select
+      summary: Get details of a usage dashboard.
+      description: Retrieve details of a specific usage dashboard by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the specified usage dashboard.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageDashboardResponse'
+  /budgets:
+    get:
+      operationId: list-budgets
+      x-stackQL-resource: budgets
+      x-stackQL-method: list
+      x-stackQL-verb: select
+      summary: List all budgets.
+      description: Retrieve all budgets configured for the account.
+      responses:
+        '200':
+          description: A list of budgets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetsListResponse'
+    post:
+      operationId: create-budget
+      x-stackQL-resource: budgets
+      x-stackQL-method: create
+      x-stackQL-verb: insert
+      summary: Create a new budget.
+      description: Create a new budget for the account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetRequest'
+      responses:
+        '201':
+          description: Budget created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+  /budgets/{id}:
+    get:
+      operationId: get-budget
+      x-stackQL-resource: budgets
+      x-stackQL-method: get
+      x-stackQL-verb: select
+      summary: Get details of a specific budget.
+      description: Retrieve details of a specific budget by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Budget details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+    patch:
+      operationId: update-budget
+      x-stackQL-resource: budgets
+      x-stackQL-method: update
+      x-stackQL-verb: update
+      summary: Update a budget.
+      description: Update an existing budget for the account.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetRequest'
+      responses:
+        '200':
+          description: Budget updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+    delete:
+      operationId: delete-budget
+      x-stackQL-resource: budgets
+      x-stackQL-method: delete
+      x-stackQL-verb: delete
+      summary: Delete a budget.
+      description: Remove a specific budget from the account.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Budget deleted successfully.
+components:
+  schemas:
+    LogDeliveryConfigurationsListResponse:
+      type: object
+      properties:
+        logDeliveryConfigurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogDeliveryConfiguration'
+    LogDeliveryConfigurationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+    LogDeliveryConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+        destination:
+          type: string
+        status:
+          type: string
+    CreateLogDeliveryConfigurationRequest:
+      type: object
+      properties:
+        logDeliveryConfig:
+          type: object
+          properties:
+            destination:
+              type: string
+            status:
+              type: string
+    EnableDisableLogDeliveryConfigurationRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [enabled, disabled]
+    CreateUsageDashboardRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the usage dashboard.
+        description:
+          type: string
+          description: A description of the usage dashboard.
+        config:
+          type: object
+          description: Configuration settings for the usage dashboard.
+          additionalProperties: true
+    UsageDashboardResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the usage dashboard.
+        name:
+          type: string
+          description: The name of the usage dashboard.
+        description:
+          type: string
+          description: A description of the usage dashboard.
+        config:
+          type: object
+          description: Configuration settings of the usage dashboard.
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the usage dashboard was created.
+    BudgetsListResponse:
+      type: object
+      properties:
+        budgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+    BudgetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the budget.
+        name:
+          type: string
+          description: The name of the budget.
+        amount:
+          type: number
+          format: float
+          description: The budget amount.
+        period:
+          type: string
+          description: The time period for the budget (e.g., monthly, yearly).
+        currency:
+          type: string
+          description: The currency for the budget amount.
+    Budget:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the budget.
+        name:
+          type: string
+          description: The name of the budget.
+        amount:
+          type: number
+          format: float
+          description: The budget amount.
+        period:
+          type: string
+          description: The time period for the budget (e.g., monthly, yearly).
+        currency:
+          type: string
+          description: The currency for the budget amount.
+    CreateBudgetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the budget.
+        amount:
+          type: number
+          format: float
+          description: The budget amount.
+        period:
+          type: string
+          description: The time period for the budget (e.g., monthly, yearly).
+        currency:
+          type: string
+          description: The currency for the budget amount.
+    UpdateBudgetRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The updated name of the budget.
+        amount:
+          type: number
+          format: float
+          description: The updated budget amount.
+        period:
+          type: string
+          description: The updated time period for the budget.
+        currency:
+          type: string
+          description: The updated currency for the budget amount.

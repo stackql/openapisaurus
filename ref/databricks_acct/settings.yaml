@@ -1,0 +1,232 @@
+openapi: 3.0.1
+info:
+  title: Databricks Settings API
+  description: API for managing account settings in Databricks, including IP access lists.
+  version: 1.0.0
+paths:
+  /api/2.0/accounts/{account_id}/ip-access-lists:
+    get:
+      operationId: list-account-ip-access-lists
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: list
+      x-stackQL-verb: select
+      summary: List all account IP access lists.
+      description: Retrieve all IP access lists configured for the account.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of account IP access lists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIPAccessListsListResponse'
+    post:
+      operationId: create-account-ip-access-list
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: create
+      x-stackQL-verb: insert
+      summary: Create an account IP access list.
+      description: Create a new IP access list for the account.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountIPAccessListRequest'
+      responses:
+        '201':
+          description: Account IP access list created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIPAccessListResponse'
+  /api/2.0/accounts/{account_id}/ip-access-lists/{id}:
+    get:
+      operationId: get-account-ip-access-list
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: get
+      x-stackQL-verb: select
+      summary: Get details of an account IP access list.
+      description: Retrieve details of a specific account IP access list by its ID.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account IP access list details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIPAccessListResponse'
+    put:
+      operationId: replace-account-ip-access-list
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: replace
+      x-stackQL-verb: replace
+      summary: Replace an account IP access list.
+      description: Replace the existing IP access list with the provided details.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceAccountIPAccessListRequest'
+      responses:
+        '200':
+          description: Account IP access list replaced successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIPAccessListResponse'
+    patch:
+      operationId: update-account-ip-access-list
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: update
+      x-stackQL-verb: update
+      summary: Update an account IP access list.
+      description: Update specific attributes of an existing IP access list.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountIPAccessListRequest'
+      responses:
+        '200':
+          description: Account IP access list updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountIPAccessListResponse'
+    delete:
+      operationId: delete-account-ip-access-list
+      x-stackQL-resource: account_ip_access_lists
+      x-stackQL-method: delete
+      x-stackQL-verb: delete
+      summary: Delete an account IP access list.
+      description: Remove a specific IP access list from the account.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Account IP access list deleted successfully.
+components:
+  schemas:
+    AccountIPAccessListsListResponse:
+      type: object
+      properties:
+        accessLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountIPAccessList'
+    AccountIPAccessListResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the IP access list.
+        label:
+          type: string
+          description: A label for the IP access list.
+        list:
+          type: array
+          items:
+            type: string
+          description: A list of IP addresses or CIDR ranges included in the access list.
+    AccountIPAccessList:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the IP access list.
+        label:
+          type: string
+          description: A label for the IP access list.
+        list:
+          type: array
+          items:
+            type: string
+          description: A list of IP addresses or CIDR ranges included in the access list.
+    CreateAccountIPAccessListRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          description: A label for the IP access list.
+        list:
+          type: array
+          items:
+            type: string
+          description: A list of IP addresses or CIDR ranges to include in the access list.
+    ReplaceAccountIPAccessListRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          description: A label for the IP access list.
+        list:
+          type: array
+          items:
+            type: string
+          description: A list of IP addresses or CIDR ranges to include in the access list.
+    UpdateAccountIPAccessListRequest:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Updated label for the IP access list.
+        list:
+          type: array
+          items:
+            type: string
+          description: Updated list of IP addresses or CIDR ranges for the access list.
